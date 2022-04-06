@@ -3,11 +3,11 @@ package main
 import (
 	"io"
 	"net/http"
-	"strconv"
 
 	"log"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
+	"github.com/gorilla/mux"
 )
 
 var (
@@ -42,38 +42,59 @@ func Post(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(201)
 
 	w.Write([]byte(url))
+	return
 
 }
 
 func Get(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil || id < 1 {
-		http.NotFound(w, r)
-		log.Print("upal")
-		return
-	}
+	//fmt.Print("hello")
 	w.WriteHeader(307)
 
-	r.Header.Set("Location", app.LongUrl(IdList[id]))
+	r, err := http.NewRequest("GET", r.URL.Query().Get("id"), nil)
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	// id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	// if err != nil || id < 1 {
+	// 	http.NotFound(w, r)
+	// 	log.Print("upal")
+	// 	return
+	// }
 
+	//r.Header.Set("Location", app.LongUrl(IdList[id]))
+	//r.Header.WriteSubset(w io.Writer, {"Location": []string{app.LongUrl(IdList[id])}})
 	// remove row below
-	log.Print(IdList[id])
+	//log.Print(IdList[id])
+
 	w.Write([]byte(app.LongUrl(IdList[id])))
-	//w.Write([]byte(GetLongURLFromID(string(q))))
 	//http.Get()
 }
 
+const port = ":8080"
+
 func main() {
+	mux := initHandlers()
+	IdList = make(map[int]string)
 
-	http.HandleFunc("/", Post)
-	http.HandleFunc("/{id}", Get)
-
-	server := &http.Server{
-		Addr: "localhost:8080",
+	srv := http.Server{
+		Addr:    port,
+		Handler: mux,
 	}
 
-	server.ListenAndServe()
+	log.Printf("App listening port: %s", port)
+	log.Fatal(srv.ListenAndServe())
 
+}
+func initHandlers() *mux.Router {
+	// TODO: how handler 404 (if not found some url, example: /not_exist_url)
+	// TODO: handle "Not Allowed Method" example: DELETE method request to /
+
+	router := mux.NewRouter()
+	router.HandleFunc("/", Post).Methods("POST")
+	router.HandleFunc("/{id}", Get).Methods("GET")
+
+	return router
 }
 
 // func WriteShortURLByID(url string) int {
