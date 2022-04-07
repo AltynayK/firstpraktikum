@@ -60,15 +60,10 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
+	//
+	w.Header().Set("Location", app.LongURL(IDList[b]))
 
-	if IDList != nil && b <= len(IDList) {
-		w.WriteHeader(307)
-		w.Header().Set("Location", app.LongURL(IDList[b]))
-	} else {
-		w.WriteHeader(400)
-		return
-	}
-
+	w.WriteHeader(307)
 	//w.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
 
 	//log.Print(app.LongURL(IDList[b]))
