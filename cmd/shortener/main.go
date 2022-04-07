@@ -49,13 +49,15 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
-		//	w.WriteHeader(400)
+
+		w.WriteHeader(400)
+		return
 	}
 	//fmt.Println(`id := `, id)
 
 	b, err := strconv.Atoi(id)
 	if err != nil && b < 1 {
-		//w.WriteHeader(400)
+		w.WriteHeader(400)
 		return
 	}
 	//w.WriteHeader(307)
