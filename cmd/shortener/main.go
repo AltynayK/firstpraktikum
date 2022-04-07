@@ -1,13 +1,11 @@
 package main
 
 import (
-	"io"
 	"net/http"
-	"strconv"
 
 	"log"
 
-	"github.com/AltynayK/firstpraktikum/internal/app"
+	"github.com/AltynayK/firstpraktikum/internal/handler"
 	"github.com/gorilla/mux"
 )
 
@@ -16,67 +14,11 @@ var (
 	id     int
 )
 
-func Post(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("content-type", "plain/text")
-
-	b, err := io.ReadAll(r.Body)
-	// обрабатываем ошибку
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	url := app.ShortURL(string(b))
-	if IDList == nil {
-		IDList = make(map[int]string)
-	}
-
-	id++
-	IDList[id] = url
-
-	//log.Print(id)
-
-	//log.Print(IDList)
-	w.WriteHeader(201)
-
-	w.Write([]byte(url))
-
-}
-
-func Get(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(307)
-
-	vars := mux.Vars(r)
-	id, ok := vars["id"]
-	if !ok {
-		w.WriteHeader(400)
-	}
-	//fmt.Println(`id := `, id)
-
-	b, err := strconv.Atoi(id)
-	if err != nil && b < 1 {
-		w.WriteHeader(400)
-		return
-	}
-
-	w.Header().Set("Location", app.LongURL(IDList[b]))
-
-	//
-
-	//w.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
-
-	//log.Print(b)
-
-	//w.Write([]byte(app.LongURL(IDList[b])))
-	//w.Write([]byte(app.LongURL(IDList[id])))
-}
-
 const port = ":8080"
 
 func main() {
 	mux := initHandlers()
-	IDList = make(map[int]string)
+	//IDList = make(map[int]string)
 
 	srv := http.Server{
 		Addr:    port,
@@ -92,8 +34,8 @@ func initHandlers() *mux.Router {
 	// TODO: handle "Not Allowed Method" example: DELETE method request to /
 
 	router := mux.NewRouter()
-	router.HandleFunc("/", Post).Methods("POST")
-	router.HandleFunc("/{id}", Get).Methods("GET")
+	router.HandleFunc("/", handler.Post).Methods("POST")
+	router.HandleFunc("/{id}", handler.Get).Methods("GET")
 
 	return router
 }
