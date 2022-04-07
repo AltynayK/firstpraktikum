@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -51,12 +50,12 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
-		fmt.Println("id is missing in parameters")
+		w.WriteHeader(400)
 	}
 	//fmt.Println(`id := `, id)
 
 	b, err := strconv.Atoi(id)
-	if err != nil {
+	if err != nil && b < 1 {
 		w.WriteHeader(400)
 		return
 	}
