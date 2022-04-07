@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
 	"log"
 
@@ -31,14 +33,12 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		IDList = make(map[int]string)
 	}
 
-	if IDList[id] != url {
-		id++
-		IDList[id] = url
-	}
+	id++
+	IDList[id] = url
 
 	//log.Print(id)
 
-	//log.Print(IdList)
+	//log.Print(IDList)
 	w.WriteHeader(201)
 
 	w.Write([]byte(url))
@@ -48,22 +48,28 @@ func Post(w http.ResponseWriter, r *http.Request) {
 func Get(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(307)
 
-	r, err := http.NewRequest("GET", r.URL.Query().Get("id"), nil)
-
-	if err != nil {
-		w.WriteHeader(400)
-		return
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		fmt.Println("id is missing in parameters")
 	}
+	//fmt.Println(`id := `, id)
 
-	w.Header().Set("Location", app.LongURL(IDList[id]))
+	b, _ := strconv.Atoi(id)
+	// if err != nil {
+	// 	w.WriteHeader(400)
+	// 	return
+	// }
+
+	w.Header().Set("Location", app.LongURL(IDList[b]))
 
 	//
 
 	//w.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
 
-	//log.Print(IDList[id])
+	//log.Print(b)
 
-	//w.Write([]byte(app.LongURL(IDList[id])))
+	//w.Write([]byte(app.LongURL(IDList[b])))
 	//w.Write([]byte(app.LongURL(IDList[id])))
 }
 
