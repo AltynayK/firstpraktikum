@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	IdList map[int]string
+	IDList map[int]string
 	id     int
 )
 
@@ -26,14 +26,14 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := app.ShortUrl(string(b))
-	if IdList == nil {
-		IdList = make(map[int]string)
+	url := app.ShortURL(string(b))
+	if IDList == nil {
+		IDList = make(map[int]string)
 	}
 
-	if IdList[id] != url {
+	if IDList[id] != url {
 		id++
-		IdList[id] = url
+		IDList[id] = url
 	}
 
 	log.Print(id)
@@ -63,12 +63,12 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 	//r.Header.Set("Location", app.LongUrl(IdList[id]))
 	w.WriteHeader(307)
-	w.Header().Add("Location", app.LongUrl(IdList[id]))
+	w.Header().Add("Location", app.LongURL(IDList[id]))
 	//r.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
 	// remove row below
 	//log.Print(IdList[id])
 
-	w.Write([]byte(app.LongUrl(IdList[id])))
+	w.Write([]byte(app.LongURL(IDList[id])))
 	//http.Get()
 	return
 }
@@ -77,7 +77,7 @@ const port = ":8080"
 
 func main() {
 	mux := initHandlers()
-	IdList = make(map[int]string)
+	IDList = make(map[int]string)
 
 	srv := http.Server{
 		Addr:    port,
