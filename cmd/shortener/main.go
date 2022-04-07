@@ -63,12 +63,14 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	//r.Header.Set("Location", app.LongUrl(IdList[id]))
-	//r.Header.WriteSubset(w io.Writer, {"Location": []string{app.LongUrl(IdList[id])}})
+	w.Header().Add("Location", app.LongUrl(IdList[id]))
+	//r.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
 	// remove row below
 	//log.Print(IdList[id])
 
 	w.Write([]byte(app.LongUrl(IdList[id])))
 	//http.Get()
+	return
 }
 
 const port = ":8080"
