@@ -60,7 +60,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Location", "http://"+app.LongURL(IDList[b]))
+	w.Header().Set("Location", "http://localhost:8080/"+app.LongURL(IDList[b]))
 
 	//
 
