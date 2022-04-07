@@ -61,7 +61,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Location", app.LongURL(IDList[b]))
+	w.Header().Set("Location", "http://"+app.LongURL(IDList[b]))
 
 	//
 
