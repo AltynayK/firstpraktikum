@@ -27,7 +27,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := app.ShortURL(string(b))
+	url := "http://" + app.ShortURL(string(b))
 	if IDList == nil {
 		IDList = make(map[int]string)
 	}
