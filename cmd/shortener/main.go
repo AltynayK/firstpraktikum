@@ -49,7 +49,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
 func Get(w http.ResponseWriter, r *http.Request) {
 	//fmt.Print("hello")
 
-	r, err := http.NewRequest("GET", r.URL.Query().Get("id"), nil)
+	r, err := http.NewRequest("GET", r.URL.Query().Get("/{id}"), nil)
 	if err != nil {
 		w.WriteHeader(400)
 		return
