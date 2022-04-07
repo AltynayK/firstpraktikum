@@ -40,7 +40,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
 	//log.Print(IDList)
 	w.WriteHeader(201)
 
-	w.Write([]byte("http://" + url))
+	w.Write([]byte(url))
 
 }
 
@@ -60,7 +60,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Location", "http://localhost:8080/"+app.LongURL(IDList[b]))
+	w.Header().Set("Location", app.LongURL(IDList[b]))
 
 	//
 
