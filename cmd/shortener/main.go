@@ -47,29 +47,25 @@ func Post(w http.ResponseWriter, r *http.Request) {
 }
 
 func Get(w http.ResponseWriter, r *http.Request) {
-	//fmt.Print("hello")
+	w.WriteHeader(307)
 
-	r, err := http.NewRequest("GET", r.URL.Query().Get("/{id}"), nil)
+	r, err := http.NewRequest("GET", r.URL.Query().Get("id"), nil)
+
 	if err != nil {
 		w.WriteHeader(400)
 		return
 	}
-	// id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	// if err != nil || id < 1 {
-	// 	http.NotFound(w, r)
-	// 	log.Print("upal")
-	// 	return
-	// }
 
-	//r.Header.Set("Location", app.LongUrl(IdList[id]))
-	w.WriteHeader(307)
-	w.Header().Add("Location", "app.LongURL(IDList[id])")
-	//r.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
-	// remove row below
-	//log.Print(IdList[id])
+	w.Header().Set("Location", app.LongURL(IDList[id]))
 
-	w.Write([]byte(app.LongURL(IDList[id])))
-	//http.Get()
+	//
+
+	//w.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
+
+	//log.Print(IDList[id])
+
+	//w.Write([]byte(app.LongURL(IDList[id])))
+	//w.Write([]byte(app.LongURL(IDList[id])))
 	return
 }
 
