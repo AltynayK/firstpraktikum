@@ -73,7 +73,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	//w.Write([]byte(app.LongURL(IDList[id])))
 }
 
-const port = "http://localhost:8080"
+const port = ":8080"
 
 func main() {
 	mux := initHandlers()
