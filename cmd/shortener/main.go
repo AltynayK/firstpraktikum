@@ -61,6 +61,10 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//
+	if len(IDList) == 0 {
+		w.WriteHeader(307)
+		return
+	}
 	w.Header().Set("Location", app.LongURL(IDList[b]))
 
 	w.WriteHeader(307)
