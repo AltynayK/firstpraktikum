@@ -40,7 +40,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
 	//log.Print(IDList)
 	w.WriteHeader(201)
 
-	w.Write([]byte(url))
+	w.Write([]byte("http://" + url))
 
 }
 
