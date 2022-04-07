@@ -48,7 +48,6 @@ func Post(w http.ResponseWriter, r *http.Request) {
 
 func Get(w http.ResponseWriter, r *http.Request) {
 	//fmt.Print("hello")
-	w.WriteHeader(307)
 
 	r, err := http.NewRequest("GET", r.URL.Query().Get("id"), nil)
 	if err != nil {
@@ -63,6 +62,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	//r.Header.Set("Location", app.LongUrl(IdList[id]))
+	w.WriteHeader(307)
 	w.Header().Add("Location", app.LongUrl(IdList[id]))
 	//r.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
 	// remove row below
