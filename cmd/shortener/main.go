@@ -42,7 +42,6 @@ func Post(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(201)
 
 	w.Write([]byte(url))
-	return
 
 }
 
@@ -66,7 +65,6 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 	//w.Write([]byte(app.LongURL(IDList[id])))
 	//w.Write([]byte(app.LongURL(IDList[id])))
-	return
 }
 
 const port = ":8080"
