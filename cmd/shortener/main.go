@@ -55,11 +55,11 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	}
 	//fmt.Println(`id := `, id)
 
-	b, _ := strconv.Atoi(id)
-	// if err != nil {
-	// 	w.WriteHeader(400)
-	// 	return
-	// }
+	b, err := strconv.Atoi(id)
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
 
 	w.Header().Set("Location", app.LongURL(IDList[b]))
 
