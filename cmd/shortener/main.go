@@ -36,7 +36,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		IDList[id] = url
 	}
 
-	log.Print(id)
+	//log.Print(id)
 
 	//log.Print(IdList)
 	w.WriteHeader(201)
@@ -63,7 +63,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 	//r.Header.Set("Location", app.LongUrl(IdList[id]))
 	w.WriteHeader(307)
-	w.Header().Add("Location", app.LongURL(IDList[id]))
+	w.Header().Add("Location", "app.LongURL(IDList[id])")
 	//r.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
 	// remove row below
 	//log.Print(IdList[id])
@@ -84,7 +84,7 @@ func main() {
 		Handler: mux,
 	}
 
-	log.Printf("App listening port: %s", port)
+	//log.Printf("App listening port: %s", port)
 	log.Fatal(srv.ListenAndServe())
 
 }
