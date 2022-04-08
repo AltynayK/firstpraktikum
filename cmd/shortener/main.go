@@ -46,28 +46,24 @@ func Post(w http.ResponseWriter, r *http.Request) {
 
 func Get(w http.ResponseWriter, r *http.Request) {
 
-	vars := mux.Vars(r)
-	id, ok := vars["id"]
-	if !ok {
+	id := r.URL.Query().Get("id")
+	if id != "" {
+		b, err := strconv.Atoi(id)
+		if err != nil && b < 1 {
+			w.WriteHeader(400)
+			return
+		}
+		//
 
-		w.WriteHeader(400)
-		return
+		w.Header().Set("Location", app.LongURL(IDList[b]))
 	}
-	//fmt.Println(`id := `, id)
+	// Первый путь
+	// id := query["id"][0]
 
-	b, err := strconv.Atoi(id)
-	if err != nil && b < 1 {
-		w.WriteHeader(400)
-		return
-	}
-	//
-	if len(IDList) == 0 {
-		w.WriteHeader(307)
-		return
-	}
-	w.Header().Set("Location", app.LongURL(IDList[b]))
+	// Второй способ
 
 	w.WriteHeader(307)
+	return
 	//w.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
 
 	//log.Print(app.LongURL(IDList[b]))
