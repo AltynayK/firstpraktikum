@@ -1,13 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
 
 	"log"
 
-	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/gorilla/mux"
 )
 
@@ -34,13 +34,15 @@ func Post(w http.ResponseWriter, r *http.Request) {
 
 	id++
 	IDList[id] = longUrl
-	shortUrl := app.ShortURL(strconv.Itoa(id))
+
+	shortURL := "http://" + r.Host + r.URL.String() + (strconv.Itoa(id))
 	//log.Print(id)
 
 	//log.Print(IDList)
+	w.Header().Set("Location", shortURL)
 	w.WriteHeader(201)
 
-	w.Write([]byte(shortUrl))
+	w.Write([]byte(shortURL))
 
 }
 
@@ -60,11 +62,12 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	longUrl := IDList[b]
+	longURL := IDList[b]
 	//
-	w.Header().Set("Location", longUrl)
+	w.Header().Set("Location", longURL)
 
 	w.WriteHeader(307)
+	fmt.Fprint(w)
 	//w.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
 
 	//log.Print(app.LongURL(IDList[b]))
