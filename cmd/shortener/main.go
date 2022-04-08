@@ -27,13 +27,13 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	longUrl := string(b)
+	longURL := string(b)
 	if IDList == nil {
 		IDList = make(map[int]string)
 	}
 
 	id++
-	IDList[id] = longUrl
+	IDList[id] = longURL
 
 	shortURL := "http://" + r.Host + r.URL.String() + (strconv.Itoa(id))
 	//log.Print(id)
