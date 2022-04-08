@@ -8,7 +8,6 @@ import (
 	"log"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
-	"github.com/gorilla/mux"
 )
 
 var (
@@ -47,16 +46,19 @@ func Post(w http.ResponseWriter, r *http.Request) {
 func Get(w http.ResponseWriter, r *http.Request) {
 
 	id := r.URL.Query().Get("id")
-	if id != "" {
-		b, err := strconv.Atoi(id)
-		if err != nil && b < 1 {
-			w.WriteHeader(400)
-			return
-		}
-		//
-
-		w.Header().Set("Location", app.LongURL(IDList[b]))
+	if id == "" {
+		http.Error(w, "The query parameter is missing", http.StatusBadRequest)
+		return
 	}
+	b, err := strconv.Atoi(id)
+	if err != nil && b < 1 {
+		w.WriteHeader(400)
+		return
+		//
+	}
+	//fmt.Fprintf(w, "Welcome to the home page!")
+	w.Header().Set("Location", app.LongURL(IDList[b]))
+
 	// Первый путь
 	// id := query["id"][0]
 
@@ -72,31 +74,37 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	//w.Write([]byte(app.LongURL(IDList[id])))
 }
 
-const port = ":8080"
+// const port = ":8080"
 
 func main() {
-	mux := initHandlers()
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", Post)
+	mux.HandleFunc("/{id}", Get)
+	log.Fatal(http.ListenAndServe(":8080", mux))
+	// mux := initHandlers()
 	//IDList = make(map[int]string)
 
-	srv := http.Server{
-		Addr:    port,
-		Handler: mux,
-	}
+	// srv := http.Server{
+	// 	Addr:    port,
+	// 	Handler: mux,
+	// }
 
 	//log.Printf("App listening port: %s", port)
-	log.Fatal(srv.ListenAndServe())
+	// log.Fatal(srv.ListenAndServe())
 
 }
-func initHandlers() *mux.Router {
-	// TODO: how handler 404 (if not found some url, example: /not_exist_url)
-	// TODO: handle "Not Allowed Method" example: DELETE method request to /
 
-	router := mux.NewRouter()
-	router.HandleFunc("/", Post).Methods("POST")
-	router.HandleFunc("/{id}", Get).Methods("GET")
+// func initHandlers() *mux.Router {
+// TODO: how handler 404 (if not found some url, example: /not_exist_url)
+// TODO: handle "Not Allowed Method" example: DELETE method request to /
 
-	return router
-}
+// 	router := mux.NewRouter()
+// 	router.HandleFunc("/", Post).Methods("POST")
+// 	router.HandleFunc("/id", Get).Methods("GET")
+
+// 	return router
+// }
 
 // func WriteShortURLByID(url string) int {
 
