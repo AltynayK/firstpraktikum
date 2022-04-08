@@ -63,7 +63,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	// Второй способ
 
 	w.WriteHeader(307)
-	return
+
 	//w.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
 
 	//log.Print(app.LongURL(IDList[b]))
