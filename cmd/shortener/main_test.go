@@ -10,8 +10,6 @@ func TestPost(t *testing.T) {
 
 	type want struct {
 		code int
-
-		contentType string
 	}
 	tests := []struct {
 		name string
