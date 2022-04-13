@@ -6,34 +6,27 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/gorilla/mux"
 )
 
-var (
-	IDList map[int]string
-	id     int
-)
-
 func Post(w http.ResponseWriter, r *http.Request) {
+	// var (
+	// 	url *domain.Url
+	// )
 
 	w.Header().Set("content-type", "plain/text")
 
-	b, err := io.ReadAll(r.Body)
+	url, err := io.ReadAll(r.Body)
 	// обрабатываем ошибку
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	longURL := string(b)
-	if IDList == nil {
-		IDList = make(map[int]string)
-	}
+	longURL := string(url)
 
-	id++
-	IDList[id] = longURL
-
-	shortURL := "http://" + r.Host + r.URL.String() + (strconv.Itoa(id))
+	shortURL := "http://" + r.Host + r.URL.String() + (strconv.Itoa(service.WriteURLByID(longURL)))
 	//log.Print(id)
 
 	//log.Print(IDList)
@@ -60,7 +53,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	longURL := IDList[b]
+	longURL := service.GetURLFromID(b)
 	//
 	w.Header().Set("Location", longURL)
 
