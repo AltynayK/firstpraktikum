@@ -47,7 +47,7 @@ func PostJson(w http.ResponseWriter, req *http.Request) {
 
 		return
 	}
-
+	w.Header().Set("Location", ShortURL)
 	// set "Created" status 201
 	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
