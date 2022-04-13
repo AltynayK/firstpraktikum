@@ -17,17 +17,17 @@ type Connection struct {
 	ShortURL string `json:"url" json:"URL"`
 }
 
-func PostJson(rw http.ResponseWriter, req *http.Request) {
+func PostJson(w http.ResponseWriter, req *http.Request) {
 	var (
 		url     *domain.Url
 		jsonRes []byte
 		err     error
 	)
-
+	w.Header().Set("content-type", "application/json")
 	if err = json.NewDecoder(req.Body).Decode(&url); err != nil {
 		log.Println("Post req Error:", err)
 
-		rw.WriteHeader(400)
+		w.WriteHeader(400)
 
 		return
 	}
@@ -42,15 +42,15 @@ func PostJson(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	if jsonRes, err = json.Marshal(okRes); err != nil {
-		rw.WriteHeader(500)
-		fmt.Fprintf(rw, "response json marshal err")
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "response json marshal err")
 
 		return
 	}
 
 	// set "Created" status 201
-	rw.WriteHeader(201)
-	fmt.Fprint(rw, string(jsonRes))
+	w.WriteHeader(201)
+	fmt.Fprint(w, string(jsonRes))
 
 }
 
