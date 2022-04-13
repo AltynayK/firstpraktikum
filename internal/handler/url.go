@@ -26,7 +26,8 @@ func Post(w http.ResponseWriter, r *http.Request) {
 
 	longURL := string(url)
 
-	shortURL := "http://" + r.Host + r.URL.String() + (strconv.Itoa(service.WriteURLByID(longURL)))
+	shortURL := "http://localhost:8080/" + (strconv.Itoa(service.WriteURLByID(longURL)))
+	//shortURL := "http://" + r.Host + r.URL.String() + (strconv.Itoa(service.WriteURLByID(longURL)))
 	//log.Print(id)
 
 	//log.Print(IDList)
