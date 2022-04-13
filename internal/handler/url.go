@@ -32,7 +32,7 @@ func PostJson(w http.ResponseWriter, r *http.Request) {
 
 	longURL := string(url)
 
-	ShortURL := "http://localhost:8080/" + strconv.Itoa(service.WriteURLByID(longURL))
+	ShortURL := "http://localhost:8080/api/shorten/" + strconv.Itoa(service.WriteURLByID(longURL))
 
 	okRes := domain.PostResponse{
 		Result: ShortURL,
@@ -44,6 +44,7 @@ func PostJson(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+	//log.Print(ShortURL)
 	w.Header().Set("Location", ShortURL)
 	// set "Created" status 201
 	w.WriteHeader(201)
