@@ -1,16 +1,60 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/AltynayK/firstpraktikum/internal/domain"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/gorilla/mux"
 )
 
-func Post(w http.ResponseWriter, r *http.Request) {
+type Connection struct {
+	ShortURL string `json:"url" json:"URL"`
+}
+
+func PostJson(rw http.ResponseWriter, req *http.Request) {
+	var (
+		url     *domain.Url
+		jsonRes []byte
+		err     error
+	)
+
+	if err = json.NewDecoder(req.Body).Decode(&url); err != nil {
+		log.Println("Post req Error:", err)
+
+		rw.WriteHeader(400)
+
+		return
+	}
+
+	//log.Printf("parsed url: %v\n", url)
+
+	// TODO: some service logic
+	ShortURL := "http://localhost:8080/" + strconv.Itoa(service.WriteURLByID(url.LongURL))
+
+	okRes := domain.PostResponse{
+		Result: ShortURL,
+	}
+
+	if jsonRes, err = json.Marshal(okRes); err != nil {
+		rw.WriteHeader(500)
+		fmt.Fprintf(rw, "response json marshal err")
+
+		return
+	}
+
+	// set "Created" status 201
+	rw.WriteHeader(201)
+	fmt.Fprint(rw, string(jsonRes))
+
+}
+
+func PostText(w http.ResponseWriter, r *http.Request) {
 	// var (
 	// 	url *domain.Url
 	// )

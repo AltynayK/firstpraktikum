@@ -29,7 +29,8 @@ func initHandlers() *mux.Router {
 	// TODO: handle "Not Allowed Method" example: DELETE method request to /
 
 	router := mux.NewRouter()
-	router.HandleFunc("/", handler.Post).Methods("POST")
+	router.HandleFunc("/", handler.PostText).Methods("POST")
+	router.HandleFunc("/api/shorten", handler.PostJson).Methods("POST")
 	router.HandleFunc("/{id}", handler.Get).Methods("GET")
 
 	return router

@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestPost(t *testing.T) {
+func TestGet(t *testing.T) {
 
 	type want struct {
 		code int
