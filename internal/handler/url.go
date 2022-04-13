@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -17,25 +16,23 @@ type Connection struct {
 	ShortURL string `json:"url" json:"URL"`
 }
 
-func PostJson(w http.ResponseWriter, req *http.Request) {
+func PostJson(w http.ResponseWriter, r *http.Request) {
 	var (
-		url     *domain.Url
 		jsonRes []byte
 		err     error
 	)
+
 	w.Header().Set("content-type", "application/json")
-	if err = json.NewDecoder(req.Body).Decode(&url); err != nil {
-		log.Println("Post req Error:", err)
-
-		w.WriteHeader(400)
-
+	url, err := io.ReadAll(r.Body)
+	// обрабатываем ошибку
+	if err != nil {
+		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	//log.Printf("parsed url: %v\n", url)
+	longURL := string(url)
 
-	// TODO: some service logic
-	ShortURL := "http://localhost:8080/" + strconv.Itoa(service.WriteURLByID(url.LongURL))
+	ShortURL := "http://localhost:8080/" + strconv.Itoa(service.WriteURLByID(longURL))
 
 	okRes := domain.PostResponse{
 		Result: ShortURL,
