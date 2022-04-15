@@ -7,34 +7,32 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/AltynayK/firstpraktikum/internal/domain"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/gorilla/mux"
 )
 
-type Connection struct {
-	ShortURL string `json:"url" json:"URL"`
+type Url struct {
+	LongURL string `json:"url" json:"URL"`
+}
+type PostResponse struct {
+	Result string `json:"result"`
 }
 
 func PostJson(w http.ResponseWriter, r *http.Request) {
-	var (
-		jsonRes []byte
-		err     error
-	)
-
+	var url Url
+	var jsonRes []byte
 	w.Header().Set("content-type", "application/json")
-	url, err := io.ReadAll(r.Body)
-	// обрабатываем ошибку
+	err := json.NewDecoder(r.Body).Decode(&url)
 	if err != nil {
-		http.Error(w, err.Error(), 400)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	//log.Print(url.LongURL)
+	// longURL := string(url)
+	// log.Print(longURL)
+	ShortURL := "http://localhost:8080/api/shorten/" + strconv.Itoa(service.WriteURLByID(url.LongURL))
 
-	longURL := string(url)
-
-	ShortURL := "http://localhost:8080/api/shorten/" + strconv.Itoa(service.WriteURLByID(longURL))
-
-	okRes := domain.PostResponse{
+	okRes := PostResponse{
 		Result: ShortURL,
 	}
 
@@ -44,7 +42,7 @@ func PostJson(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	//log.Print(ShortURL)
+
 	w.Header().Set("Location", ShortURL)
 	// set "Created" status 201
 	w.WriteHeader(201)
