@@ -19,17 +19,16 @@ type PostResponse struct {
 }
 
 func PostJson(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
 	var url Url
 	var jsonRes []byte
-	w.Header().Set("content-type", "application/json")
+
 	err := json.NewDecoder(r.Body).Decode(&url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	//log.Print(url.LongURL)
-	// longURL := string(url)
-	// log.Print(longURL)
+
 	ShortURL := "http://localhost:8080/api/shorten/" + strconv.Itoa(service.WriteURLByID(url.LongURL))
 
 	okRes := PostResponse{
@@ -44,7 +43,7 @@ func PostJson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Location", ShortURL)
-	// set "Created" status 201
+
 	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
 
