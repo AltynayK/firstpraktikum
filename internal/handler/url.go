@@ -29,7 +29,7 @@ func PostJson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ShortURL := "http://localhost:8080/api/shorten/" + strconv.Itoa(service.WriteURLByID(url.LongURL))
+	ShortURL := "http://localhost:8080/" + strconv.Itoa(service.WriteURLByID(url.LongURL))
 
 	okRes := PostResponse{
 		Result: ShortURL,
@@ -42,7 +42,7 @@ func PostJson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Location", url.LongURL)
+	w.Header().Set("Location", ShortURL)
 
 	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
