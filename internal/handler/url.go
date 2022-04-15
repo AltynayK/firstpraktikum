@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/AltynayK/firstpraktikum/internal/service"
+	"github.com/AltynayK/firstpraktikum/internal/shortener"
 	"github.com/gorilla/mux"
 )
 
@@ -29,7 +30,7 @@ func PostJson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ShortURL := "http://localhost:8080/" + strconv.Itoa(service.WriteURLByID(url.LongURL))
+	ShortURL := shortener.WriteShortURL(url.LongURL)
 
 	okRes := PostResponse{
 		Result: ShortURL,
@@ -65,7 +66,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 
 	longURL := string(url)
 
-	shortURL := "http://localhost:8080/" + (strconv.Itoa(service.WriteURLByID(longURL)))
+	shortURL := shortener.WriteShortURL(longURL)
 	//shortURL := "http://" + r.Host + r.URL.String() + (strconv.Itoa(service.WriteURLByID(longURL)))
 	//log.Print(id)
 
