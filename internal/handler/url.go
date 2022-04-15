@@ -42,7 +42,7 @@ func PostJson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Location", ShortURL)
+	w.Header().Set("Location", url.LongURL)
 
 	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
@@ -98,7 +98,9 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Location", longURL)
 
 	w.WriteHeader(307)
+
 	fmt.Fprint(w)
+
 	//w.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
 
 	//log.Print(app.LongURL(IDList[b]))
