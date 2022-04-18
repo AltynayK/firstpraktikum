@@ -14,8 +14,8 @@ func main() {
 	mux := initHandlers()
 	//IDList = make(map[int]string)
 
-	os.Setenv("CONN_PORT", "8080")
-	os.Setenv("SERVER_ADDRESS", "localhost"+":"+os.Getenv("CONN_PORT"))
+	os.Setenv("CONN_PORT", ":8080")
+	os.Setenv("SERVER_ADDRESS", "localhost"+os.Getenv("CONN_PORT"))
 	os.Setenv("BASE_URL", "http://"+os.Getenv("SERVER_ADDRESS")+"/")
 	srv := http.Server{
 		Addr:    os.Getenv("CONN_PORT"),
