@@ -13,7 +13,7 @@ import (
 func main() {
 	mux := initHandlers()
 	//IDList = make(map[int]string)
-	port := "8080"
+	port := ":8080"
 	os.Setenv("SERVER_ADDRESS", "localhost"+port)
 	os.Setenv("BASE_URL", "http://"+os.Getenv("SERVER_ADDRESS")+"/")
 	srv := http.Server{
