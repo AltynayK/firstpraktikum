@@ -16,7 +16,7 @@ func main() {
 	mux := initHandlers()
 	//IDList = make(map[int]string)
 	os.Setenv("SERVER_ADDRESS", "127.0.0.1"+port)
-	os.Setenv("BASE_URL", "http://127.0.0.1:8080/")
+	os.Setenv("BASE_URL", "http://127.0.0.1"+port+"/")
 	srv := http.Server{
 		Addr:    port,
 		Handler: mux,
