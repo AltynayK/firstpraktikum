@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const port = ":8080"
+const port = ":37075"
 
 func main() {
 	mux := initHandlers()
