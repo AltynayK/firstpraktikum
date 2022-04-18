@@ -32,7 +32,7 @@ func initHandlers() *mux.Router {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", handler.PostText).Methods("POST")
-	router.HandleFunc("/api/shorten", handler.PostJson).Methods("POST")
+	router.HandleFunc("/api/shorten", handler.PostJSON).Methods("POST")
 	router.HandleFunc("/{id}", handler.Get).Methods("GET")
 
 	return router

@@ -12,16 +12,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Url struct {
+type URL struct {
 	LongURL string `json:"url" json:"URL"`
 }
 type PostResponse struct {
 	Result string `json:"result"`
 }
 
-func PostJson(w http.ResponseWriter, r *http.Request) {
+func PostJSON(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
-	var url Url
+	var url URL
 	var jsonRes []byte
 
 	err := json.NewDecoder(r.Body).Decode(&url)
