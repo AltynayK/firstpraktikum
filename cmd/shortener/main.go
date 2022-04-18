@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"log"
 
@@ -14,7 +15,8 @@ const port = ":8080"
 func main() {
 	mux := initHandlers()
 	//IDList = make(map[int]string)
-
+	os.Setenv("SERVER_ADDRESS", "localhost")
+	os.Setenv("BASE_URL", "http://localhost:8080/")
 	srv := http.Server{
 		Addr:    port,
 		Handler: mux,

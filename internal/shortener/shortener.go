@@ -1,12 +1,14 @@
 package shortener
 
 import (
+	"os"
 	"strconv"
 
 	"github.com/AltynayK/firstpraktikum/internal/service"
 )
 
 func WriteShortURL(url string) string {
-	return "http://localhost:8080/" + strconv.Itoa(service.WriteURLByID(url))
+	base := os.Getenv("BASE_URL")
+	return base + strconv.Itoa(service.WriteURLByID(url))
 
 }
