@@ -13,7 +13,8 @@ import (
 )
 
 type config struct {
-	SERVER_ADDRESS string `env:"SERVER_ADDRESS" envDefault:":8080"`
+	//SERVER_ADDRESS string `opts:"help=listening interface, default=127.0.0.1"`
+	Port string `env:"Port" envDefault:":8080"`
 }
 
 func main() {
@@ -23,10 +24,10 @@ func main() {
 	if err := env.Parse(&cfg); err != nil {
 		fmt.Printf("%+v\n", err)
 	}
-
-	os.Setenv("BASE_URL", "http://localhost"+os.Getenv("SERVER_ADDRESS"))
+	os.Setenv("SERVER_ADDRESS", "localhost")
+	os.Setenv("BASE_URL", "http://"+os.Getenv("SERVER_ADDRESS")+cfg.Port)
 	srv := http.Server{
-		Addr:    cfg.SERVER_ADDRESS,
+		Addr:    cfg.Port,
 		Handler: mux,
 	}
 
