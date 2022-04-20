@@ -14,10 +14,12 @@ import (
 
 type URL struct {
 	LongURL string `json:"url" json:"URL"`
+	Result  string `json:"result"`
 }
-type PostResponse struct {
-	Result string `json:"result"`
-}
+
+// type PostResponse struct {
+
+// }
 
 func PostJSON(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
@@ -32,7 +34,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 	ShortURL := shortener.WriteShortURL(url.LongURL)
 
-	okRes := PostResponse{
+	okRes := URL{
 		Result: ShortURL,
 	}
 
