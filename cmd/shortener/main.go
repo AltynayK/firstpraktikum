@@ -12,8 +12,7 @@ import (
 )
 
 // type config struct {
-// 	//SERVER_ADDRESS string `opts:"help=listening interface, default=127.0.0.1"`
-// 	Port int `env:"Port" envDefault:":8080"`
+// 	SERVER_ADDRESS string `opts:"help=listening interface, default=127.0.0.1:8080"`
 // }
 
 func main() {
@@ -29,7 +28,7 @@ func main() {
 		*ServerAddress = u
 	}
 
-	//os.Setenv("SERVER_ADDRESS", "localhost")
+	//os.Setenv("SERVER_ADDRESS", "127.0.0.1:8080")
 	os.Setenv("BASE_URL", "http://"+*ServerAddress)
 	srv := http.Server{
 		Addr:    *ServerAddress,
