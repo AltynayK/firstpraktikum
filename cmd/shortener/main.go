@@ -1,33 +1,38 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"net/http"
 	"os"
 
 	"log"
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
-	"github.com/caarlos0/env"
 	"github.com/gorilla/mux"
 )
 
-type config struct {
-	//SERVER_ADDRESS string `opts:"help=listening interface, default=127.0.0.1"`
-	Port string `env:"Port" envDefault:":8080"`
-}
+// type config struct {
+// 	//SERVER_ADDRESS string `opts:"help=listening interface, default=127.0.0.1"`
+// 	Port int `env:"Port" envDefault:":8080"`
+// }
 
 func main() {
 	mux := initHandlers()
 	//IDList = make(map[int]string)
-	cfg := config{}
-	if err := env.Parse(&cfg); err != nil {
-		fmt.Printf("%+v\n", err)
+	// cfg := config{}
+	// if err := env.Parse(&cfg); err != nil {
+	// 	fmt.Printf("%+v\n", err)
+	// }
+	ServerAddress := flag.String("a", "127.0.0.1:8080", "SERVER_ADDRESS - адрес запуска HTTP-сервера")
+	flag.Parse()
+	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
+		*ServerAddress = u
 	}
-	os.Setenv("SERVER_ADDRESS", "localhost")
-	os.Setenv("BASE_URL", "http://"+os.Getenv("SERVER_ADDRESS")+cfg.Port)
+
+	//os.Setenv("SERVER_ADDRESS", "localhost")
+	os.Setenv("BASE_URL", "http://"+*ServerAddress)
 	srv := http.Server{
-		Addr:    cfg.Port,
+		Addr:    *ServerAddress,
 		Handler: mux,
 	}
 
