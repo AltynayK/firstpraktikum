@@ -13,7 +13,7 @@ import (
 )
 
 type URL struct {
-	LongURL string `json:"url" json:"URL"`
+	LongURL string `json:"url"`
 	Result  string `json:"result"`
 }
 
