@@ -33,6 +33,7 @@ func ReadFile() {
 		id++
 		IDList[id] = line
 	}
+	return
 }
 func WriteURLByID(url string) int {
 	if IDList == nil {
