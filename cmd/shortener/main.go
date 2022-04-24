@@ -8,20 +8,24 @@ import (
 	"log"
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
+	"github.com/AltynayK/firstpraktikum/internal/service"
+
 	"github.com/gorilla/mux"
 )
 
-// type config struct {
-// 	SERVER_ADDRESS string `opts:"help=listening interface, default=127.0.0.1:8080"`
+// type Path struct {
+// 	FilePath string
+// }
+
+// type Config struct {
+// 	FileStoragePath string `env:"FILE_STORAGE_PATH"`
 // }
 
 func main() {
+	//	var path Path
 	mux := initHandlers()
 	//IDList = make(map[int]string)
-	// cfg := config{}
-	// if err := env.Parse(&cfg); err != nil {
-	// 	fmt.Printf("%+v\n", err)
-	// }
+
 	ServerAddress := flag.String("a", "127.0.0.1:8080", "SERVER_ADDRESS - адрес запуска HTTP-сервера")
 	flag.Parse()
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
@@ -34,11 +38,16 @@ func main() {
 		Addr:    *ServerAddress,
 		Handler: mux,
 	}
+	service.ReadFile()
+	// cfg := Config{}
+	// if err := env.Parse(&cfg); err != nil {
+	// 	fmt.Printf("%+v\n", err)
+	// }
 
-	//log.Printf("App listening port: %s", port)
 	log.Fatal(srv.ListenAndServe())
 
 }
+
 func initHandlers() *mux.Router {
 	// TODO: how handler 404 (if not found some url, example: /not_exist_url)
 	// TODO: handle "Not Allowed Method" example: DELETE method request to /

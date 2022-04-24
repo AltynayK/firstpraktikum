@@ -1,4 +1,4 @@
-package shortener
+package short
 
 import (
 	"os"
