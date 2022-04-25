@@ -13,47 +13,46 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// type Path struct {
-// 	FilePath string
-// }
+var (
+	SERVER_ADDRESS    *string
+	BASE_URL          *string
+	FILE_STORAGE_PATH *string
+)
 
-// type Config struct {
-// 	FileStoragePath string `env:"FILE_STORAGE_PATH"`
-// }
+func init() {
+	SERVER_ADDRESS = flag.String("a", "127.0.0.1:8080", "SERVER_ADDRESS - адрес запуска HTTP-сервера")
+	BASE_URL = flag.String("b", "http://"+*SERVER_ADDRESS, "BASE_URL")
+	FILE_STORAGE_PATH = flag.String("f", "texts.txt", "FILE_STORAGE_PATH - путь до файла с сокращёнными URL")
+}
 
 func main() {
-	//	var path Path
-	mux := initHandlers()
-	//IDList = make(map[int]string)
 
-	ServerAddress := flag.String("a", "127.0.0.1:8080", "SERVER_ADDRESS - адрес запуска HTTP-сервера")
-	BaseUrl := flag.String("b", "http://"+*ServerAddress, "BASE_URL")
+	mux := initHandlers()
+
 	flag.Parse()
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
-		*ServerAddress = u
+		*SERVER_ADDRESS = u
 	}
 	if u, f := os.LookupEnv("BASE_URL"); f {
-		*BaseUrl = u
+		*BASE_URL = u
 	}
+	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
+		*FILE_STORAGE_PATH = u
+	}
+	//FilePath: = *FILE_STORAGE_PATH
 	//os.Setenv("SERVER_ADDRESS", "127.0.0.1:8080")
-	os.Setenv("BASE_URL", *BaseUrl)
+	//os.Setenv("BASE_URL", *BaseUrl)
 	srv := http.Server{
-		Addr:    *ServerAddress,
+		Addr:    *SERVER_ADDRESS,
 		Handler: mux,
 	}
-	service.ReadFile()
-	// cfg := Config{}
-	// if err := env.Parse(&cfg); err != nil {
-	// 	fmt.Printf("%+v\n", err)
-	// }
+	service.ReadFile(FILE_STORAGE_PATH)
 
 	log.Fatal(srv.ListenAndServe())
 
 }
 
 func initHandlers() *mux.Router {
-	// TODO: how handler 404 (if not found some url, example: /not_exist_url)
-	// TODO: handle "Not Allowed Method" example: DELETE method request to /
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", handler.PostText).Methods("POST")
@@ -62,13 +61,3 @@ func initHandlers() *mux.Router {
 
 	return router
 }
-
-// func WriteShortURLByID(url string) int {
-
-// 	return id
-
-// }
-
-// func GetLongURLFromID(id string) string {
-
-// }
