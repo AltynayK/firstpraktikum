@@ -1,14 +1,18 @@
 package short
 
 import (
-	"os"
 	"strconv"
 
 	"github.com/AltynayK/firstpraktikum/internal/service"
 )
 
+var Base *string
+
+func GetBaseUrl(a *string) {
+	Base = a
+}
 func WriteShortURL(url string) string {
-	base := os.Getenv("BASE_URL")
-	return base + "/" + strconv.Itoa(service.WriteURLByID(url))
+
+	return *Base + "/" + strconv.Itoa(service.WriteURLByID(url))
 
 }
