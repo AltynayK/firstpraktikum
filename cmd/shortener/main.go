@@ -26,7 +26,7 @@ func main() {
 	mux := initHandlers()
 	//IDList = make(map[int]string)
 
-	ServerAddress := flag.String("a", "127.0.0.1:8080", "SERVER_ADDRESS - адрес запуска HTTP-сервера")
+	ServerAddress := flag.String("a", "", "SERVER_ADDRESS - адрес запуска HTTP-сервера")
 	BaseUrl := flag.String("b", "http://"+*ServerAddress, "BASE_URL")
 	flag.Parse()
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
