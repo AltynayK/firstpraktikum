@@ -29,12 +29,12 @@ func main() {
 	ServerAddress := flag.String("a", "127.0.0.1:8080", "SERVER_ADDRESS - адрес запуска HTTP-сервера")
 	BaseUrl := flag.String("b", "http://"+*ServerAddress, "BASE_URL")
 	flag.Parse()
-	// if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
-	// 	*ServerAddress = u
-	// }
-	// if u, f := os.LookupEnv("BASE_URL"); f {
-	// 	*BaseUrl = u
-	// }
+	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
+		*ServerAddress = u
+	}
+	if u, f := os.LookupEnv("BASE_URL"); f {
+		*BaseUrl = u
+	}
 	//os.Setenv("SERVER_ADDRESS", "127.0.0.1:8080")
 	os.Setenv("BASE_URL", *BaseUrl)
 	srv := http.Server{
