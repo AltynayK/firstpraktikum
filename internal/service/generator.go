@@ -3,6 +3,7 @@ package service
 import (
 	"bufio"
 	"flag"
+	"log"
 	"os"
 )
 
@@ -13,15 +14,17 @@ var (
 var FilePath string
 
 func ReadFile() {
-	FileStorage := flag.String("f", "text.txt", "FILE_STORAGE_PATH - путь до файла с сокращёнными URL")
+	FileStorage := flag.String("f", "texts.txt", "FILE_STORAGE_PATH - путь до файла с сокращёнными URL")
 	flag.Parse()
 	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
 		*FileStorage = u
 	}
 	FilePath = *FileStorage
-	file, err := os.Open(FilePath)
+	file, err := os.OpenFile(FilePath, os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
-		panic(err)
+		if os.IsNotExist(err) {
+			log.Fatal("Folder does not exist.")
+		}
 	}
 	scanner := bufio.NewScanner(file)
 
@@ -55,11 +58,13 @@ func GetURLFromID(id int) string {
 func WriteToFile(LongURL string) {
 	f, err := os.OpenFile(FilePath, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
-		panic(err)
+		if os.IsNotExist(err) {
+			log.Fatal("Folder does not exist.")
+		}
 	}
 	defer f.Close()
 
 	if _, err = f.WriteString(LongURL + "\n"); err != nil {
-		panic(err)
+		log.Fatal("Folder does not exist.")
 	}
 }
