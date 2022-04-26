@@ -27,7 +27,7 @@ func init() {
 }
 
 func main() {
-
+	//mw := handler.CompressGzip{}
 	mux := initHandlers()
 
 	flag.Parse()
@@ -47,7 +47,7 @@ func main() {
 	//os.Setenv("BASE_URL", *BaseUrl)
 	srv := http.Server{
 		Addr:    *SERVER_ADDRESS,
-		Handler: handler.CompressGzip(mux),
+		Handler: mux,
 	}
 	service.ReadFile(FILE_STORAGE_PATH)
 
@@ -58,9 +58,11 @@ func main() {
 func initHandlers() *mux.Router {
 
 	router := mux.NewRouter()
+	router.Use(handler.CompressGzip)
+
 	router.HandleFunc("/", handler.PostText).Methods("POST")
 	router.HandleFunc("/api/shorten", handler.PostJSON).Methods("POST")
 	router.HandleFunc("/{id}", handler.Get).Methods("GET")
-
+	//router.Use(mw)
 	return router
 }
