@@ -28,7 +28,7 @@ func init() {
 
 func main() {
 
-	mux := initHandlers()
+	mux := handler.CompressGzip(initHandlers())
 
 	flag.Parse()
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
