@@ -41,7 +41,7 @@ func main() {
 	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
 		*FileStoragePath = u
 	}
-	short.GetBaseUrl(BaseURL)
+	short.GetBaseURL(BaseURL)
 	//FilePath: = *FILE_STORAGE_PATH
 	//os.Setenv("SERVER_ADDRESS", "127.0.0.1:8080")
 	//os.Setenv("BASE_URL", *BaseUrl)

@@ -8,7 +8,7 @@ import (
 
 var Base *string
 
-func GetBaseUrl(a *string) {
+func GetBaseURL(a *string) {
 	Base = a
 }
 func WriteShortURL(url string) string {
