@@ -28,7 +28,7 @@ func init() {
 
 func main() {
 
-	mux := handler.CompressGzip(initHandlers())
+	mux := initHandlers()
 
 	flag.Parse()
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
@@ -47,7 +47,7 @@ func main() {
 	//os.Setenv("BASE_URL", *BaseUrl)
 	srv := http.Server{
 		Addr:    *SERVER_ADDRESS,
-		Handler: mux,
+		Handler: handler.CompressGzip(mux),
 	}
 	service.ReadFile(FILE_STORAGE_PATH)
 
