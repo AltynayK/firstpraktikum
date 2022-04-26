@@ -15,15 +15,15 @@ import (
 )
 
 var (
-	SERVER_ADDRESS    *string
-	BASE_URL          *string
-	FILE_STORAGE_PATH *string
+	ServerAddress   *string
+	BaseURL         *string
+	FileStoragePath *string
 )
 
 func init() {
-	SERVER_ADDRESS = flag.String("a", "127.0.0.1:8080", "SERVER_ADDRESS - адрес запуска HTTP-сервера")
-	BASE_URL = flag.String("b", "http://"+*SERVER_ADDRESS, "BASE_URL")
-	FILE_STORAGE_PATH = flag.String("f", "texts.txt", "FILE_STORAGE_PATH - путь до файла с сокращёнными URL")
+	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
+	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
+	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла с сокращёнными URL")
 }
 
 func main() {
@@ -32,24 +32,24 @@ func main() {
 
 	flag.Parse()
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
-		*SERVER_ADDRESS = u
+		*ServerAddress = u
 	}
 	if u, f := os.LookupEnv("BASE_URL"); f {
-		*BASE_URL = u
+		*BaseURL = u
 	}
 	//fmt.Print(os.Getenv("BASE_URL"))
 	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
-		*FILE_STORAGE_PATH = u
+		*FileStoragePath = u
 	}
-	short.GetBaseUrl(BASE_URL)
+	short.GetBaseUrl(BaseURL)
 	//FilePath: = *FILE_STORAGE_PATH
 	//os.Setenv("SERVER_ADDRESS", "127.0.0.1:8080")
 	//os.Setenv("BASE_URL", *BaseUrl)
 	srv := http.Server{
-		Addr:    *SERVER_ADDRESS,
+		Addr:    *ServerAddress,
 		Handler: mux,
 	}
-	service.ReadFile(FILE_STORAGE_PATH)
+	service.ReadFile(FileStoragePath)
 
 	log.Fatal(srv.ListenAndServe())
 
