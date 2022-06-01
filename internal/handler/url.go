@@ -17,6 +17,11 @@ type URL struct {
 	Result  string `json:"result"`
 }
 
+type URLs struct {
+	ShortURL string `json:"short_url"`
+	LongURL  string `json:"original_url"`
+}
+
 // type PostResponse struct {
 
 // }
@@ -109,4 +114,24 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 	//w.Write([]byte(app.LongURL(IDList[b])))
 	//w.Write([]byte(app.LongURL(IDList[id])))
+}
+
+func GetAllUrls(w http.ResponseWriter, r *http.Request) {
+	id := 1
+	var jsonRes []byte
+	var result []URLs
+	for a := range service.IDList {
+
+		okRes := URLs{
+			ShortURL: *short.Init + "/" + strconv.Itoa(id),
+			LongURL:  string(service.IDList[a]),
+		}
+		a++
+		id++
+		result = append(result, okRes)
+
+	}
+	jsonRes, _ = json.Marshal(result)
+	fmt.Fprintln(w, string(jsonRes))
+
 }

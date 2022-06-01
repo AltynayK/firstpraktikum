@@ -23,7 +23,7 @@ var (
 func init() {
 	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
 	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
-	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла с сокращёнными URL")
+	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
 }
 
 func main() {
@@ -63,6 +63,7 @@ func initHandlers() *mux.Router {
 	router.HandleFunc("/", handler.PostText).Methods("POST")
 	router.HandleFunc("/api/shorten", handler.PostJSON).Methods("POST")
 	router.HandleFunc("/{id}", handler.Get).Methods("GET")
+	router.HandleFunc("/api/user/urls", handler.GetAllUrls).Methods("GET")
 	//router.Use(mw)
 	return router
 }
