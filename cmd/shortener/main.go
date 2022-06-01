@@ -1,113 +1,69 @@
 package main
 
 import (
-	"fmt"
-	"io"
+	"flag"
 	"net/http"
-	"strconv"
+	"os"
 
 	"log"
+
+	"github.com/AltynayK/firstpraktikum/internal/handler"
+	"github.com/AltynayK/firstpraktikum/internal/service"
+	"github.com/AltynayK/firstpraktikum/internal/short"
 
 	"github.com/gorilla/mux"
 )
 
 var (
-	IDList map[int]string
-	id     int
+	ServerAddress   *string
+	BaseURL         *string
+	FileStoragePath *string
 )
 
-func Post(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("content-type", "plain/text")
-
-	b, err := io.ReadAll(r.Body)
-	// обрабатываем ошибку
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	longURL := string(b)
-	if IDList == nil {
-		IDList = make(map[int]string)
-	}
-
-	id++
-	IDList[id] = longURL
-
-	shortURL := "http://" + r.Host + r.URL.String() + (strconv.Itoa(id))
-	//log.Print(id)
-
-	//log.Print(IDList)
-	w.Header().Set("Location", shortURL)
-	w.WriteHeader(201)
-
-	w.Write([]byte(shortURL))
-
+func init() {
+	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
+	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
+	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
 }
-
-func Get(w http.ResponseWriter, r *http.Request) {
-
-	vars := mux.Vars(r)
-	id, ok := vars["id"]
-	if !ok {
-
-		w.WriteHeader(400)
-		return
-	}
-	//fmt.Println(`id := `, id)
-
-	b, err := strconv.Atoi(id)
-	if err != nil && b < 1 {
-		w.WriteHeader(400)
-		return
-	}
-	longURL := IDList[b]
-	//
-	w.Header().Set("Location", longURL)
-
-	w.WriteHeader(307)
-	fmt.Fprint(w)
-	//w.Header.WriteSubset(w io.Writer, app.LongUrl(IdList[id]))
-
-	//log.Print(app.LongURL(IDList[b]))
-
-	//w.Write([]byte(app.LongURL(IDList[b])))
-	//w.Write([]byte(app.LongURL(IDList[id])))
-}
-
-const port = ":8080"
 
 func main() {
+	//mw := handler.CompressGzip{}
 	mux := initHandlers()
-	//IDList = make(map[int]string)
 
+	flag.Parse()
+	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
+		*ServerAddress = u
+	}
+	if u, f := os.LookupEnv("BASE_URL"); f {
+		*BaseURL = u
+	}
+	//fmt.Print(os.Getenv("BASE_URL"))
+	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
+		*FileStoragePath = u
+	}
+	short.GetBaseURL(BaseURL)
+	//FilePath: = *FILE_STORAGE_PATH
+	//os.Setenv("SERVER_ADDRESS", "127.0.0.1:8080")
+	//os.Setenv("BASE_URL", *BaseUrl)
 	srv := http.Server{
-		Addr:    port,
+		Addr:    *ServerAddress,
 		Handler: mux,
 	}
+	service.ReadFile(FileStoragePath)
 
-	//log.Printf("App listening port: %s", port)
 	log.Fatal(srv.ListenAndServe())
 
 }
+
 func initHandlers() *mux.Router {
-	// TODO: how handler 404 (if not found some url, example: /not_exist_url)
-	// TODO: handle "Not Allowed Method" example: DELETE method request to /
 
 	router := mux.NewRouter()
-	router.HandleFunc("/", Post).Methods("POST")
-	router.HandleFunc("/{id}", Get).Methods("GET")
+	router.Use(handler.CompressGzip)
 
+	router.HandleFunc("/", handler.PostText).Methods("POST")
+	router.HandleFunc("/api/shorten", handler.PostJSON).Methods("POST")
+	router.HandleFunc("/{id}", handler.Get).Methods("GET")
+	router.HandleFunc("/api/user/urls", handler.GetAllUrls).Methods("GET")
+	//router.Use(mw)
 	return router
 }
-
-// func WriteShortURLByID(url string) int {
-
-// 	return id
-
-// }
-
-// func GetLongURLFromID(id string) string {
-
-// }
