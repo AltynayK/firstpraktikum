@@ -67,3 +67,22 @@ func initHandlers() *mux.Router {
 	//router.Use(mw)
 	return router
 }
+
+// func addCookie(w http.ResponseWriter, name, value string, ttl time.Duration) {
+// 	expire := time.Now().Add(ttl)
+// 	cookie := http.Cookie{
+// 		Name:       name,
+// 		Value:      value,
+// 		Path:       "",
+// 		Domain:     "",
+// 		Expires:    expire,
+// 		RawExpires: "",
+// 		MaxAge:     0,
+// 		Secure:     false,
+// 		HttpOnly:   false,
+// 		SameSite:   0,
+// 		Raw:        "",
+// 		Unparsed:   []string{},
+// 	}
+// 	http.SetCookie(w, &cookie)
+// }

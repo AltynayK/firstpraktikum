@@ -70,33 +70,8 @@ func WriteToFile(LongURL string) {
 	}
 }
 
-// func WriteToFileAll(LongURL string) {
-// 	f, err := os.OpenFile(*FilePath, os.O_APPEND|os.O_WRONLY, 0600)
-// 	if err != nil {
-// 		if os.IsNotExist(err) {
-// 			log.Fatal("Folder does not exist.")
-// 		}
-// 	}
-// 	defer f.Close()
-
-// 	if _, err = f.WriteString(LongURL + "\n"); err != nil {
-// 		log.Fatal("Folder does not exist.")
-// 	}
-// }
-
 func MakeData(longURL string, shortURL string) {
 
-	// var result []byte
-
-	// okRes := abs{
-	// 	ShortURL: longURL,
-	// 	LongURL:  shortURL,
-	// }
-
-	// result = append(result, okRes)
-	// fmt.Print(result)
-
-	// ioutil.WriteFile("output.json", u1, 0644)
 	var jsonBlob = []byte(`{ShortURL: shortURL, LongURL: longURL,}`)
 	rankings := abs{
 		LongURL:  longURL,
@@ -104,12 +79,16 @@ func MakeData(longURL string, shortURL string) {
 	}
 	err := json.Unmarshal(jsonBlob, &rankings)
 	if err != nil {
-		// nozzle.printError("opening config file", err.Error())
+		log.Fatal("Error")
 	}
-	rankingsJson, _ := json.Marshal(rankings)
-
+	rankingsJSON, _ := json.Marshal(rankings)
 	file, err := os.OpenFile("output.json", os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		if os.IsNotExist(err) {
+			log.Fatal("Folder does not exist.")
+		}
+	}
 	file.WriteString("\n")
-	file.Write(rankingsJson)
+	file.Write(rankingsJSON)
 
 }

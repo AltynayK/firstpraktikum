@@ -121,6 +121,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
+
 	var jsonRes []byte
 	var result []string
 	file, err := os.OpenFile("./output.json", os.O_RDONLY|os.O_CREATE, 0777)
@@ -138,7 +139,6 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 		result = append(result, line)
 	}
 	jsonRes, _ = json.Marshal(result)
-	//fmt.Print(string(jsonRes))
 	if string(jsonRes) == ("null") {
 		w.WriteHeader(http.StatusNoContent)
 	}
