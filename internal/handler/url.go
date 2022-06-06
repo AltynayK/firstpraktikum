@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/AltynayK/firstpraktikum/internal/service"
@@ -41,7 +44,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	okRes := URL{
 		Result: ShortURL,
 	}
-
+	service.MakeData(url.LongURL, ShortURL)
 	if jsonRes, err = json.Marshal(okRes); err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "response json marshal err")
@@ -73,6 +76,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 
 	shortURL := short.WriteShortURL(longURL)
+	service.MakeData(longURL, shortURL)
 	//shortURL := "http://" + r.Host + r.URL.String() + (strconv.Itoa(service.WriteURLByID(longURL)))
 	//log.Print(id)
 
@@ -117,21 +121,27 @@ func Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
-	id := 1
 	var jsonRes []byte
-	var result []URLs
-	for a := range service.IDList {
+	var result []string
+	file, err := os.OpenFile("./output.json", os.O_RDONLY|os.O_CREATE, 0777)
 
-		okRes := URLs{
-			ShortURL: *short.Init + "/" + strconv.Itoa(id),
-			LongURL:  string(service.IDList[a]),
+	if err != nil {
+		if os.IsNotExist(err) {
+			log.Fatal("Folder does not exist.")
 		}
-		a++
-		id++
-		result = append(result, okRes)
+	}
+	scanner := bufio.NewScanner(file)
 
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		result = append(result, line)
 	}
 	jsonRes, _ = json.Marshal(result)
-	fmt.Fprintln(w, string(jsonRes))
-
+	//fmt.Print(string(jsonRes))
+	if string(jsonRes) == ("null") {
+		w.WriteHeader(http.StatusNoContent)
+	}
+	w.Write(jsonRes)
+	return
 }
