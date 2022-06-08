@@ -115,6 +115,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
 
 	var jsonRes []byte
 	var result []string
