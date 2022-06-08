@@ -73,12 +73,12 @@ func Cookie(next http.Handler) http.Handler {
 
 		dst := make([]byte, aes.BlockSize) // зашифровываем
 		aesblock.Encrypt(dst, []byte(cookie.Value))
-		fmt.Printf("encrypted: %x\n", dst)
+		//fmt.Printf("encrypted: %x\n", dst)
 
 		src2 := make([]byte, aes.BlockSize) // расшифровываем
 		aesblock.Decrypt(src2, dst)
-		fmt.Printf("decrypted: %s\n", src2)
-		fmt.Println(cookie)
+		//fmt.Printf("decrypted: %s\n", src2)
+		//fmt.Println(cookie)
 		next.ServeHTTP(w, r)
 
 	})
