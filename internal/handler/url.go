@@ -133,7 +133,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 		result = append(result, line)
 	}
 	jsonRes, _ = json.Marshal(result)
-	if string(jsonRes) == ("null") {
+	if string(jsonRes) == ("") {
 		w.WriteHeader(http.StatusNoContent)
 	}
 	w.Write(jsonRes)
