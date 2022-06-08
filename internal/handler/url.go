@@ -129,13 +129,14 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-
+		if line == ("") {
+			w.WriteHeader(http.StatusNoContent)
+		}
 		result = append(result, line)
+
 	}
 	jsonRes, _ = json.Marshal(result)
-	if string(jsonRes) == ("") {
-		w.WriteHeader(http.StatusNoContent)
-	}
+
 	w.Write(jsonRes)
 	return
 }
