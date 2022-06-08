@@ -60,9 +60,6 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostText(w http.ResponseWriter, r *http.Request) {
-	// var (
-	// 	url *domain.Url
-	// )
 
 	w.Header().Set("content-type", "plain/text")
 
@@ -77,10 +74,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 
 	shortURL := short.WriteShortURL(longURL)
 	service.MakeData(longURL, shortURL)
-	//shortURL := "http://" + r.Host + r.URL.String() + (strconv.Itoa(service.WriteURLByID(longURL)))
-	//log.Print(id)
 
-	//log.Print(IDList)
 	w.Header().Set("Location", shortURL)
 	w.WriteHeader(201)
 
@@ -145,3 +139,6 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonRes)
 	return
 }
+
+// func CheckConnection(w http.ResponseWriter, req *http.Request) {
+// }

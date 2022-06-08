@@ -72,15 +72,15 @@ func WriteToFile(LongURL string) {
 
 func MakeData(longURL string, shortURL string) {
 
-	var jsonBlob = []byte(`{ShortURL: shortURL, LongURL: longURL,}`)
+	//var jsonBlob = []byte(`{ShortURL: "shortURL", LongURL: "longURL",}`)
 	rankings := abs{
 		LongURL:  longURL,
 		ShortURL: shortURL,
 	}
-	err := json.Unmarshal(jsonBlob, &rankings)
-	if err != nil {
-		log.Fatal("Error")
-	}
+	// err := json.Unmarshal(jsonBlob, &rankings)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	rankingsJSON, _ := json.Marshal(rankings)
 	file, err := os.OpenFile("output.json", os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
@@ -88,7 +88,7 @@ func MakeData(longURL string, shortURL string) {
 			log.Fatal("Folder does not exist.")
 		}
 	}
-	file.WriteString("\n")
 	file.Write(rankingsJSON)
+	file.WriteString("\n")
 
 }

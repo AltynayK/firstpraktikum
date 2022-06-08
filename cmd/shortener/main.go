@@ -24,6 +24,7 @@ func init() {
 	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
 	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
 	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
+	//DatabaseDNS = flag.String("-d", , "")
 }
 
 func main() {
@@ -59,30 +60,14 @@ func initHandlers() *mux.Router {
 
 	router := mux.NewRouter()
 	router.Use(handler.CompressGzip)
+	router.Use(handler.Cookie)
 
 	router.HandleFunc("/", handler.PostText).Methods("POST")
 	router.HandleFunc("/api/shorten", handler.PostJSON).Methods("POST")
 	router.HandleFunc("/{id}", handler.Get).Methods("GET")
 	router.HandleFunc("/api/user/urls", handler.GetAllUrls).Methods("GET")
+
+	//router.HandleFunc("/ping", ).Methods("GET")
 	//router.Use(mw)
 	return router
 }
-
-// func addCookie(w http.ResponseWriter, name, value string, ttl time.Duration) {
-// 	expire := time.Now().Add(ttl)
-// 	cookie := http.Cookie{
-// 		Name:       name,
-// 		Value:      value,
-// 		Path:       "",
-// 		Domain:     "",
-// 		Expires:    expire,
-// 		RawExpires: "",
-// 		MaxAge:     0,
-// 		Secure:     false,
-// 		HttpOnly:   false,
-// 		SameSite:   0,
-// 		Raw:        "",
-// 		Unparsed:   []string{},
-// 	}
-// 	http.SetCookie(w, &cookie)
-// }
