@@ -12,13 +12,13 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type gzipBodyWriter struct {
+type gzipResponseWriter struct {
 	http.ResponseWriter
-	writer io.Writer
+	Writer io.Writer
 }
 
-func (gz gzipBodyWriter) Write(b []byte) (int, error) {
-	return gz.writer.Write(b)
+func (gz gzipResponseWriter) Write(b []byte) (int, error) {
+	return gz.Writer.Write(b)
 }
 
 func CompressGzip(next http.Handler) http.Handler {
@@ -27,22 +27,10 @@ func CompressGzip(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-
-		// gz, err := gzip.NewWriterLevel(w, gzip.BestCompression)
-		// if err != nil {
-		// 	http.Error(w, "", http.StatusInternalServerError)
-		// 	return
-		// }
-		// defer gz.Close()
 		w.Header().Set("Content-Encoding", "gzip")
-		//w.Header().Set("Vary", "Accept-Encoding")
-		//w.Header().Del("Content-Length")
 		gz := gzip.NewWriter(w)
 		defer gz.Close()
-		next.ServeHTTP(gzipBodyWriter{
-			ResponseWriter: w,
-			writer:         gz,
-		}, r)
+		next.ServeHTTP(gzipResponseWriter{Writer: gz, ResponseWriter: w}, r)
 	})
 }
 func Cookie(next http.Handler) http.Handler {
