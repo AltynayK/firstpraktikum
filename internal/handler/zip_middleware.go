@@ -28,14 +28,16 @@ func CompressGzip(next http.Handler) http.Handler {
 			return
 		}
 
-		gz, err := gzip.NewWriterLevel(w, gzip.BestCompression)
-		if err != nil {
-			http.Error(w, "", http.StatusInternalServerError)
-			return
-		}
-		defer gz.Close()
+		// gz, err := gzip.NewWriterLevel(w, gzip.BestCompression)
+		// if err != nil {
+		// 	http.Error(w, "", http.StatusInternalServerError)
+		// 	return
+		// }
+		//defer gz.Close()
 		w.Header().Set("Content-Encoding", "gzip")
 		//w.Header().Set("Vary", "Accept-Encoding")
+		gz := gzip.NewWriter(w)
+		defer gz.Close()
 		w.Header().Del("Content-Length")
 		next.ServeHTTP(gzipBodyWriter{
 			ResponseWriter: w,
@@ -46,41 +48,37 @@ func CompressGzip(next http.Handler) http.Handler {
 func Cookie(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session")
+		id := uuid.NewV4()
 		if err != nil {
-			id := uuid.NewV4()
+
 			cookie = &http.Cookie{
 				Name:     "session",
 				Value:    id.String(),
 				HttpOnly: true,
 			}
+			// константа aes.BlockSize определяет размер блока и равна 16 байтам
+			key, err := generateRandom(aes.BlockSize) // ключ шифрования
+			if err != nil {
+				fmt.Printf("error: %v\n", err)
+				return
+			}
+
+			// получаем cipher.Block
+			aesblock, err := aes.NewCipher(key)
+			if err != nil {
+				fmt.Printf("error: %v\n", err)
+				return
+			}
+
+			dst := make([]byte, aes.BlockSize) // зашифровываем
+			aesblock.Encrypt(dst, []byte(cookie.Value))
+			//fmt.Printf("encrypted: %x\n", dst)
 
 			http.SetCookie(w, cookie)
+
 		}
 
-		// константа aes.BlockSize определяет размер блока и равна 16 байтам
-		key, err := generateRandom(aes.BlockSize) // ключ шифрования
-		if err != nil {
-			fmt.Printf("error: %v\n", err)
-			return
-		}
-
-		// получаем cipher.Block
-		aesblock, err := aes.NewCipher(key)
-		if err != nil {
-			fmt.Printf("error: %v\n", err)
-			return
-		}
-
-		dst := make([]byte, aes.BlockSize) // зашифровываем
-		aesblock.Encrypt(dst, []byte(cookie.Value))
-		//fmt.Printf("encrypted: %x\n", dst)
-
-		src2 := make([]byte, aes.BlockSize) // расшифровываем
-		aesblock.Decrypt(src2, dst)
-		//fmt.Printf("decrypted: %s\n", src2)
-		//fmt.Println(cookie)
 		next.ServeHTTP(w, r)
-
 	})
 }
 
@@ -92,4 +90,24 @@ func generateRandom(size int) ([]byte, error) {
 	}
 
 	return b, nil
+}
+
+func deShifr(dst []byte) {
+	// константа aes.BlockSize определяет размер блока и равна 16 байтам
+	key, err := generateRandom(aes.BlockSize) // ключ шифрования
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+
+	// получаем cipher.Block
+	aesblock, err := aes.NewCipher(key)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	src2 := make([]byte, aes.BlockSize) // расшифровываем
+	aesblock.Decrypt(src2, dst)
+	//fmt.Printf("decrypted: %s\n", src2)
+	//fmt.Println(cookie)
 }
