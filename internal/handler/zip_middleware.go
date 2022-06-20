@@ -12,15 +12,27 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type gzipBodyWriter struct {
+// type gzipBodyWriter struct {
+// 	http.ResponseWriter
+// 	writer io.Writer
+// }
+
+// func (gz gzipBodyWriter) Write(b []byte) (int, error) {
+// 	return gz.writer.Write(b)
+// }
+type gzipResponseWriter struct {
+	io.Writer
 	http.ResponseWriter
-	writer io.Writer
 }
 
-func (gz gzipBodyWriter) Write(b []byte) (int, error) {
-	return gz.writer.Write(b)
+func (w *gzipResponseWriter) WriteHeader(status int) {
+	w.Header().Del("Content-Length")
+	w.ResponseWriter.WriteHeader(status)
 }
 
+func (w *gzipResponseWriter) Write(b []byte) (int, error) {
+	return w.Writer.Write(b)
+}
 func CompressGzip(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
@@ -39,10 +51,11 @@ func CompressGzip(next http.Handler) http.Handler {
 		gz := gzip.NewWriter(w)
 		defer gz.Close()
 		w.Header().Del("Content-Length")
-		next.ServeHTTP(gzipBodyWriter{
-			ResponseWriter: w,
-			writer:         gz,
-		}, r)
+		next.ServeHTTP(&gzipResponseWriter{ResponseWriter: w, Writer: gz}, r)
+		// next.ServeHTTP(gzipBodyWriter{
+		// 	ResponseWriter: w,
+		// 	writer:         gz,
+		// }, r)
 	})
 }
 func Cookie(next http.Handler) http.Handler {
