@@ -6,45 +6,21 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
-	"sync"
 
 	uuid "github.com/satori/go.uuid"
 )
 
-// type gzipBodyWriter struct {
-// 	http.ResponseWriter
-// 	writer io.Writer
-// }
-
-// func (gz gzipBodyWriter) Write(b []byte) (int, error) {
-// 	return gz.writer.Write(b)
-// }
-var gzPool = sync.Pool{
-	New: func() interface{} {
-		w := gzip.NewWriter(ioutil.Discard)
-		gzip.NewWriterLevel(w, gzip.BestCompression)
-		return w
-	},
-}
-
-type gzipResponseWriter struct {
-	io.Writer
+type gzipBodyWriter struct {
 	http.ResponseWriter
+	writer io.Writer
 }
 
-func (w *gzipResponseWriter) WriteHeader(status int) {
-	w.Header().Del("Content-Length")
-	w.ResponseWriter.WriteHeader(status)
+func (gz gzipBodyWriter) Write(b []byte) (int, error) {
+	return gz.writer.Write(b)
 }
 
-func (w *gzipResponseWriter) Write(b []byte) (int, error) {
-	return w.Writer.Write(b)
-}
-
-// Gzip func handler
 func CompressGzip(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
@@ -52,15 +28,19 @@ func CompressGzip(next http.Handler) http.Handler {
 			return
 		}
 
-		w.Header().Set("Content-Encoding", "gzip")
-
-		gz := gzPool.Get().(*gzip.Writer)
-		defer gzPool.Put(gz)
-
-		gz.Reset(w)
+		gz, err := gzip.NewWriterLevel(w, gzip.BestCompression)
+		if err != nil {
+			http.Error(w, "", http.StatusInternalServerError)
+			return
+		}
 		defer gz.Close()
-
-		next.ServeHTTP(&gzipResponseWriter{ResponseWriter: w, Writer: gz}, r)
+		w.Header().Set("Content-Encoding", "gzip")
+		//w.Header().Set("Vary", "Accept-Encoding")
+		w.Header().Del("Content-Length")
+		next.ServeHTTP(gzipBodyWriter{
+			ResponseWriter: w,
+			writer:         gz,
+		}, r)
 	})
 }
 func Cookie(next http.Handler) http.Handler {
