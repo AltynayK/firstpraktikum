@@ -28,15 +28,17 @@ func CompressGzip(next http.Handler) http.Handler {
 			return
 		}
 
-		gz, err := gzip.NewWriterLevel(w, gzip.BestCompression)
-		if err != nil {
-			http.Error(w, "", http.StatusInternalServerError)
-			return
-		}
-		defer gz.Close()
+		// gz, err := gzip.NewWriterLevel(w, gzip.BestCompression)
+		// if err != nil {
+		// 	http.Error(w, "", http.StatusInternalServerError)
+		// 	return
+		// }
+		// defer gz.Close()
 		w.Header().Set("Content-Encoding", "gzip")
 		//w.Header().Set("Vary", "Accept-Encoding")
-		w.Header().Del("Content-Length")
+		//w.Header().Del("Content-Length")
+		gz := gzip.NewWriter(w)
+		defer gz.Close()
 		next.ServeHTTP(gzipBodyWriter{
 			ResponseWriter: w,
 			writer:         gz,
