@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"bytes"
 	"compress/gzip"
 	"crypto/aes"
 	"crypto/rand"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -48,24 +50,25 @@ func CompressGzip(next http.Handler) http.Handler {
 func GzipHandle(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// проверяем, что клиент поддерживает gzip-сжатие
-		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+		if !strings.Contains(r.Header.Get("Content-Encoding"), "gzip") {
 			// если gzip не поддерживается, передаём управление
 			// дальше без изменений
 			next.ServeHTTP(w, r)
 			return
 		}
-
 		// создаём gzip.Writer поверх текущего w
-		gz, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
+		gz, err := gzip.NewReader(r.Body)
 		if err != nil {
 			io.WriteString(w, err.Error())
 			return
 		}
 		defer gz.Close()
+		s, _ := ioutil.ReadAll(gz)
 
-		w.Header().Set("Content-Encoding", "gzip")
+		w.Header().Del("Content-Encoding")
 		// передаём обработчику страницы переменную типа gzipWriter для вывода данных
-		next.ServeHTTP(gzipWriter{ResponseWriter: w, Writer: gz}, r)
+		r.Body = io.NopCloser(bytes.NewBuffer(s))
+		next.ServeHTTP(w, r)
 	})
 }
 
