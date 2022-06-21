@@ -60,6 +60,7 @@ func initHandlers() *mux.Router {
 
 	router := mux.NewRouter()
 	router.Use(handler.CompressGzip)
+	router.Use(handler.GzipHandle)
 	router.Use(handler.Cookie)
 
 	router.HandleFunc("/", handler.PostText).Methods("POST")
