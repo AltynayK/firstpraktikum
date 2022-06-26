@@ -124,7 +124,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Fatal("Folder does not exist.")
-
+			w.WriteHeader(http.StatusNoContent)
 		}
 	}
 	scanner := bufio.NewScanner(file)
@@ -135,10 +135,11 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 		result = append(result, line)
 
 	}
-	jsonRes, _ = json.Marshal(result)
 	if len(result) == 0 {
 		w.WriteHeader(http.StatusNoContent)
 	}
+	jsonRes, _ = json.Marshal(result)
+
 	w.Write(jsonRes)
 	return
 }
