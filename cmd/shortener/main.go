@@ -60,7 +60,7 @@ func main() {
 func initHandlers() *mux.Router {
 
 	router := mux.NewRouter()
-	//router.Use(handler.Decompress)
+	router.Use(handler.Decompress)
 	router.Use(handler.GzipHandler)
 	router.Use(handler.SetCookie)
 	//router.Use(handler.ReadCookieHandler)
