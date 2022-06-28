@@ -1,15 +1,13 @@
 package handler
 
 import (
-	"bytes"
 	"compress/gzip"
 	"crypto/aes"
 	"crypto/rand"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -53,71 +51,72 @@ func GzipHandler(h http.Handler) http.Handler {
 
 func Decompress(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// проверяем, что клиент поддерживает gzip-сжатие
-		// переменная reader будет равна r.Body или *gzip.Reader
-		var reader io.Reader
-
 		if r.Header.Get(`Content-Encoding`) == `gzip` {
 			gz, err := gzip.NewReader(r.Body)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			reader = gz
-			defer gz.Close()
-		} else {
-			reader = r.Body
+			r.Body = gz
+
 		}
 
-		body, err := ioutil.ReadAll(reader)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		// передаём обработчику страницы переменную типа gzipWriter для вывода данных
-		r.Body = io.NopCloser(bytes.NewBuffer(body))
 		next.ServeHTTP(w, r)
-		// если gzip не поддерживается, передаём управление
-		// дальше без изменений
 
 	})
 }
 
-func Cookie(next http.Handler) http.Handler {
+var Id uuid.UUID
+
+func SetCookie(next http.Handler) http.Handler {
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session")
-		id := uuid.NewV4()
-		if err != nil {
 
-			cookie = &http.Cookie{
-				Name:     "session",
-				Value:    id.String(),
-				HttpOnly: true,
-			}
-			// константа aes.BlockSize определяет размер блока и равна 16 байтам
-			key, err := generateRandom(aes.BlockSize) // ключ шифрования
+		if len(Id) == 0 {
+			Id = uuid.NewV4()
 			if err != nil {
-				fmt.Printf("error: %v\n", err)
-				return
+
+				cookie = &http.Cookie{
+					Name:       "session",
+					Value:      Id.String(),
+					Path:       "",
+					Domain:     "",
+					Expires:    time.Time{},
+					RawExpires: "",
+					MaxAge:     0,
+					Secure:     false,
+					HttpOnly:   true,
+					SameSite:   0,
+					Raw:        "",
+					Unparsed:   []string{},
+				}
+				// константа aes.BlockSize определяет размер блока и равна 16 байтам
+				key, err := generateRandom(aes.BlockSize) // ключ шифрования
+				if err != nil {
+					fmt.Printf("error: %v\n", err)
+					return
+				}
+
+				// получаем cipher.Block
+				aesblock, err := aes.NewCipher(key)
+				if err != nil {
+					fmt.Printf("error: %v\n", err)
+					return
+				}
+
+				dst := make([]byte, aes.BlockSize) // зашифровываем
+				aesblock.Encrypt(dst, []byte(cookie.Value))
+				//fmt.Printf("encrypted: %x\n", dst)
+
+				http.SetCookie(w, cookie)
+
 			}
-
-			// получаем cipher.Block
-			aesblock, err := aes.NewCipher(key)
-			if err != nil {
-				fmt.Printf("error: %v\n", err)
-				return
-			}
-
-			dst := make([]byte, aes.BlockSize) // зашифровываем
-			aesblock.Encrypt(dst, []byte(cookie.Value))
-			//fmt.Printf("encrypted: %x\n", dst)
-
-			http.SetCookie(w, cookie)
-
 		}
 
 		next.ServeHTTP(w, r)
 	})
+
 }
 
 func generateRandom(size int) ([]byte, error) {

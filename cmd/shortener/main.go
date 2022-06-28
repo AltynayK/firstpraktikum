@@ -12,6 +12,7 @@ import (
 	"github.com/AltynayK/firstpraktikum/internal/short"
 
 	"github.com/gorilla/mux"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
@@ -61,7 +62,8 @@ func initHandlers() *mux.Router {
 	router := mux.NewRouter()
 	//router.Use(handler.Decompress)
 	router.Use(handler.GzipHandler)
-	router.Use(handler.Cookie)
+	router.Use(handler.SetCookie)
+	//router.Use(handler.ReadCookieHandler)
 
 	router.HandleFunc("/", handler.PostText).Methods("POST")
 	router.HandleFunc("/api/shorten", handler.PostJSON).Methods("POST")
