@@ -166,6 +166,6 @@ func CheckConnection(w http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 
 	}
-	w.WriteHeader(http.StatusAccepted)
+	w.WriteHeader(200)
 
 }
