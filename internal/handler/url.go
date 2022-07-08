@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bufio"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,6 +14,7 @@ import (
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 type URL struct {
@@ -144,5 +146,26 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// func CheckConnection(w http.ResponseWriter, req *http.Request) {
-// }
+var db *sql.DB
+var DBdns *string
+
+func GetDatabaseDNS(a *string) {
+	DBdns = a
+}
+
+func CheckConnection(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("content-type", "application/json")
+	db, err := sql.Open("postgres", *DBdns)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	err = db.Ping()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+
+	}
+	w.WriteHeader(http.StatusAccepted)
+
+}

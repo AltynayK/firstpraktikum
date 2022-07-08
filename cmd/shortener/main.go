@@ -12,24 +12,25 @@ import (
 	"github.com/AltynayK/firstpraktikum/internal/short"
 
 	"github.com/gorilla/mux"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
 	ServerAddress   *string
 	BaseURL         *string
 	FileStoragePath *string
+	DatabaseDNS     *string
 )
 
 func init() {
 	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
 	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
 	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	//DatabaseDNS = flag.String("-d", , "")
+	DatabaseDNS = flag.String("d", "postgres://altynay:password@localhost/somedb?sslmode=disable", "DatabaseDNS")
 }
 
 func main() {
 	//mw := handler.CompressGzip{}
+
 	mux := initHandlers()
 
 	flag.Parse()
@@ -42,6 +43,9 @@ func main() {
 	//fmt.Print(os.Getenv("BASE_URL"))
 	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
 		*FileStoragePath = u
+	}
+	if u, f := os.LookupEnv("DatabaseDNS"); f {
+		*DatabaseDNS = u
 	}
 	short.GetBaseURL(BaseURL)
 	//FilePath: = *FILE_STORAGE_PATH
@@ -69,8 +73,6 @@ func initHandlers() *mux.Router {
 	router.HandleFunc("/api/shorten", handler.PostJSON).Methods("POST")
 	router.HandleFunc("/{id}", handler.Get).Methods("GET")
 	router.HandleFunc("/api/user/urls", handler.GetAllUrls).Methods("GET")
-
-	//router.HandleFunc("/ping", ).Methods("GET")
-	//router.Use(mw)
+	router.HandleFunc("/ping", handler.CheckConnection).Methods("GET")
 	return router
 }
