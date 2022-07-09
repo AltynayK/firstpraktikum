@@ -118,6 +118,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	if service.A == 0 {
 		os.Remove("output.json")
+		w.WriteHeader(http.StatusNoContent)
 	}
 	w.Header().Set("content-type", "application/json")
 
