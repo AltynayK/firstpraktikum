@@ -10,6 +10,7 @@ import (
 var (
 	IDList map[int]string
 	id     int = 0
+	A      int = 0
 )
 var FilePath *string
 
@@ -57,6 +58,7 @@ func GetURLFromID(id int) string {
 }
 
 func WriteToFile(LongURL string) {
+
 	f, err := os.OpenFile(*FilePath, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -68,10 +70,13 @@ func WriteToFile(LongURL string) {
 	if _, err = f.WriteString(LongURL + "\n"); err != nil {
 		log.Fatal("Folder does not exist.")
 	}
+
 }
 
 func MakeData(longURL string, shortURL string) {
-
+	if A == 0 {
+		os.Remove("output.json")
+	}
 	//var jsonBlob = []byte(`{ShortURL: "shortURL", LongURL: "longURL",}`)
 	rankings := abs{
 		LongURL:  longURL,
@@ -83,11 +88,13 @@ func MakeData(longURL string, shortURL string) {
 	// }
 	rankingsJSON, _ := json.Marshal(rankings)
 	file, err := os.OpenFile("output.json", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Fatal("Folder does not exist.")
 		}
 	}
+	A++
 	file.Write(rankingsJSON)
 	file.WriteString("\n")
 

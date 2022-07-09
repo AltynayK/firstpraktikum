@@ -2,7 +2,6 @@ package handler
 
 import (
 	"bufio"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -117,10 +116,14 @@ func Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
+	if service.A == 0 {
+		os.Remove("output.json")
+	}
 	w.Header().Set("content-type", "application/json")
 
 	var jsonRes []byte
 	var result []string
+
 	file, err := os.OpenFile("./output.json", os.O_RDONLY|os.O_CREATE, 0777)
 
 	if err != nil {
@@ -141,31 +144,31 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	}
 	jsonRes, _ = json.Marshal(result)
-
+	service.A++
 	w.Write(jsonRes)
 	return
 }
 
-var db *sql.DB
-var DBdns *string
+// var db *sql.DB
+// var DBdns *string
 
-func GetDatabaseDNS(a *string) {
-	DBdns = a
-}
+// func GetDatabaseDNS(a *string) {
+// 	DBdns = a
+// }
 
-func CheckConnection(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("content-type", "application/json")
-	db, err := sql.Open("postgres", *DBdns)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal(err)
+// func CheckConnection(w http.ResponseWriter, req *http.Request) {
+// 	w.Header().Set("content-type", "application/json")
+// 	db, err := sql.Open("postgresql", *DBdns)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	defer db.Close()
+// 	err = db.Ping()
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusInternalServerError)
 
-	}
-	w.WriteHeader(200)
+// 	} else {
+// 		w.WriteHeader(http.StatusAccepted)
+// 	}
 
-}
+// }
