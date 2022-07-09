@@ -141,9 +141,9 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 		result = append(result, line)
 
 	}
-	if len(result) == 0 {
-		w.WriteHeader(http.StatusNoContent)
-	}
+	// if len(result) == 0 {
+	// 	w.WriteHeader(http.StatusNoContent)
+	// }
 	jsonRes, _ = json.Marshal(result)
 	service.A++
 	w.Write(jsonRes)
