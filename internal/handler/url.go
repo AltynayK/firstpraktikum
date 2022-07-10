@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bufio"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -156,20 +157,28 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 // func GetDatabaseDNS(a *string) {
 // 	DBdns = a
 // }
+var db *sql.DB
+var DBdns *string
 
-// func CheckConnection(w http.ResponseWriter, req *http.Request) {
-// 	w.Header().Set("content-type", "application/json")
-// 	db, err := sql.Open("postgresql", *DBdns)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	defer db.Close()
-// 	err = db.Ping()
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusInternalServerError)
+func GetDatabaseDNS(a *string) {
+	DBdns = a
+}
+func CheckConnection(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("content-type", "application/json")
 
-// 	} else {
-// 		w.WriteHeader(http.StatusAccepted)
-// 	}
+	db, err := sql.Open("postgres", "DBdns")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	err = db.Ping()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		//log.Fatal(err)
+		//fmt.Print("no connected")
 
-// }
+	}
+	//fmt.Print("connected")
+	w.WriteHeader(http.StatusOK)
+
+}
