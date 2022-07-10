@@ -75,6 +75,6 @@ func initHandlers() *mux.Router {
 	router.HandleFunc("/api/shorten", handler.PostJSON).Methods("POST")
 	router.HandleFunc("/{id}", handler.Get).Methods("GET")
 	router.HandleFunc("/api/user/urls", handler.GetAllUrls).Methods("GET")
-	//router.HandleFunc("/ping", handler.CheckConnection).Methods("GET")
+	router.HandleFunc("/ping", handler.CheckConnection).Methods("GET")
 	return router
 }
