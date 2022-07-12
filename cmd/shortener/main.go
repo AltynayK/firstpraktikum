@@ -9,6 +9,7 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
 	"github.com/AltynayK/firstpraktikum/internal/service"
+	"github.com/AltynayK/firstpraktikum/internal/short"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -48,6 +49,7 @@ func main() {
 	if u, f := os.LookupEnv("DatabaseDNS"); f {
 		*DatabaseDNS = u
 	}
+	short.GetBaseURL(BaseURL)
 	handler.GetDatabaseDNS(DatabaseDNS)
 	//FilePath: = *FILE_STORAGE_PATH
 	//os.Setenv("SERVER_ADDRESS", "127.0.0.1:8080")
