@@ -9,7 +9,6 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
 	"github.com/AltynayK/firstpraktikum/internal/service"
-	"github.com/AltynayK/firstpraktikum/internal/short"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -26,8 +25,8 @@ func init() {
 	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
 	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
 	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	DatabaseDNS = flag.String("d", "postgres://altynay:passwoed@localhost/somedb?sslmode=disable", "DatabaseDNS")
-	//DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altynay password=passwoed dbname=somedb sslmode=disable", "DatabaseDNS")
+	//DatabaseDNS = flag.String("d", "postgres://altynay:passwoed@localhost/somedb?sslmode=disable", "DatabaseDNS")
+	DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altynay password=passwoed dbname=somedb sslmode=disable", "DatabaseDNS")
 }
 
 func main() {
@@ -49,7 +48,7 @@ func main() {
 	if u, f := os.LookupEnv("DatabaseDNS"); f {
 		*DatabaseDNS = u
 	}
-	short.GetBaseURL(BaseURL)
+	handler.GetDatabaseDNS(DatabaseDNS)
 	//FilePath: = *FILE_STORAGE_PATH
 	//os.Setenv("SERVER_ADDRESS", "127.0.0.1:8080")
 	//os.Setenv("BASE_URL", *BaseUrl)
@@ -73,8 +72,8 @@ func initHandlers() *mux.Router {
 
 	router.HandleFunc("/", handler.PostText).Methods("POST")
 	router.HandleFunc("/api/shorten", handler.PostJSON).Methods("POST")
-	router.HandleFunc("/{id}", handler.Get).Methods("GET")
+	router.HandleFunc("/{id:[0-9]+}", handler.Get).Methods("GET")
 	router.HandleFunc("/api/user/urls", handler.GetAllUrls).Methods("GET")
-	//router.HandleFunc("/ping", handler.CheckConnection).Methods("GET")
+	router.HandleFunc("/ping", handler.CheckConnection).Methods("GET")
 	return router
 }

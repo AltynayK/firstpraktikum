@@ -166,7 +166,8 @@ func GetDatabaseDNS(a *string) {
 func CheckConnection(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	db, err := sql.Open("postgres", "DBdns")
+	db, err := sql.Open("postgres", "postgres://altynay:passwoed@localhost/somedb?sslmode=disable")
+	//fmt.Println(*DBdns)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -174,7 +175,7 @@ func CheckConnection(w http.ResponseWriter, req *http.Request) {
 	err = db.Ping()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		//log.Fatal(err)
+		log.Fatal(err)
 		//fmt.Print("no connected")
 
 	}
