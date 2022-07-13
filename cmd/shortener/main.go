@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
+	"github.com/AltynayK/firstpraktikum/internal/postgresql"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 
@@ -51,6 +52,7 @@ func main() {
 	}
 	short.GetBaseURL(BaseURL)
 	handler.GetDatabaseDNS(DatabaseDNS)
+	postgresql.GetDatabaseDNSS(DatabaseDNS)
 	//FilePath: = *FILE_STORAGE_PATH
 	//os.Setenv("SERVER_ADDRESS", "127.0.0.1:8080")
 	//os.Setenv("BASE_URL", *BaseUrl)
@@ -58,8 +60,8 @@ func main() {
 		Addr:    *ServerAddress,
 		Handler: mux,
 	}
-	service.ReadFile(FileStoragePath)
 
+	service.ReadFile(FileStoragePath)
 	log.Fatal(srv.ListenAndServe())
 
 }
@@ -77,5 +79,6 @@ func initHandlers() *mux.Router {
 	router.HandleFunc("/{id:[0-9]+}", handler.Get).Methods("GET")
 	router.HandleFunc("/api/user/urls", handler.GetAllUrls).Methods("GET")
 	router.HandleFunc("/ping", handler.CheckConnection).Methods("GET")
+	//router.HandleFunc("/api/shorten/batch", handler.PostMultipleUrls).Methods("POST")
 	return router
 }

@@ -10,13 +10,13 @@ import (
 var (
 	IDList map[int]string
 	id     int = 0
-	A      int = 0
 )
 var FilePath *string
 
 type abs struct {
 	ShortURL string `json:"short_url"`
 	LongURL  string `json:"original_url"`
+	UserID   string `json:"userID"`
 }
 
 func ReadFile(a *string) {
@@ -73,14 +73,12 @@ func WriteToFile(LongURL string) {
 
 }
 
-func MakeData(longURL string, shortURL string) {
-	if A == 0 {
-		os.Remove("output.json")
-	}
+func MakeData(longURL string, shortURL string, userID string) {
 	//var jsonBlob = []byte(`{ShortURL: "shortURL", LongURL: "longURL",}`)
 	rankings := abs{
 		LongURL:  longURL,
 		ShortURL: shortURL,
+		UserID:   userID,
 	}
 	// err := json.Unmarshal(jsonBlob, &rankings)
 	// if err != nil {
@@ -94,7 +92,6 @@ func MakeData(longURL string, shortURL string) {
 			log.Fatal("Folder does not exist.")
 		}
 	}
-	A++
 	file.Write(rankingsJSON)
 	file.WriteString("\n")
 
