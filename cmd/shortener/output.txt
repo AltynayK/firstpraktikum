@@ -1,0 +1,5 @@
+{"short_url":"http://127.0.0.1:8080/1075","original_url":"https://golangbyexample.com/","userID":"756484b0-2be9-4086-9e03-b16c01a5b23d"}
+{"short_url":"http://127.0.0.1:8080/1076","original_url":"https://dfggolangbyexample.com/","userID":"1c3a3a4b-e91e-4889-9b39-4abdd9f47243"}
+{"short_url":"http://127.0.0.1:8080/1077","original_url":"https://dfggolfangbyexample.com/","userID":"1c3a3a4b-e91e-4889-9b39-4abdd9f47243"}
+{"short_url":"http://127.0.0.1:8080/1078","original_url":"https://ngbyexample.com/","userID":"1c3a3a4b-e91e-4889-9b39-4abdd9f47243"}
+{"short_url":"http://127.0.0.1:8080/1079","original_url":"https://ngbyexample.com/","userID":"1c3a3a4b-e91e-4889-9b39-4abdd9f47243"}

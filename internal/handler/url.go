@@ -294,7 +294,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var jsonRes []byte
 	var result string
 	w.Header().Set("content-type", "application/json")
-	file, err := os.OpenFile("./output.json", os.O_RDONLY|os.O_CREATE, 0777)
+	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Fatal("Folder does not exist.")
