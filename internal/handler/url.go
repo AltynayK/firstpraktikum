@@ -265,26 +265,7 @@ func CheckConnection(w http.ResponseWriter, req *http.Request) {
 // }
 
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session")
-	Id = uuid.NewV4()
-	if err != nil {
 
-		cookie = &http.Cookie{
-			Name:       "session",
-			Value:      Id.String(),
-			Path:       "",
-			Domain:     "",
-			Expires:    time.Time{},
-			RawExpires: "",
-			MaxAge:     0,
-			Secure:     false,
-			HttpOnly:   true,
-			SameSite:   0,
-			Raw:        "",
-			Unparsed:   []string{},
-		}
-
-	}
 	type languageStruct struct {
 		Shorturl    string `json:"short_url"`
 		Originalurl string `json:"original_url"`
@@ -322,12 +303,13 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var x2 []*languageStruct
 
 	for _, v := range x {
-		//fmt.Print(v)
-		if v.Userid == cookie.Value {
-			x2 = append(x2, v)
-		}
+
+		//	if v.Userid == r.Context().Value("session") {
+		x2 = append(x2, v)
+		//}
 
 	}
+	//fmt.Print(r.Context().Value("session"))
 	if x2 == nil {
 		w.WriteHeader(http.StatusNoContent)
 	}
