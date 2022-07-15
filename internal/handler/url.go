@@ -152,32 +152,32 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetAllUrls(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "application/json")
+// func GetAllUrls(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("content-type", "application/json")
 
-	var jsonRes []byte
-	var result []string
+// 	var jsonRes []byte
+// 	var result []string
 
-	file, err := os.OpenFile("./output.json", os.O_RDONLY|os.O_CREATE, 0777)
+// 	file, err := os.OpenFile("./output.json", os.O_RDONLY|os.O_CREATE, 0777)
 
-	if err != nil {
-		if os.IsNotExist(err) {
-			log.Fatal("Folder does not exist.")
-			w.WriteHeader(http.StatusNoContent)
-		}
-	}
-	scanner := bufio.NewScanner(file)
+// 	if err != nil {
+// 		if os.IsNotExist(err) {
+// 			log.Fatal("Folder does not exist.")
+// 			w.WriteHeader(http.StatusNoContent)
+// 		}
+// 	}
+// 	scanner := bufio.NewScanner(file)
 
-	for scanner.Scan() {
-		line := scanner.Text()
+// 	for scanner.Scan() {
+// 		line := scanner.Text()
 
-		result = append(result, line)
+// 		result = append(result, line)
 
-	}
-	jsonRes, _ = json.Marshal(result)
-	w.Write(jsonRes)
-	return
-}
+// 	}
+// 	jsonRes, _ = json.Marshal(result)
+// 	w.Write(jsonRes)
+// 	return
+// }
 
 var db *sql.DB
 var DBdns *string
@@ -264,70 +264,75 @@ func CheckConnection(w http.ResponseWriter, req *http.Request) {
 
 // }
 
-// type fileStruct struct {
-// 	Short_url    string `json:"short_url`
-// 	Original_url string `json:"original_url`
-// 	UserID       string `json:"userID`
-// }
+func GetAllUrls(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session")
+	Id = uuid.NewV4()
+	if err != nil {
 
-// func GetAllUrls(w http.ResponseWriter, r *http.Request) {
-// 	var jsonRes []byte
-// 	var result []string
-// 	w.Header().Set("content-type", "application/json")
-// 	cookie, err := r.Cookie("session")
-// 	Id = uuid.NewV4()
-// 	if err != nil {
+		cookie = &http.Cookie{
+			Name:       "session",
+			Value:      Id.String(),
+			Path:       "",
+			Domain:     "",
+			Expires:    time.Time{},
+			RawExpires: "",
+			MaxAge:     0,
+			Secure:     false,
+			HttpOnly:   true,
+			SameSite:   0,
+			Raw:        "",
+			Unparsed:   []string{},
+		}
 
-// 		cookie = &http.Cookie{
-// 			Name:       "session",
-// 			Value:      Id.String(),
-// 			Path:       "",
-// 			Domain:     "",
-// 			Expires:    time.Time{},
-// 			RawExpires: "",
-// 			MaxAge:     0,
-// 			Secure:     false,
-// 			HttpOnly:   true,
-// 			SameSite:   0,
-// 			Raw:        "",
-// 			Unparsed:   []string{},
-// 		}
+	}
+	type languageStruct struct {
+		Shorturl    string `json:"short_url"`
+		Originalurl string `json:"original_url"`
+		Userid      string `json:"userID"`
+	}
+	var x []*languageStruct
+	var jsonRes []byte
+	var result string
+	w.Header().Set("content-type", "application/json")
+	file, err := os.OpenFile("./output.json", os.O_RDONLY|os.O_CREATE, 0777)
+	if err != nil {
+		if os.IsNotExist(err) {
+			log.Fatal("Folder does not exist.")
+			w.WriteHeader(http.StatusNoContent)
+		}
+	}
 
-// 	}
-// 	var x []*fileStruct
-// 	file, err := os.OpenFile("./output.json", os.O_RDONLY|os.O_CREATE, 0777)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		//result = append(result, line)
+		if result == "" {
+			result = line
+		}
+		if result != "" && line != "\n" {
+			result = result + "," + line
+		}
 
-// 	if err != nil {
-// 		if os.IsNotExist(err) {
-// 			log.Fatal("Folder does not exist.")
-// 			w.WriteHeader(http.StatusNoContent)
-// 		}
-// 	}
-// 	scanner := bufio.NewScanner(file)
+	}
+	a := "[" + result + "]"
+	//jsonRes, _ = json.Marshal(result)
+	//fmt.Print(a)
+	jsonRes = []byte(a)
+	err = json.Unmarshal(jsonRes, &x)
+	var x2 []*languageStruct
 
-// 	for scanner.Scan() {
-// 		line := scanner.Text()
+	for _, v := range x {
+		//fmt.Print(v)
+		if v.Userid == cookie.Value {
+			x2 = append(x2, v)
+		}
 
-// 		result = append(result, line)
+	}
 
-// 	}
-// 	jsonRes, _ = json.Marshal(result)
-// 	err = json.Unmarshal(jsonRes, &x)
+	data, err := json.MarshalIndent(x2, " ", " ")
+	//fmt.Println(string(data))
+	//fmt.Print(x)
+	w.Write(data)
 
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	var x2 []*fileStruct
-// 	for _, v := range x {
-// 		if v.UserID == cookie.Value {
-// 			x2 = append(x2, v)
-// 		}
-// 	}
-
-// 	data, err := json.MarshalIndent(x2, "", " ")
-// 	//fmt.Println(string(data), err)
-// 	w.Write(data)
-
-// 	//fmt.Println(x2)
-// 	return
-// }
+	return
+}
