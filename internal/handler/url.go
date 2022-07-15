@@ -274,6 +274,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var x []*languageStruct
 	var jsonRes []byte
 	var result string
+	cookie, err := r.Cookie("session")
 	w.Header().Set("content-type", "application/json")
 	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
@@ -304,12 +305,12 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 
 	for _, v := range x {
 
-		//	if v.Userid == r.Context().Value("session") {
-		x2 = append(x2, v)
-		//}
+		if v.Userid == cookie.Value {
+			x2 = append(x2, v)
+		}
 
 	}
-	//fmt.Print(r.Context().Value("session"))
+	//fmt.Print(cookie.Value)
 	if x2 == nil {
 		w.WriteHeader(http.StatusNoContent)
 	}
