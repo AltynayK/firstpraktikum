@@ -328,8 +328,11 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-
+	if x2 == nil {
+		w.WriteHeader(http.StatusNoContent)
+	}
 	data, err := json.MarshalIndent(x2, " ", " ")
+
 	//fmt.Println(string(data))
 	//fmt.Print(x)
 	w.Write(data)
