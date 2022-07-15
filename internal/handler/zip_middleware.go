@@ -72,11 +72,16 @@ func Decompress(next http.Handler) http.Handler {
 
 var Id uuid.UUID
 var Key []byte
+var userCtxKey = &contextKey{"user"}
+
+type contextKey struct {
+	name string
+}
 
 func SetCookie(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+
 		cookie, err := r.Cookie("session")
 		//|| deShifr([]byte(cookie.Value)) != r.Context().Value(cookie)
 
@@ -97,7 +102,7 @@ func SetCookie(next http.Handler) http.Handler {
 				Raw:        "",
 				Unparsed:   []string{},
 			}
-			context.WithValue(ctx, cookie, cookie.Value)
+
 			// константа aes.BlockSize определяет размер блока и равна 16 байтам
 			Key, err := generateRandom(aes.BlockSize) // ключ шифрования
 			if err != nil {
@@ -120,6 +125,8 @@ func SetCookie(next http.Handler) http.Handler {
 			http.SetCookie(w, cookie)
 
 		}
+		ctx := context.WithValue(r.Context(), userCtxKey, cookie.Value)
+		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
 	})
@@ -146,7 +153,7 @@ func CheckCookie(next http.Handler) http.Handler {
 
 		}
 		decrypt([]byte(cookie.Value), Key)
-		if cookie.Value != r.Context().Value("cookie") {
+		if cookie.Value != r.Context().Value("session") {
 			fmt.Print("sdfsdf")
 		}
 		next.ServeHTTP(w, r)

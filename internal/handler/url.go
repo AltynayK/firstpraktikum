@@ -10,13 +10,11 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	uuid "github.com/satori/go.uuid"
 )
 
 type URL struct {
@@ -44,31 +42,13 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	cookie, err := r.Cookie("session")
-	Id = uuid.NewV4()
-	if err != nil {
 
-		cookie = &http.Cookie{
-			Name:       "session",
-			Value:      Id.String(),
-			Path:       "",
-			Domain:     "",
-			Expires:    time.Time{},
-			RawExpires: "",
-			MaxAge:     0,
-			Secure:     false,
-			HttpOnly:   true,
-			SameSite:   0,
-			Raw:        "",
-			Unparsed:   []string{},
-		}
-
-	}
 	ShortURL := short.WriteShortURL(url.LongURL)
 	okRes := URL{
 		Result: ShortURL,
 	}
-	service.MakeData(url.LongURL, ShortURL, cookie.Value)
+	a := r.Context().Value(userCtxKey).(string)
+	service.MakeData(url.LongURL, ShortURL, a)
 	if jsonRes, err = json.Marshal(okRes); err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "response json marshal err")
@@ -85,26 +65,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 func PostText(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "plain/text")
-	cookie, err := r.Cookie("session")
-	Id = uuid.NewV4()
-	if err != nil {
 
-		cookie = &http.Cookie{
-			Name:       "session",
-			Value:      Id.String(),
-			Path:       "",
-			Domain:     "",
-			Expires:    time.Time{},
-			RawExpires: "",
-			MaxAge:     0,
-			Secure:     false,
-			HttpOnly:   true,
-			SameSite:   0,
-			Raw:        "",
-			Unparsed:   []string{},
-		}
-
-	}
 	url, err := io.ReadAll(r.Body)
 	// обрабатываем ошибку
 	if err != nil {
@@ -116,7 +77,9 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 
 	shortURL := short.WriteShortURL(longURL)
 	//
-	service.MakeData(longURL, shortURL, cookie.Value)
+
+	a := r.Context().Value(userCtxKey).(string)
+	service.MakeData(longURL, shortURL, a)
 
 	w.Header().Set("Location", shortURL)
 	w.WriteHeader(201)
@@ -274,26 +237,6 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var x []*languageStruct
 	var jsonRes []byte
 	var result string
-	cookie, err := r.Cookie("session")
-	Id = uuid.NewV4()
-	if err != nil {
-
-		cookie = &http.Cookie{
-			Name:       "session",
-			Value:      Id.String(),
-			Path:       "",
-			Domain:     "",
-			Expires:    time.Time{},
-			RawExpires: "",
-			MaxAge:     0,
-			Secure:     false,
-			HttpOnly:   true,
-			SameSite:   0,
-			Raw:        "",
-			Unparsed:   []string{},
-		}
-
-	}
 	w.Header().Set("content-type", "application/json")
 	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
@@ -324,12 +267,12 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 
 	for _, v := range x {
 
-		if v.Userid == cookie.Value {
+		if v.Userid == r.Context().Value(userCtxKey) {
 			x2 = append(x2, v)
 		}
 
 	}
-	//fmt.Print(cookie.Value)
+	//fmt.Print(r.Context().Value(userCtxKey))
 	if x2 == nil {
 		w.WriteHeader(http.StatusNoContent)
 	}
