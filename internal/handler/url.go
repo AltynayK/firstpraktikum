@@ -275,6 +275,25 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var jsonRes []byte
 	var result string
 	cookie, err := r.Cookie("session")
+	Id = uuid.NewV4()
+	if err != nil {
+
+		cookie = &http.Cookie{
+			Name:       "session",
+			Value:      Id.String(),
+			Path:       "",
+			Domain:     "",
+			Expires:    time.Time{},
+			RawExpires: "",
+			MaxAge:     0,
+			Secure:     false,
+			HttpOnly:   true,
+			SameSite:   0,
+			Raw:        "",
+			Unparsed:   []string{},
+		}
+
+	}
 	w.Header().Set("content-type", "application/json")
 	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
