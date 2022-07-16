@@ -8,7 +8,7 @@ import (
 	"log"
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
-	"github.com/AltynayK/firstpraktikum/internal/postgresql"
+	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 
@@ -49,13 +49,22 @@ func main() {
 	}
 	short.GetBaseURL(BaseURL)
 	handler.GetDatabaseDNS(DatabaseDNS)
-	postgresql.GetDatabaseDNSS(DatabaseDNS)
+	//postgresql.GetDatabaseDNSS(DatabaseDNS)
 
 	srv := http.Server{
 		Addr:    *ServerAddress,
 		Handler: mux,
 	}
 	service.ReadFile(FileStoragePath)
+
+	db, err := repository.NewPostgresDB(repository.Config{
+		DBdns: DatabaseDNS,
+	})
+	if err != nil {
+		log.Fatalf("err")
+	}
+	repository.CreateTable(db)
+
 	log.Fatal(srv.ListenAndServe())
 
 }

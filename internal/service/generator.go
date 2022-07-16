@@ -100,39 +100,3 @@ func MakeDataForMultipleCase(longURL string, shortURL string, userID string, cor
 	file.Write(rankingsJSON)
 	file.WriteString("\n")
 }
-
-type Video struct {
-	Id    string
-	Title string
-	Views int64
-}
-
-// func DataFromDB() {
-// 	videos := make([]Video, 0)
-
-// 	rows, err := db.QueryContext(ctx, "SELECT video_id, title, views from videos")
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	// обязательно закрываем перед возвратом функции
-// 	defer rows.Close()
-
-// 	// пробегаем по всем записям
-// 	for rows.Next() {
-// 		var v Video
-// 		err = rows.Scan(&v.Id, &v.Title, &v.Views)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		videos = append(videos, v)
-// 	}
-
-// 	// проверяем на ошибки
-// 	err = rows.Err()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return videos, nil
-// }

@@ -12,6 +12,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
@@ -43,20 +44,24 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	ShortURL = short.WriteShortURL(url.LongURL)
 	okRes := URL{
 		Result: ShortURL,
 	}
 	a := r.Context().Value(userCtxKey).(string)
-	service.MakeData(url.LongURL, ShortURL, a)
+	if ok := repository.Ping(); ok {
+		repository.InsertDataToDB(ShortURL, url.LongURL, a)
+	} else {
+		service.MakeData(url.LongURL, ShortURL, a)
+	}
+
 	if jsonRes, err = json.Marshal(okRes); err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "response json marshal err")
 
 		return
 	}
-	//postgresql.InsertDataToDB(ShortURL, url.LongURL, a)
+
 	w.Header().Set("Location", ShortURL)
 	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
@@ -73,8 +78,13 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 	shortURL := short.WriteShortURL(longURL)
 	a := r.Context().Value(userCtxKey).(string)
-	service.MakeData(longURL, shortURL, a)
-	//postgresql.InsertDataToDB(shortURL, longURL, a)
+
+	if ok := repository.Ping(); ok {
+		repository.InsertDataToDB(shortURL, longURL, a)
+	} else {
+		service.MakeData(longURL, shortURL, a)
+	}
+
 	w.Header().Set("Location", shortURL)
 	w.WriteHeader(201)
 	w.Write([]byte(shortURL))
@@ -92,8 +102,19 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	longURL := service.GetURLFromID(b)
-	w.Header().Set("Location", longURL)
+
+	if ok := repository.Ping(); ok {
+		rows, _ := repository.DB.Query("SELECT original_url FROM data WHERE id = ?", b)
+		var longURLL string
+		for rows.Next() {
+			rows.Scan(&longURLL)
+		}
+		w.Header().Set("Location", longURLL)
+	} else {
+		longURL := service.GetURLFromID(b)
+		w.Header().Set("Location", longURL)
+	}
+
 	w.WriteHeader(307)
 	fmt.Fprint(w)
 }
