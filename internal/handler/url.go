@@ -49,23 +49,29 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		Result: ShortURL,
 	}
 	a := r.Context().Value(userCtxKey).(string)
-	if ok := repository.Ping(); ok {
-		repository.InsertDataToDB(ShortURL, url.LongURL, a)
-		w.Header().Set("Location", ShortURL)
-		w.WriteHeader(201)
-		fmt.Fprint(w, string(jsonRes))
-	} else {
-		service.MakeData(url.LongURL, ShortURL, a)
-		w.Header().Set("Location", ShortURL)
-		w.WriteHeader(201)
-		fmt.Fprint(w, string(jsonRes))
-	}
-
 	if jsonRes, err = json.Marshal(okRes); err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "response json marshal err")
 
 		return
+	}
+	if ok := repository.Ping(); ok {
+		repository.InsertDataToDB(ShortURL, url.LongURL, a)
+		w.Header().Set("Location", ShortURL)
+		w.WriteHeader(201)
+
+		fmt.Fprint(w, string(jsonRes))
+	} else {
+		service.MakeData(url.LongURL, ShortURL, a)
+		w.Header().Set("Location", ShortURL)
+		w.WriteHeader(201)
+		if jsonRes, err = json.Marshal(okRes); err != nil {
+			w.WriteHeader(500)
+			fmt.Fprintf(w, "response json marshal err")
+
+			return
+		}
+		fmt.Fprint(w, string(jsonRes))
 	}
 
 }
