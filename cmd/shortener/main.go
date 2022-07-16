@@ -66,7 +66,7 @@ func initHandlers() *mux.Router {
 	router.Use(handler.Decompress)
 	router.Use(handler.GzipHandler)
 	router.Use(handler.SetCookie)
-	//router.Use(handler.CreateTable)
+	router.Use(handler.CreateTable)
 	//router.Use(handler.CheckCookie)
 
 	router.HandleFunc("/", handler.PostText).Methods("POST")

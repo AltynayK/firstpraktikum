@@ -6,9 +6,11 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"database/sql"
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -163,17 +165,17 @@ func decrypt(ciphertext []byte, key []byte) ([]byte, error) {
 	return gcm.Open(nil, nonce, ciphertext, nil)
 }
 
-// func CreateTable(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		db, err := sql.Open("postgres", *DBdns)
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		defer db.Close()
-// 		_, err = db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar, user_id varchar)")
-// 		if err != nil {
-// 			panic(err)
-// 		}
-// 		next.ServeHTTP(w, r)
-// 	})
-// }
+func CreateTable(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		db, err := sql.Open("postgres", *DBdns)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer db.Close()
+		_, err = db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar, user_id varchar)")
+		if err != nil {
+			panic(err)
+		}
+		next.ServeHTTP(w, r)
+	})
+}
