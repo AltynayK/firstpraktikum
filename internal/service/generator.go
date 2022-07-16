@@ -22,7 +22,6 @@ type abs struct {
 
 func ReadFile(a *string) {
 	FilePath = a
-
 	file, err := os.OpenFile(*FilePath, os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -30,7 +29,6 @@ func ReadFile(a *string) {
 		}
 	}
 	scanner := bufio.NewScanner(file)
-
 	for scanner.Scan() {
 		line := scanner.Text()
 		if IDList == nil {
@@ -52,12 +50,10 @@ func WriteURLByID(url string) int {
 }
 
 func GetURLFromID(id int) string {
-
 	return IDList[id]
 }
 
 func WriteToFile(LongURL string) {
-
 	f, err := os.OpenFile(*FilePath, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -65,11 +61,9 @@ func WriteToFile(LongURL string) {
 		}
 	}
 	defer f.Close()
-
 	if _, err = f.WriteString(LongURL + "\n"); err != nil {
 		log.Fatal("Folder does not exist.")
 	}
-
 }
 
 func MakeData(longURL string, shortURL string, userID string) {
@@ -80,7 +74,6 @@ func MakeData(longURL string, shortURL string, userID string) {
 	}
 	rankingsJSON, _ := json.Marshal(rankings)
 	file, err := os.OpenFile("output.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
-
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Fatal("Folder does not exist.")
@@ -88,7 +81,6 @@ func MakeData(longURL string, shortURL string, userID string) {
 	}
 	file.Write(rankingsJSON)
 	file.WriteString("\n")
-
 }
 
 func MakeDataForMultipleCase(longURL string, shortURL string, userID string, correlationID string) {
@@ -100,7 +92,6 @@ func MakeDataForMultipleCase(longURL string, shortURL string, userID string, cor
 	}
 	rankingsJSON, _ := json.Marshal(rankings)
 	file, err := os.OpenFile("outputMultiple.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
-
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Fatal("Folder does not exist.")
@@ -108,5 +99,4 @@ func MakeDataForMultipleCase(longURL string, shortURL string, userID string, cor
 	}
 	file.Write(rankingsJSON)
 	file.WriteString("\n")
-
 }

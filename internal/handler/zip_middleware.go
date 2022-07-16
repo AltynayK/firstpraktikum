@@ -6,9 +6,11 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"database/sql"
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -30,7 +32,6 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	if h.Get("Content-Type") == "" {
 		h.Set("Content-Type", http.DetectContentType(b))
 	}
-
 	return w.Writer.Write(b)
 }
 
@@ -40,14 +41,11 @@ func GzipHandler(h http.Handler) http.Handler {
 			h.ServeHTTP(w, r)
 			return
 		}
-
 		w.Header().Set("Content-Encoding", "gzip")
 		w.Header().Set("Vary", "Accept-Encoding")
 		gw := gzip.NewWriter(w)
 		defer gw.Close()
-
 		w = &gzipResponseWriter{gw, w}
-
 		h.ServeHTTP(w, r)
 	}
 	return http.HandlerFunc(fn)
@@ -62,11 +60,8 @@ func Decompress(next http.Handler) http.Handler {
 				return
 			}
 			r.Body = gz
-
 		}
-
 		next.ServeHTTP(w, r)
-
 	})
 }
 
@@ -79,15 +74,10 @@ type contextKey struct {
 }
 
 func SetCookie(next http.Handler) http.Handler {
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		cookie, err := r.Cookie("session")
-		//|| deShifr([]byte(cookie.Value)) != r.Context().Value(cookie)
-
 		Id = uuid.NewV4()
 		if err != nil {
-
 			cookie = &http.Cookie{
 				Name:       "session",
 				Value:      Id.String(),
@@ -102,32 +92,17 @@ func SetCookie(next http.Handler) http.Handler {
 				Raw:        "",
 				Unparsed:   []string{},
 			}
-
 			// константа aes.BlockSize определяет размер блока и равна 16 байтам
 			Key, err := generateRandom(aes.BlockSize) // ключ шифрования
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
 				return
 			}
-
-			// // получаем cipher.Block
-			// aesblock, err := aes.NewCipher(key)
-			// if err != nil {
-			// 	fmt.Printf("error: %v\n", err)
-			// 	return
-			// }
-
-			// dst := make([]byte, aes.BlockSize) // зашифровываем
-			// aesblock.Encrypt(dst, []byte(cookie.Value))
-			// //log.Fatal(dst)
 			encrypt([]byte(cookie.Value), Key)
-			//decrypt([]byte(cookie.Value), Key)
 			http.SetCookie(w, cookie)
-
 		}
 		ctx := context.WithValue(r.Context(), userCtxKey, cookie.Value)
 		r = r.WithContext(ctx)
-
 		next.ServeHTTP(w, r)
 	})
 
@@ -139,18 +114,14 @@ func generateRandom(size int) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return b, nil
 }
 
 func CheckCookie(next http.Handler) http.Handler {
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusNotFound)
-			// r.Context().Value("cookie")
-
 		}
 		decrypt([]byte(cookie.Value), Key)
 		if cookie.Value != r.Context().Value("session") {
@@ -161,45 +132,20 @@ func CheckCookie(next http.Handler) http.Handler {
 
 }
 
-// func deShifr(dst []byte) string {
-// 	// константа aes.BlockSize определяет размер блока и равна 16 байтам
-// 	key, err := generateRandom(aes.BlockSize) // ключ шифрования
-// 	if err != nil {
-// 		fmt.Printf("error: %v\n", err)
-
-// 	}
-
-// 	// получаем cipher.Block
-// 	aesblock, err := aes.NewCipher(key)
-// 	if err != nil {
-// 		fmt.Printf("error: %v\n", err)
-
-// 	}
-
-// 	src2 := make([]byte, aes.BlockSize) // расшифровываем
-// 	aesblock.Decrypt(src2, dst)
-// 	//fmt.Printf("decrypted: %s\n", src2)
-// 	//fmt.Println(cookie)
-// 	return string(src2)
-// }
 func encrypt(plaintext []byte, key []byte) ([]byte, error) {
 	c, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
-
 	gcm, err := cipher.NewGCM(c)
 	if err != nil {
 		return nil, err
 	}
-
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
 		return nil, err
 	}
-
 	return gcm.Seal(nonce, nonce, plaintext, nil), nil
-
 }
 
 func decrypt(ciphertext []byte, key []byte) ([]byte, error) {
@@ -207,17 +153,29 @@ func decrypt(ciphertext []byte, key []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	gcm, err := cipher.NewGCM(c)
 	if err != nil {
 		return nil, err
 	}
-
 	nonceSize := gcm.NonceSize()
 	if len(ciphertext) < nonceSize {
 		return nil, errors.New("ciphertext too short")
 	}
-
 	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
 	return gcm.Open(nil, nonce, ciphertext, nil)
+}
+
+func CreateTable(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		db, err := sql.Open("postgres", *DBdns)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer db.Close()
+		_, err = db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar, user_id varchar)")
+		if err != nil {
+			panic(err)
+		}
+		next.ServeHTTP(w, r)
+	})
 }
