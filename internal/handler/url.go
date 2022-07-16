@@ -56,9 +56,12 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if ok := repository.Ping(); ok {
-		repository.InsertDataToDB(ShortURL, url.LongURL, a)
+		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
+			w.WriteHeader(409)
+		} else {
+			w.WriteHeader(201)
+		}
 		w.Header().Set("Location", ShortURL)
-		w.WriteHeader(201)
 
 		fmt.Fprint(w, string(jsonRes))
 	} else {
@@ -88,9 +91,12 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	a := r.Context().Value(userCtxKey).(string)
 
 	if repository.Ping() == true {
-		repository.InsertDataToDB(shortURL, longURL, a)
+		if repository.InsertDataToDB(shortURL, longURL, a) == false {
+			w.WriteHeader(409)
+		} else {
+			w.WriteHeader(201)
+		}
 		w.Header().Set("Location", shortURL)
-		w.WriteHeader(201)
 		w.Write([]byte(shortURL))
 	} else {
 		service.MakeData(longURL, shortURL, a)
