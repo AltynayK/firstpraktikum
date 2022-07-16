@@ -14,9 +14,10 @@ var (
 var FilePath *string
 
 type abs struct {
-	ShortURL string `json:"short_url"`
-	LongURL  string `json:"original_url"`
-	UserID   string `json:"userID"`
+	ShortURL      string `json:"short_url"`
+	LongURL       string `json:"original_url"`
+	UserID        string `json:"userID"`
+	CorrelationID string `json:"correlation_id"`
 }
 
 func ReadFile(a *string) {
@@ -52,8 +53,6 @@ func WriteURLByID(url string) int {
 
 func GetURLFromID(id int) string {
 
-	// remove row below
-
 	return IDList[id]
 }
 
@@ -74,18 +73,33 @@ func WriteToFile(LongURL string) {
 }
 
 func MakeData(longURL string, shortURL string, userID string) {
-	//var jsonBlob = []byte(`{ShortURL: "shortURL", LongURL: "longURL",}`)
 	rankings := abs{
 		LongURL:  longURL,
 		ShortURL: shortURL,
 		UserID:   userID,
 	}
-	// err := json.Unmarshal(jsonBlob, &rankings)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 	rankingsJSON, _ := json.Marshal(rankings)
 	file, err := os.OpenFile("output.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+
+	if err != nil {
+		if os.IsNotExist(err) {
+			log.Fatal("Folder does not exist.")
+		}
+	}
+	file.Write(rankingsJSON)
+	file.WriteString("\n")
+
+}
+
+func MakeDataForMultipleCase(longURL string, shortURL string, userID string, correlationID string) {
+	rankings := abs{
+		CorrelationID: correlationID,
+		LongURL:       longURL,
+		ShortURL:      shortURL,
+		UserID:        userID,
+	}
+	rankingsJSON, _ := json.Marshal(rankings)
+	file, err := os.OpenFile("outputMultiple.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 
 	if err != nil {
 		if os.IsNotExist(err) {

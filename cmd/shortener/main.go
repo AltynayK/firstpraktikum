@@ -27,12 +27,10 @@ func init() {
 	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
 	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
 	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	//DatabaseDNS = flag.String("d", "postgres://altynay:passwoed@localhost/somedb?sslmode=disable", "DatabaseDNS")
 	DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altynay password=passwoed dbname=somedb sslmode=disable", "DatabaseDNS")
 }
 
 func main() {
-	//mw := handler.CompressGzip{}
 	//postgresql.Init()
 	mux := initHandlers()
 
@@ -43,7 +41,6 @@ func main() {
 	if u, f := os.LookupEnv("BASE_URL"); f {
 		*BaseURL = u
 	}
-	//fmt.Print(os.Getenv("BASE_URL"))
 	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
 		*FileStoragePath = u
 	}
@@ -53,9 +50,7 @@ func main() {
 	short.GetBaseURL(BaseURL)
 	handler.GetDatabaseDNS(DatabaseDNS)
 	postgresql.GetDatabaseDNSS(DatabaseDNS)
-	//FilePath: = *FILE_STORAGE_PATH
-	//os.Setenv("SERVER_ADDRESS", "127.0.0.1:8080")
-	//os.Setenv("BASE_URL", *BaseUrl)
+
 	srv := http.Server{
 		Addr:    *ServerAddress,
 		Handler: mux,
@@ -79,6 +74,6 @@ func initHandlers() *mux.Router {
 	router.HandleFunc("/{id:[0-9]+}", handler.Get).Methods("GET")
 	router.HandleFunc("/api/user/urls", handler.GetAllUrls).Methods("GET")
 	router.HandleFunc("/ping", handler.CheckConnection).Methods("GET")
-	//router.HandleFunc("/api/shorten/batch", handler.PostMultipleUrls).Methods("POST")
+	router.HandleFunc("/api/shorten/batch", handler.PostMultipleUrls).Methods("POST")
 	return router
 }

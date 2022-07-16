@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -18,18 +19,21 @@ import (
 )
 
 type URL struct {
-	LongURL string `json:"url"`
-	Result  string `json:"result"`
+	LongURL       string `json:"url"`
+	Result        string `json:"result"`
+	CorrelationID string `json:"correlation_id"`
+}
+
+type MultURL struct {
+	CorrelationID string `json:"correlation_id"`
+	Result        string `json:"short_url"`
 }
 
 type URLs struct {
-	ShortURL string `json:"short_url"`
-	LongURL  string `json:"original_url"`
+	ShortURL      string `json:"short_url"`
+	LongURL       string `json:"original_url"`
+	CorrelationID string `json:"correlation_id"`
 }
-
-// type PostResponse struct {
-
-// }
 
 func PostJSON(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
@@ -84,10 +88,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Location", shortURL)
 	w.WriteHeader(201)
 
-	//postgresql.InsertDataToDB(shortURL, longURL, cookie.Value)
-
 	w.Write([]byte(shortURL))
-	//db.Exec("insert into urls (short_url, original_url) values (shortURL, longURL)")
 }
 
 func Get(w http.ResponseWriter, r *http.Request) {
@@ -114,33 +115,6 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w)
 
 }
-
-// func GetAllUrls(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("content-type", "application/json")
-
-// 	var jsonRes []byte
-// 	var result []string
-
-// 	file, err := os.OpenFile("./output.json", os.O_RDONLY|os.O_CREATE, 0777)
-
-// 	if err != nil {
-// 		if os.IsNotExist(err) {
-// 			log.Fatal("Folder does not exist.")
-// 			w.WriteHeader(http.StatusNoContent)
-// 		}
-// 	}
-// 	scanner := bufio.NewScanner(file)
-
-// 	for scanner.Scan() {
-// 		line := scanner.Text()
-
-// 		result = append(result, line)
-
-// 	}
-// 	jsonRes, _ = json.Marshal(result)
-// 	w.Write(jsonRes)
-// 	return
-// }
 
 var db *sql.DB
 var DBdns *string
@@ -170,71 +144,13 @@ func CheckConnection(w http.ResponseWriter, req *http.Request) {
 
 }
 
-// type MultipleUrl []struct {
-// 	CorrelationID string `json:"correlation_id"`
-// 	OriginalURL   string `json:"original_url"`
-// }
-
-// func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("content-type", "application/json")
-
-// 	var url []MultipleUrl
-// 	//var jsonRes []byte
-
-// 	err := json.NewDecoder(r.Body).Decode(&url)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	cookie, err := r.Cookie("session")
-// 	Id = uuid.NewV4()
-// 	if err != nil {
-
-// 		cookie = &http.Cookie{
-// 			Name:       "session",
-// 			Value:      Id.String(),
-// 			Path:       "",
-// 			Domain:     "",
-// 			Expires:    time.Time{},
-// 			RawExpires: "",
-// 			MaxAge:     0,
-// 			Secure:     false,
-// 			HttpOnly:   true,
-// 			SameSite:   0,
-// 			Raw:        "",
-// 			Unparsed:   []string{},
-// 		}
-
-// 	}
-// 	ShortURL := short.WriteShortURL(url.OriginalURL)
-// 	okRes := MultipleUrl{
-// 		CorrelationID: CorrelationID,
-// 		short_url:     ShortURL,
-// 	}
-// 	service.MakeData(url.LongURL, ShortURL, cookie.Value)
-// 	if jsonRes, err = json.Marshal(okRes); err != nil {
-// 		w.WriteHeader(500)
-// 		fmt.Fprintf(w, "response json marshal err")
-
-// 		return
-// 	}
-// 	//postgresql.InsertDataToDB(ShortURL, url.LongURL, cookie.Value)
-// 	w.Header().Set("Location", ShortURL)
-
-// 	w.WriteHeader(201)
-// 	fmt.Fprint(w, string(jsonRes))
-
-// }
-
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
-
-	type languageStruct struct {
+	type URLStruct struct {
 		Shorturl    string `json:"short_url"`
 		Originalurl string `json:"original_url"`
 		Userid      string `json:"userID"`
 	}
-	var x []*languageStruct
+	var x []*URLStruct
 	var jsonRes []byte
 	var result string
 	w.Header().Set("content-type", "application/json")
@@ -245,7 +161,6 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 		}
 	}
-
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -256,31 +171,67 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 		if result != "" && line != "\n" {
 			result = result + "," + line
 		}
-
 	}
 	a := "[" + result + "]"
 	//jsonRes, _ = json.Marshal(result)
-	//fmt.Print(a)
 	jsonRes = []byte(a)
 	err = json.Unmarshal(jsonRes, &x)
-	var x2 []*languageStruct
-
+	var x2 []*URLStruct
 	for _, v := range x {
-
 		if v.Userid == r.Context().Value(userCtxKey) {
 			x2 = append(x2, v)
 		}
-
 	}
-	//fmt.Print(r.Context().Value(userCtxKey))
 	if x2 == nil {
 		w.WriteHeader(http.StatusNoContent)
 	}
 	data, err := json.MarshalIndent(x2, " ", " ")
-
-	//fmt.Println(string(data))
-	//fmt.Print(x)
 	w.Write(data)
-
 	return
+}
+
+type Posts []URLs
+
+func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+
+	var url Posts
+
+	content, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(content, &url)
+	if err != nil {
+		//log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	var okRes MultURL
+	var ShortURL string
+	var jsonRes []byte
+	var JsonArray []MultURL
+	for _, value := range url {
+		ShortURL = short.WriteShortURL(value.LongURL)
+		okRes = MultURL{
+			CorrelationID: value.CorrelationID,
+			Result:        ShortURL,
+		}
+		a := r.Context().Value(userCtxKey).(string)
+		service.MakeDataForMultipleCase(value.LongURL, ShortURL, a, okRes.CorrelationID)
+		//jsonRes, _ = json.Marshal(okRes)
+		// if jsonRes, err = json.Marshal(okRes); err != nil {
+		// 	w.WriteHeader(500)
+		// 	fmt.Fprintf(w, "response json marshal err")
+		// 	return
+		// }
+		JsonArray = append(JsonArray, okRes)
+		//fmt.Print("`correlation_id:`", value.CorrelationID, value.LongURL)
+	}
+	if jsonRes, err = json.Marshal(JsonArray); err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "response json marshal err")
+		return
+	}
+	w.WriteHeader(201)
+	fmt.Fprint(w, string(jsonRes))
+	//fmt.Fprint(w, res)
+
 }
