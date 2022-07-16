@@ -51,8 +51,14 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	a := r.Context().Value(userCtxKey).(string)
 	if ok := repository.Ping(); ok {
 		repository.InsertDataToDB(ShortURL, url.LongURL, a)
+		w.Header().Set("Location", ShortURL)
+		w.WriteHeader(201)
+		fmt.Fprint(w, string(jsonRes))
 	} else {
 		service.MakeData(url.LongURL, ShortURL, a)
+		w.Header().Set("Location", ShortURL)
+		w.WriteHeader(201)
+		fmt.Fprint(w, string(jsonRes))
 	}
 
 	if jsonRes, err = json.Marshal(okRes); err != nil {
@@ -61,10 +67,6 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
-	w.Header().Set("Location", ShortURL)
-	w.WriteHeader(201)
-	fmt.Fprint(w, string(jsonRes))
 
 }
 
@@ -81,13 +83,16 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 
 	if ok := repository.Ping(); ok {
 		repository.InsertDataToDB(shortURL, longURL, a)
+		w.Header().Set("Location", shortURL)
+		w.WriteHeader(201)
+		w.Write([]byte(shortURL))
 	} else {
 		service.MakeData(longURL, shortURL, a)
+		w.Header().Set("Location", shortURL)
+		w.WriteHeader(201)
+		w.Write([]byte(shortURL))
 	}
 
-	w.Header().Set("Location", shortURL)
-	w.WriteHeader(201)
-	w.Write([]byte(shortURL))
 }
 
 func Get(w http.ResponseWriter, r *http.Request) {
@@ -110,13 +115,15 @@ func Get(w http.ResponseWriter, r *http.Request) {
 			rows.Scan(&longURLL)
 		}
 		w.Header().Set("Location", longURLL)
+		w.WriteHeader(307)
+		fmt.Fprint(w)
 	} else {
 		longURL := service.GetURLFromID(b)
 		w.Header().Set("Location", longURL)
+		w.WriteHeader(307)
+		fmt.Fprint(w)
 	}
 
-	w.WriteHeader(307)
-	fmt.Fprint(w)
 }
 
 var db *sql.DB
