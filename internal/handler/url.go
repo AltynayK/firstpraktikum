@@ -12,7 +12,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/AltynayK/firstpraktikum/internal/postgresql"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
@@ -35,6 +34,7 @@ type URLs struct {
 }
 
 func PostJSON(w http.ResponseWriter, r *http.Request) {
+	var ShortURL string
 	w.Header().Set("content-type", "application/json")
 	var url URL
 	var jsonRes []byte
@@ -43,7 +43,8 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	ShortURL := short.WriteShortURL(url.LongURL)
+
+	ShortURL = short.WriteShortURL(url.LongURL)
 	okRes := URL{
 		Result: ShortURL,
 	}
@@ -55,7 +56,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	postgresql.InsertDataToDB(ShortURL, url.LongURL, a)
+	//postgresql.InsertDataToDB(ShortURL, url.LongURL, a)
 	w.Header().Set("Location", ShortURL)
 	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
@@ -73,7 +74,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	shortURL := short.WriteShortURL(longURL)
 	a := r.Context().Value(userCtxKey).(string)
 	service.MakeData(longURL, shortURL, a)
-	postgresql.InsertDataToDB(shortURL, longURL, a)
+	//postgresql.InsertDataToDB(shortURL, longURL, a)
 	w.Header().Set("Location", shortURL)
 	w.WriteHeader(201)
 	w.Write([]byte(shortURL))
