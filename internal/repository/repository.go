@@ -23,5 +23,8 @@ func InsertDataToDB(short_url string, original_url string, user_id string) {
 
 func Ping() bool {
 	err := DB.Ping()
-	return err != nil
+	if err != nil {
+		return false
+	}
+	return true
 }

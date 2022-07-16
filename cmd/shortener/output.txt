@@ -101,3 +101,6 @@
 {"short_url":"http://127.0.0.1:8080/1232","original_url":"https://practicum.yandex.ru/","userID":"463694ee-a18e-4cc5-bd74-37d767d2577e","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1233","original_url":"https://practicum.yandex.ru/","userID":"463694ee-a18e-4cc5-bd74-37d767d2577e","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1234","original_url":"https://practicum.yandex.ru/","userID":"4a567736-d86d-4836-bb75-9fd724dcb880","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1235","original_url":"https://practicum.yandex.ru/","userID":"e5d0be30-41a3-4625-9c5a-67510715e692","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1236","original_url":"https://practicum.yandex.ru/","userID":"e5d0be30-41a3-4625-9c5a-67510715e692","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1237","original_url":"https://practicum.yandex.ru/","userID":"e5d0be30-41a3-4625-9c5a-67510715e692","correlation_id":""}

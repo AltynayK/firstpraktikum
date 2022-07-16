@@ -81,7 +81,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	shortURL := short.WriteShortURL(longURL)
 	a := r.Context().Value(userCtxKey).(string)
 
-	if ok := repository.Ping(); ok {
+	if repository.Ping() == true {
 		repository.InsertDataToDB(shortURL, longURL, a)
 		w.Header().Set("Location", shortURL)
 		w.WriteHeader(201)
@@ -108,7 +108,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if ok := repository.Ping(); ok {
+	if repository.Ping() == true {
 		rows, _ := repository.DB.Query("SELECT original_url FROM data WHERE id = ?", b)
 		var longURLL string
 		for rows.Next() {
