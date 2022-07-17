@@ -30,6 +30,8 @@ func init() {
 	DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
 }
 
+var Checkvar bool
+
 func main() {
 
 	mux := initHandlers()

@@ -111,3 +111,5 @@
 {"short_url":"http://127.0.0.1:8080/1267","original_url":"https://pradcftdicum.yandhex.ru/","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1268","original_url":"https://pradcftdicum.yandhex.ru/","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1269","original_url":"https://pradcftdicum.yadssddndhex.ru/","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1332","original_url":"https://golangcode.com/","userID":"73141e33-29e6-4e0f-a4da-000053454553","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1333","original_url":"https://praddcfdtdicum.yandhex.ru/","userID":"a85135b6-d688-4822-ac3c-02d6171836bb","correlation_id":""}
