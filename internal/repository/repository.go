@@ -12,6 +12,7 @@ func CreateTable(db *sql.DB) {
 		panic(err)
 	}
 	DB = db
+
 }
 
 func InsertDataToDB(short_url string, original_url string, user_id string) bool {

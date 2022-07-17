@@ -33,6 +33,12 @@ type URLs struct {
 	LongURL       string `json:"original_url"`
 	CorrelationID string `json:"correlation_id"`
 }
+type dbUrl struct {
+	id          int
+	shorturl    string
+	originalurl string
+	userid      string
+}
 
 func PostJSON(w http.ResponseWriter, r *http.Request) {
 	var ShortURL string
@@ -121,11 +127,14 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if repository.Ping() == true {
-		rows, _ := repository.DB.Query("SELECT original_url FROM data WHERE id = ?", b)
-		var longURLL string
-		for rows.Next() {
-			rows.Scan(&longURLL)
+		db = repository.DB
+
+		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
+		alb := dbUrl{}
+		if err := row.Scan(&alb.originalurl); err != nil {
+			log.Fatal(err)
 		}
+		longURLL := alb.originalurl
 		w.Header().Set("Location", longURLL)
 		w.WriteHeader(307)
 		fmt.Fprint(w)
