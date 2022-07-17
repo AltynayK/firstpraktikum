@@ -83,7 +83,7 @@ func MakeData(longURL string, shortURL string, userID string) {
 	file.WriteString("\n")
 }
 
-func MakeDataForMultipleCase(longURL string, shortURL string, userID string, correlationID string) {
+func MakeDataForMultipleCase(shortURL string, longURL string, userID string, correlationID string) {
 	rankings := abs{
 		CorrelationID: correlationID,
 		LongURL:       longURL,

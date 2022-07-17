@@ -256,7 +256,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		if repository.Ping() == true {
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		} else {
-			service.MakeDataForMultipleCase(value.LongURL, ShortURL, a, okRes.CorrelationID)
+			service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
 
 		}
 		JsonArray = append(JsonArray, okRes)
