@@ -7,7 +7,7 @@ import (
 var DB *sql.DB
 
 func CreateTable(db *sql.DB) {
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar, user_id varchar, correlation_id varchar)")
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar UNIQUE, user_id varchar, correlation_id varchar)")
 	if err != nil {
 		panic(err)
 	}
