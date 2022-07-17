@@ -19,8 +19,8 @@ import (
 )
 
 type URL struct {
-	//LongURL       string `json:"url"`
-	Result string `json:"result"`
+	LongURL string `json:"url"`
+	Result  string `json:"result"`
 	//CorrelationID string `json:"correlation_id"`
 }
 type MultURL struct {
@@ -42,7 +42,7 @@ type DbUrl struct {
 func PostJSON(w http.ResponseWriter, r *http.Request) {
 	var ShortURL string
 	w.Header().Set("content-type", "application/json")
-	var url URLs
+	var url URL
 	var jsonRes []byte
 	err := json.NewDecoder(r.Body).Decode(&url)
 	if err != nil {
@@ -63,7 +63,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	// } else {
 	ShortURL = short.WriteShortURL(url.LongURL)
 	service.MakeData(url.LongURL, ShortURL, a)
-	w.WriteHeader(201)
+
 	// }
 	okRes := URL{
 		Result: ShortURL,
@@ -75,7 +75,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Location", ShortURL)
-
+	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
 }
 
