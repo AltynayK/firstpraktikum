@@ -8,7 +8,6 @@ import (
 	"log"
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
-	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 
@@ -27,7 +26,7 @@ func init() {
 	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
 	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
 	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
+	DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altsynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
 }
 
 func main() {
@@ -57,13 +56,9 @@ func main() {
 	}
 	service.ReadFile(FileStoragePath)
 
-	db, err := repository.NewPostgresDB(repository.Config{
-		DBdns: DatabaseDNS,
-	})
-	if err != nil {
-		log.Fatalf("err")
-	}
-	repository.CreateTable(db)
+	// repository.NewPostgresDB(repository.Config{
+	// 	DBdns: DatabaseDNS,
+	// })
 
 	log.Fatal(srv.ListenAndServe())
 

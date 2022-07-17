@@ -12,7 +12,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
@@ -20,9 +19,9 @@ import (
 )
 
 type URL struct {
-	LongURL       string `json:"url"`
-	Result        string `json:"result"`
-	CorrelationID string `json:"correlation_id"`
+	//LongURL       string `json:"url"`
+	Result string `json:"result"`
+	//CorrelationID string `json:"correlation_id"`
 }
 type MultURL struct {
 	CorrelationID string `json:"correlation_id"`
@@ -33,7 +32,7 @@ type URLs struct {
 	LongURL       string `json:"original_url"`
 	CorrelationID string `json:"correlation_id"`
 }
-type dbUrl struct {
+type DbUrl struct {
 	id          int
 	shorturl    string
 	originalurl string
@@ -43,46 +42,41 @@ type dbUrl struct {
 func PostJSON(w http.ResponseWriter, r *http.Request) {
 	var ShortURL string
 	w.Header().Set("content-type", "application/json")
-	var url URL
+	var url URLs
 	var jsonRes []byte
 	err := json.NewDecoder(r.Body).Decode(&url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	a := r.Context().Value(userCtxKey).(string)
+
+	// if repository.Ping() == true {
+	// 	ShortURL = short.WriteShortURL(url.LongURL)
+	// 	if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
+	// 		w.WriteHeader(409)
+	// 	} else {
+	// 		w.WriteHeader(201)
+	// 	}
+
+	// } else {
 	ShortURL = short.WriteShortURL(url.LongURL)
+	service.MakeData(url.LongURL, ShortURL, a)
+	w.WriteHeader(201)
+	// }
 	okRes := URL{
 		Result: ShortURL,
 	}
-	a := r.Context().Value(userCtxKey).(string)
 	if jsonRes, err = json.Marshal(okRes); err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "response json marshal err")
 
 		return
 	}
-	if ok := repository.Ping(); ok {
-		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
-			w.WriteHeader(409)
-		} else {
-			w.WriteHeader(201)
-		}
-		w.Header().Set("Location", ShortURL)
+	w.Header().Set("Location", ShortURL)
 
-		fmt.Fprint(w, string(jsonRes))
-	} else {
-		service.MakeData(url.LongURL, ShortURL, a)
-		w.Header().Set("Location", ShortURL)
-		w.WriteHeader(201)
-		if jsonRes, err = json.Marshal(okRes); err != nil {
-			w.WriteHeader(500)
-			fmt.Fprintf(w, "response json marshal err")
-
-			return
-		}
-		fmt.Fprint(w, string(jsonRes))
-	}
-
+	fmt.Fprint(w, string(jsonRes))
 }
 
 func PostText(w http.ResponseWriter, r *http.Request) {
@@ -93,23 +87,25 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	longURL := string(url)
-	shortURL := short.WriteShortURL(longURL)
+
 	a := r.Context().Value(userCtxKey).(string)
 
-	if repository.Ping() == true {
-		if repository.InsertDataToDB(shortURL, longURL, a) == false {
-			w.WriteHeader(409)
-		} else {
-			w.WriteHeader(201)
-		}
-		w.Header().Set("Location", shortURL)
-		w.Write([]byte(shortURL))
-	} else {
-		service.MakeData(longURL, shortURL, a)
-		w.Header().Set("Location", shortURL)
-		w.WriteHeader(201)
-		w.Write([]byte(shortURL))
-	}
+	// if repository.Ping() == true {
+	// 	shortURL := short.MakeShortURLToDB(longURL)
+	// 	if repository.InsertDataToDB(shortURL, longURL, a) == false {
+	// 		w.WriteHeader(409)
+	// 	} else {
+	// 		w.WriteHeader(201)
+	// 	}
+	// 	w.Header().Set("Location", shortURL)
+	// 	w.Write([]byte(shortURL))
+	// } else {
+	shortURL := short.WriteShortURL(longURL)
+	service.MakeData(longURL, shortURL, a)
+	w.Header().Set("Location", shortURL)
+	w.WriteHeader(201)
+	w.Write([]byte(shortURL))
+	// }
 
 }
 
@@ -126,24 +122,24 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if repository.Ping() == true {
-		db = repository.DB
+	// if repository.Ping() == true {
+	// 	db = repository.DB
 
-		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
-		alb := dbUrl{}
-		if err := row.Scan(&alb.originalurl); err != nil {
-			log.Fatal(err)
-		}
-		longURLL := alb.originalurl
-		w.Header().Set("Location", longURLL)
-		w.WriteHeader(307)
-		fmt.Fprint(w)
-	} else {
-		longURL := service.GetURLFromID(b)
-		w.Header().Set("Location", longURL)
-		w.WriteHeader(307)
-		fmt.Fprint(w)
-	}
+	// 	row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
+	// 	alb := DbUrl{}
+	// 	if err := row.Scan(&alb.originalurl); err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	longURLL := alb.originalurl
+	// 	w.Header().Set("Location", longURLL)
+	// 	w.WriteHeader(307)
+	// 	fmt.Fprint(w)
+	// } else {
+	longURL := service.GetURLFromID(b)
+	w.Header().Set("Location", longURL)
+	w.WriteHeader(307)
+	fmt.Fprint(w)
+	//}
 
 }
 

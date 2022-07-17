@@ -104,3 +104,8 @@
 {"short_url":"http://127.0.0.1:8080/1235","original_url":"https://practicum.yandex.ru/","userID":"e5d0be30-41a3-4625-9c5a-67510715e692","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1236","original_url":"https://practicum.yandex.ru/","userID":"e5d0be30-41a3-4625-9c5a-67510715e692","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1237","original_url":"https://practicum.yandex.ru/","userID":"e5d0be30-41a3-4625-9c5a-67510715e692","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1263","original_url":"","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1264","original_url":"https://pradcftdicum.yandhex.ru/","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1265","original_url":"","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1266","original_url":"","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1267","original_url":"https://pradcftdicum.yandhex.ru/","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}

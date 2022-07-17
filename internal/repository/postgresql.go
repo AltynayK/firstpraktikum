@@ -15,11 +15,14 @@ func NewPostgresDB(cfg Config) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	err = db.Ping()
 	if err != nil {
 		return nil, err
 	}
+	CreateTable(db)
 	return db, nil
+
 }
 
 // func CreateTable() {
