@@ -24,6 +24,7 @@ func InsertDataToDB(short_url string, original_url string, user_id string) bool 
 	}
 	return true
 }
+
 func InsertDataToDBCor(short_url string, original_url string, user_id string, correlation_id string) bool {
 
 	sqlStatementt := `INSERT INTO data (short_url, original_url, user_id, correlation_id) VALUES ($1, $2, $3, $4)`
