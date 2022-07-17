@@ -109,3 +109,5 @@
 {"short_url":"http://127.0.0.1:8080/1265","original_url":"","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1266","original_url":"","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1267","original_url":"https://pradcftdicum.yandhex.ru/","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1268","original_url":"https://pradcftdicum.yandhex.ru/","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1269","original_url":"https://pradcftdicum.yadssddndhex.ru/","userID":"04995e9d-4423-440c-84e8-14255ded70e6","correlation_id":""}
