@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"log"
 )
 
 var DB *sql.DB
@@ -35,6 +36,21 @@ func InsertDataToDBCor(short_url string, original_url string, user_id string, co
 	return true
 }
 
+type DbUrls struct {
+	id          int
+	shorturl    string
+	originalurl string
+	userid      string
+}
+
+func ReturnShortURL(LongURL string) string {
+	row := DB.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
+	alb := DbUrls{}
+	if err := row.Scan(&alb.shorturl); err != nil {
+		log.Fatal(err)
+	}
+	return alb.shorturl
+}
 func Ping() bool {
 	err := DB.Ping()
 	if err != nil {
