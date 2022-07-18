@@ -88,6 +88,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostText(w http.ResponseWriter, r *http.Request) {
+	var shortURL string
 	w.Header().Set("content-type", "plain/text")
 	url, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -100,23 +101,22 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 
 	//_, exists := os.LookupEnv("DatabaseDNS")
 	if DBdns != nil {
-		shortURL := short.WriteShortURL(longURL)
+		shortURL = short.WriteShortURL(longURL)
 		if repository.InsertDataToDB(shortURL, longURL, a) == false {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
 		} else {
 			w.WriteHeader(201)
 		}
-		w.Header().Set("Location", shortURL)
-		w.Write([]byte(shortURL))
-	} else {
-		shortURL := short.WriteShortURL(longURL)
-		service.MakeData(longURL, shortURL, a)
-		w.Header().Set("Location", shortURL)
-		w.WriteHeader(201)
-		w.Write([]byte(shortURL))
-	}
 
+	} else {
+		shortURL = short.WriteShortURL(longURL)
+		service.MakeData(longURL, shortURL, a)
+		w.WriteHeader(201)
+
+	}
+	w.Header().Set("Location", shortURL)
+	w.Write([]byte(shortURL))
 }
 
 func Get(w http.ResponseWriter, r *http.Request) {
