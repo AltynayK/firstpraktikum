@@ -60,8 +60,8 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 	a := r.Context().Value(userCtxKey).(string)
 
-	_, exists := os.LookupEnv("DatabaseDNS")
-	if !exists {
+	//_, exists := os.LookupEnv("DatabaseDNS")
+	if DBdns == nil {
 		ShortURL = short.WriteShortURL(url.LongURL)
 		service.MakeData(url.LongURL, ShortURL, a)
 		w.WriteHeader(201)
@@ -100,8 +100,8 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 
 	a := r.Context().Value(userCtxKey).(string)
 
-	_, exists := os.LookupEnv("DatabaseDNS")
-	if !exists {
+	//_, exists := os.LookupEnv("DatabaseDNS")
+	if DBdns == nil {
 		shortURL = short.WriteShortURL(longURL)
 		service.MakeData(longURL, shortURL, a)
 		w.WriteHeader(201)
