@@ -61,7 +61,12 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	a := r.Context().Value(userCtxKey).(string)
 
 	_, exists := os.LookupEnv("DatabaseDNS")
-	if exists {
+	if !exists {
+		ShortURL = short.WriteShortURL(url.LongURL)
+		service.MakeData(url.LongURL, ShortURL, a)
+		w.WriteHeader(201)
+	} else {
+
 		ShortURL = short.WriteShortURL(url.LongURL)
 
 		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
@@ -70,10 +75,6 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		} else {
 			w.WriteHeader(201)
 		}
-	} else {
-		ShortURL = short.WriteShortURL(url.LongURL)
-		service.MakeData(url.LongURL, ShortURL, a)
-		w.WriteHeader(201)
 	}
 	okRes := URL{
 		Result: ShortURL,
@@ -100,7 +101,12 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	a := r.Context().Value(userCtxKey).(string)
 
 	_, exists := os.LookupEnv("DatabaseDNS")
-	if exists {
+	if !exists {
+		shortURL = short.WriteShortURL(longURL)
+		service.MakeData(longURL, shortURL, a)
+		w.WriteHeader(201)
+	} else {
+
 		shortURL = short.WriteShortURL(longURL)
 		if repository.InsertDataToDB(shortURL, longURL, a) == false {
 			shortURL = repository.ReturnShortURL(longURL)
@@ -108,11 +114,6 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 		} else {
 			w.WriteHeader(201)
 		}
-
-	} else {
-		shortURL = short.WriteShortURL(longURL)
-		service.MakeData(longURL, shortURL, a)
-		w.WriteHeader(201)
 
 	}
 	w.Header().Set("Location", shortURL)
