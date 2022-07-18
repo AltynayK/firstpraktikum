@@ -151,3 +151,4 @@
 {"short_url":"http://127.0.0.1:8080/1399","original_url":"https://1prdadddcfbddtdicum.yandhex.ru/","userID":"3339d998-45e3-42af-9e88-ff8ce5182d8d","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1400","original_url":"https://1prdadddcfbddtdicum.yandhex.ru/","userID":"3339d998-45e3-42af-9e88-ff8ce5182d8d","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1401","original_url":"https://1prdadddcfbddtdicum.yandhex.ru/","userID":"3339d998-45e3-42af-9e88-ff8ce5182d8d","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1406","original_url":"https://1prdaddddcfbddtdicum.yandhex.ru/","userID":"b51d8fd5-2bfe-486b-a159-83d981ad3aaa","correlation_id":""}
