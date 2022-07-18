@@ -62,18 +62,18 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 	//_, exists := os.LookupEnv("DatabaseDNS")
 	if DBdns != nil {
-		ShortURL = short.MakeShortURLToDB(url.LongURL)
-
+		ShortURL = short.WriteShortURL(url.LongURL)
 		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
 
-			// row := db.QueryRow("SELECT short_url FROM data WHERE original_url = $1", url.LongURL)
-			// alb := DbUrl{}
-			// if err := row.Scan(&alb.shorturl); err != nil {
-			// 	log.Fatal(err)
-			// }
-			// ShortURL = alb.shorturl
 			w.WriteHeader(409)
+			// row := db.QueryRow("SELECT short_url FROM data WHERE original_url = $1", url.LongURL)
+			// albd := DbUrl{}
+			// if err := row.Scan(&albd.shorturl); err != nil {
+			// 	log.Fatal("sefsdfsd")
+			// }
+			//fmt.Print(url.LongURL)
 		} else {
+
 			w.WriteHeader(201)
 		}
 	} else {
