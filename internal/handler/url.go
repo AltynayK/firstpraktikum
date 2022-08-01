@@ -135,8 +135,8 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, exists := os.LookupEnv("DatabaseDNS")
-	if exists {
+	//_, exists := os.LookupEnv("DatabaseDNS")
+	if *DBdns != "" && repository.Ping() == true {
 		db = repository.DB
 
 		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
