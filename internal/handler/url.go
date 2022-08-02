@@ -68,6 +68,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
 		} else {
+			service.MakeData(url.LongURL, ShortURL, a)
 			w.WriteHeader(201)
 		}
 
@@ -108,6 +109,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
 		} else {
+			service.MakeData(longURL, shortURL, a)
 			w.WriteHeader(201)
 		}
 
