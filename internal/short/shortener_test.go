@@ -1,6 +1,11 @@
 package short
 
-import "testing"
+import (
+	"strconv"
+	"testing"
+
+	"github.com/AltynayK/firstpraktikum/internal/service"
+)
 
 func TestWriteShortURL(t *testing.T) {
 	type args struct {
@@ -16,7 +21,7 @@ func TestWriteShortURL(t *testing.T) {
 			args: args{
 				url: "https://practicum.yandex.ru/",
 			}, // значения, которые будет принимать функция
-			want: "http://127.0.0.1:8080/1", // ожидаемое значение
+			want: "http://127.0.0.1:8080/" + strconv.Itoa(service.WriteURLByID("https://practicum.yandex.ru/")), // ожидаемое значение
 		},
 	}
 	for _, tt := range tests {
