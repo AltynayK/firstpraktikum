@@ -187,3 +187,8 @@
 {"short_url":"http://127.0.0.1:8080/1489","original_url":"https://golanddgnddаvcfoded.com/","userID":"4d8b5116-125e-4423-9bf8-527ee65299af","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1490","original_url":"https://golanddgnddаvcfoded.com/","userID":"4d8b5116-125e-4423-9bf8-527ee65299af","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/1491","original_url":"https://golanddgnddаvcfoded.com/","userID":"4d8b5116-125e-4423-9bf8-527ee65299af","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1545","original_url":"https://1prdgaddffdcfdbdfdtdicum.yandhex.ru/","userID":"688ea7c0-b870-4548-91b0-dd03c0dcb3b0","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1549","original_url":"https://1prdgdaddffdcfdbdfdtdicum.yandhex.ru/","userID":"688ea7c0-b870-4548-91b0-dd03c0dcb3b0","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1475","original_url":"https://golanddgnddаvcfoded.com/","userID":"4d8b5116-125e-4423-9bf8-527ee65299af","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1475","original_url":"https://golanddgnddаvcfoded.com/","userID":"4d8b5116-125e-4423-9bf8-527ee65299af","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/1555","original_url":"https://golandddgnddаvcfoded.com/","userID":"4d8b5116-125e-4423-9bf8-527ee65299af","correlation_id":""}
