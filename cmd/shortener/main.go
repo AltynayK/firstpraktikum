@@ -27,7 +27,7 @@ func init() {
 	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
 	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
 	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	DatabaseDNS = flag.String("database-dsn", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
+	DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
 }
 
 var Checkvar bool
