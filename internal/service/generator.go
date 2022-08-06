@@ -20,6 +20,7 @@ type abs struct {
 	CorrelationID string `json:"correlation_id"`
 }
 
+//increment#6
 func ReadFile(a *string) {
 	FilePath = a
 	file, err := os.OpenFile(*FilePath, os.O_RDONLY|os.O_CREATE, 0777)
@@ -39,6 +40,7 @@ func ReadFile(a *string) {
 	}
 	return
 }
+
 func WriteURLByID(url string) int {
 	if IDList == nil {
 		IDList = make(map[int]string)
@@ -53,6 +55,7 @@ func GetURLFromID(id int) string {
 	return IDList[id]
 }
 
+//increment#6
 func WriteToFile(LongURL string) {
 	f, err := os.OpenFile(*FilePath, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {

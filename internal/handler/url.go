@@ -48,6 +48,7 @@ func GetDatabaseDNS(a *string) {
 	DBdns = a
 }
 
+//increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
 	var ShortURL string
 	w.Header().Set("content-type", "application/json")
@@ -60,7 +61,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	a := r.Context().Value(userCtxKey).(string)
 	_, exists := os.LookupEnv("DatabaseDNS")
-	if exists || flag.Lookup("DatabaseDNS").Value.(flag.Getter).Get().(string) != "" {
+	if exists && flag.Lookup("DatabaseDNS").Value.(flag.Getter).Get().(string) != "" {
 		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
@@ -84,6 +85,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(jsonRes))
 }
 
+//increment#1
 func PostText(w http.ResponseWriter, r *http.Request) {
 	var shortURL string
 	w.Header().Set("content-type", "plain/text")
@@ -95,7 +97,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
 	_, exists := os.LookupEnv("DatabaseDNS")
-	if exists || flag.Lookup("DatabaseDNS").Value.(flag.Getter).Get().(string) != "" {
+	if exists && flag.Lookup("DatabaseDNS").Value.(flag.Getter).Get().(string) != "" {
 		if repository.InsertDataToDB(shortURL, longURL, a) == false {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
@@ -111,6 +113,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(shortURL))
 }
 
+//increment#1
 func Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
@@ -146,6 +149,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//increment#10
 func CheckConnection(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	db, err := sql.Open("postgres", *DBdns)
@@ -161,6 +165,7 @@ func CheckConnection(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+//increment#9
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	type URLStruct struct {
 		Shorturl    string `json:"short_url"`
@@ -231,6 +236,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 
 type Posts []URLs
 
+//increment#12
 func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var url Posts
