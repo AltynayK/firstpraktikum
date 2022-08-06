@@ -61,24 +61,24 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	a := r.Context().Value(userCtxKey).(string)
 
 	//_, exists := os.LookupEnv("DatabaseDNS")
-	if repository.Ping() == true {
-		//if exists {
-		ShortURL = short.WriteShortURL(url.LongURL)
-		//service.WriteURLByID(url.LongURL)
+	// if repository.Ping() == true {
+	// 	//if exists {
+	// 	ShortURL = short.WriteShortURL(url.LongURL)
+	// 	//service.WriteURLByID(url.LongURL)
 
-		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
-			ShortURL = repository.ReturnShortURL(url.LongURL)
-			w.WriteHeader(409)
-		} else {
-			//service.MakeData(url.LongURL, ShortURL, a)
-			w.WriteHeader(201)
-		}
+	// 	if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
+	// 		ShortURL = repository.ReturnShortURL(url.LongURL)
+	// 		w.WriteHeader(409)
+	// 	} else {
+	// 		//service.MakeData(url.LongURL, ShortURL, a)
+	// 		w.WriteHeader(201)
+	// 	}
 
-	} else {
-		ShortURL = short.WriteShortURL(url.LongURL)
+	// } else {
+	ShortURL = short.WriteShortURL(url.LongURL)
 
-		w.WriteHeader(201)
-	}
+	w.WriteHeader(201)
+	//}
 	service.MakeData(url.LongURL, ShortURL, a)
 	okRes := URL{
 		Result: ShortURL,
@@ -103,25 +103,25 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 
 	a := r.Context().Value(userCtxKey).(string)
-	if repository.Ping() == true {
-		//_, exists := os.LookupEnv("DatabaseDNS")
-		//if exists {
-		shortURL = short.WriteShortURL(longURL)
-		//service.WriteURLByID(longURL)
-		if repository.InsertDataToDB(shortURL, longURL, a) == false {
-			shortURL = repository.ReturnShortURL(longURL)
-			w.WriteHeader(409)
-		} else {
-			//service.MakeData(longURL, shortURL, a)
-			w.WriteHeader(201)
-		}
+	// if repository.Ping() == true {
+	// 	//_, exists := os.LookupEnv("DatabaseDNS")
+	// 	//if exists {
+	// 	shortURL = short.WriteShortURL(longURL)
+	// 	//service.WriteURLByID(longURL)
+	// 	if repository.InsertDataToDB(shortURL, longURL, a) == false {
+	// 		shortURL = repository.ReturnShortURL(longURL)
+	// 		w.WriteHeader(409)
+	// 	} else {
+	// 		//service.MakeData(longURL, shortURL, a)
+	// 		w.WriteHeader(201)
+	// 	}
 
-	} else {
-		shortURL = short.WriteShortURL(longURL)
+	// } else {
+	shortURL = short.WriteShortURL(longURL)
 
-		w.WriteHeader(201)
+	w.WriteHeader(201)
 
-	}
+	//}
 	service.MakeData(longURL, shortURL, a)
 	w.Header().Set("Location", shortURL)
 	w.Write([]byte(shortURL))
