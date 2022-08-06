@@ -104,7 +104,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 
 	a := r.Context().Value(userCtxKey).(string)
 	// if repository.Ping() == true {
-	_, exists := os.LookupEnv(*DBdns)
+	_, exists := os.LookupEnv("d")
 	if exists {
 		shortURL = short.WriteShortURL(longURL)
 		//service.WriteURLByID(longURL)
