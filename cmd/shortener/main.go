@@ -36,7 +36,6 @@ func main() {
 
 	mux := initHandlers()
 
-	flag.Parse()
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
 		*ServerAddress = u
 	}
@@ -49,6 +48,7 @@ func main() {
 	if u, f := os.LookupEnv("DatabaseDNS"); f {
 		*DatabaseDNS = u
 	}
+	flag.Parse()
 	short.GetBaseURL(BaseURL)
 	handler.GetDatabaseDNS(DatabaseDNS)
 
