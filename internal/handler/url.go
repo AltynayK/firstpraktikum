@@ -142,7 +142,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, exists := os.LookupEnv("DatabaseDNS")
+	_, exists := os.LookupEnv(*DBdns)
 	if exists {
 		db = repository.DB
 
@@ -189,7 +189,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var jsonRes []byte
 	var result string
 	w.Header().Set("content-type", "application/json")
-	_, exists := os.LookupEnv("DatabaseDNS")
+	_, exists := os.LookupEnv(*DBdns)
 	if exists {
 		db = repository.DB
 
@@ -269,7 +269,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 			Result:        ShortURL,
 		}
 		a := r.Context().Value(userCtxKey).(string)
-		_, exists := os.LookupEnv("DatabaseDNS")
+		_, exists := os.LookupEnv(*DBdns)
 		if exists {
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		} else {
