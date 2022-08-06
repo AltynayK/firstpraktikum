@@ -104,24 +104,25 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 
 	a := r.Context().Value(userCtxKey).(string)
 	// if repository.Ping() == true {
-	// 	//_, exists := os.LookupEnv("DatabaseDNS")
-	// 	//if exists {
-	// 	shortURL = short.WriteShortURL(longURL)
-	// 	//service.WriteURLByID(longURL)
-	// 	if repository.InsertDataToDB(shortURL, longURL, a) == false {
-	// 		shortURL = repository.ReturnShortURL(longURL)
-	// 		w.WriteHeader(409)
-	// 	} else {
-	// 		//service.MakeData(longURL, shortURL, a)
-	// 		w.WriteHeader(201)
-	// 	}
+	_, exists := os.LookupEnv(*DBdns)
+	if exists {
+		shortURL = short.WriteShortURL(longURL)
+		//service.WriteURLByID(longURL)
+		if repository.InsertDataToDB(shortURL, longURL, a) == false {
+			shortURL = repository.ReturnShortURL(longURL)
+			w.WriteHeader(409)
+		} else {
+			//service.MakeData(longURL, shortURL, a)
+			w.WriteHeader(201)
+		}
 
-	// } else {
-	shortURL = short.WriteShortURL(longURL)
+	} else {
+		shortURL = short.WriteShortURL(longURL)
 
-	w.WriteHeader(201)
+		w.WriteHeader(201)
 
-	//}
+	}
+	//fmt.Print(*DBdns)
 	service.MakeData(longURL, shortURL, a)
 	w.Header().Set("Location", shortURL)
 	w.Write([]byte(shortURL))
