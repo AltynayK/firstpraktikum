@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"database/sql"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -58,8 +59,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a := r.Context().Value(userCtxKey).(string)
-	_, exists := os.LookupEnv(*DBdns)
-	if exists {
+	if flag.Lookup("DatabaseDNS").Value.(flag.Getter).Get().(string) != "" {
 		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
@@ -94,8 +94,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
 
-	_, exists := os.LookupEnv(*DBdns)
-	if exists {
+	if flag.Lookup("DatabaseDNS").Value.(flag.Getter).Get().(string) != "" {
 		if repository.InsertDataToDB(shortURL, longURL, a) == false {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
