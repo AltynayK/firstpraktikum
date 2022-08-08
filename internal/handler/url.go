@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"database/sql"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -60,8 +59,9 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a := r.Context().Value(userCtxKey).(string)
-	_, exists := os.LookupEnv("DatabaseDNS")
-	if exists && flag.Lookup("DatabaseDNS").Value.(flag.Getter).Get().(string) != "" {
+
+	if *DBdns != "" {
+		ShortURL = short.MakeShortURLToDB(url.LongURL)
 		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
@@ -96,19 +96,22 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	}
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
-	_, exists := os.LookupEnv("DatabaseDNS")
-	if exists && flag.Lookup("DatabaseDNS").Value.(flag.Getter).Get().(string) != "" {
+	if *DBdns != "" {
+		shortURL = short.MakeShortURLToDB(longURL)
 		if repository.InsertDataToDB(shortURL, longURL, a) == false {
 			shortURL = repository.ReturnShortURL(longURL)
+
 			w.WriteHeader(409)
 		} else {
+
 			w.WriteHeader(201)
 		}
 	} else {
 		shortURL = short.WriteShortURL(longURL)
+		service.MakeData(longURL, shortURL, a)
 		w.WriteHeader(201)
 	}
-	service.MakeData(longURL, shortURL, a)
+
 	w.Header().Set("Location", shortURL)
 	w.Write([]byte(shortURL))
 }
@@ -127,8 +130,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, exists := os.LookupEnv(*DBdns)
-	if exists {
+	if *DBdns != "" {
 		db = repository.DB
 
 		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
@@ -176,8 +178,8 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var jsonRes []byte
 	var result string
 	w.Header().Set("content-type", "application/json")
-	_, exists := os.LookupEnv(*DBdns)
-	if exists {
+
+	if *DBdns != "" {
 		db = repository.DB
 
 		rows, _ := db.Query("SELECT short_url, original_url, user_id FROM data WHERE user_id = $1", r.Context().Value(userCtxKey))
