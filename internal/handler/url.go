@@ -259,8 +259,8 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 			Result:        ShortURL,
 		}
 		a := r.Context().Value(userCtxKey).(string)
-		_, exists := os.LookupEnv(*DBdns)
-		if exists {
+
+		if *DBdns != "" {
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		} else {
 			service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
