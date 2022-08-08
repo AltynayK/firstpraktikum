@@ -260,12 +260,12 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		}
 		a := r.Context().Value(userCtxKey).(string)
 
-		if *DBdns != "" {
-			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
-		} else {
-			service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
+		// if *DBdns != "" {
+		// 	repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
+		// } else {
+		service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
 
-		}
+		//}
 		JsonArray = append(JsonArray, okRes)
 	}
 
