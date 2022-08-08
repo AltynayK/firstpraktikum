@@ -1,7 +1,6 @@
 package short
 
 import (
-	"log"
 	"strconv"
 
 	"github.com/AltynayK/firstpraktikum/internal/repository"
@@ -31,7 +30,7 @@ func MakeShortURLToDB(url string) string {
 	id := db.QueryRow("SELECT id FROM data ORDER BY id DESC LIMIT 1")
 	alb := Dbid{}
 	if err := id.Scan(&alb.maxid); err != nil {
-		log.Fatal(err)
+		alb.maxid = 0
 	}
 	nextid := alb.maxid + 1
 	return *Init + "/" + strconv.Itoa(nextid)
