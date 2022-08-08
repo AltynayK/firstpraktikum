@@ -253,18 +253,24 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	var JsonArray []MultURL
 	for _, value := range url {
 		ShortURL = short.WriteShortURL(value.LongURL)
-		okRes = MultURL{
-			CorrelationID: value.CorrelationID,
-			Result:        ShortURL,
-		}
+
 		a := r.Context().Value(userCtxKey).(string)
 
 		if *DBdns != "" {
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
+			okRes = MultURL{
+				CorrelationID: value.CorrelationID,
+				Result:        repository.ReturnShortURL(value.LongURL),
+			}
 		} else {
 			service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
+			okRes = MultURL{
+				CorrelationID: value.CorrelationID,
+				Result:        ShortURL,
+			}
 
 		}
+
 		JsonArray = append(JsonArray, okRes)
 	}
 
