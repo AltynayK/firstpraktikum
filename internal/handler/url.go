@@ -67,23 +67,26 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
 		} else {
-			ShortURL = short.WriteShortURL(url.LongURL)
-			okRes := URL{
-				Result: ShortURL,
-			}
-			service.MakeData(url.LongURL, ShortURL, a)
-
-			if jsonRes, err = json.Marshal(okRes); err != nil {
-				w.WriteHeader(500)
-				fmt.Fprintf(w, "response json marshal err")
-				return
-			}
-			w.Header().Set("Location", ShortURL)
 			w.WriteHeader(201)
-			fmt.Fprint(w, string(jsonRes))
 		}
+	} else {
+		ShortURL = short.WriteShortURL(url.LongURL)
+		okRes := URL{
+			Result: ShortURL,
+		}
+		service.MakeData(url.LongURL, ShortURL, a)
+
+		if jsonRes, err = json.Marshal(okRes); err != nil {
+			w.WriteHeader(500)
+			fmt.Fprintf(w, "response json marshal err")
+			return
+		}
+		w.WriteHeader(201)
 	}
 
+	w.Header().Set("Location", ShortURL)
+
+	fmt.Fprint(w, string(jsonRes))
 }
 
 //increment#1
@@ -104,15 +107,19 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
 		} else {
-			shortURL = short.WriteShortURL(longURL)
-			service.MakeData(longURL, shortURL, a)
 
-			w.Header().Set("Location", shortURL)
 			w.WriteHeader(201)
-			w.Write([]byte(shortURL))
 		}
+	} else {
+		shortURL = short.WriteShortURL(longURL)
+		service.MakeData(longURL, shortURL, a)
+		w.WriteHeader(201)
+
 	}
 
+	w.Header().Set("Location", shortURL)
+
+	w.Write([]byte(shortURL))
 }
 
 //increment#1
