@@ -49,10 +49,11 @@ func GetDatabaseDNS(a *string) {
 
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
-	var ShortURL string
+
 	w.Header().Set("content-type", "application/json")
 	var url URL
 	var jsonRes []byte
+	ShortURL := ""
 	err := json.NewDecoder(r.Body).Decode(&url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -68,11 +69,13 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		} else {
 			w.WriteHeader(201)
 		}
-	} else {
+	}
+	if ShortURL == "" {
 		ShortURL = short.WriteShortURL(url.LongURL)
+		service.MakeData(url.LongURL, ShortURL, a)
 		w.WriteHeader(201)
 	}
-	service.MakeData(url.LongURL, ShortURL, a)
+
 	okRes := URL{
 		Result: ShortURL,
 	}
@@ -87,8 +90,9 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 //increment#1
 func PostText(w http.ResponseWriter, r *http.Request) {
-	var shortURL string
+
 	w.Header().Set("content-type", "plain/text")
+	shortURL := ""
 	url, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
@@ -106,7 +110,8 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 
 			w.WriteHeader(201)
 		}
-	} else {
+	}
+	if shortURL == "" {
 		shortURL = short.WriteShortURL(longURL)
 		service.MakeData(longURL, shortURL, a)
 		w.WriteHeader(201)
