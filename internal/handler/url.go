@@ -12,6 +12,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
@@ -60,30 +61,29 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
-	// if repository.Ping() == true {
-	// 	ShortURL = short.MakeShortURLToDB(url.LongURL)
-	// 	if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
-	// 		ShortURL = repository.ReturnShortURL(url.LongURL)
-	// 		w.WriteHeader(409)
-	// 	} else {
-	// 		w.WriteHeader(201)
-	// 	}
-	// }
+	if repository.Ping() == true {
+		ShortURL = short.MakeShortURLToDB(url.LongURL)
+		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
+			ShortURL = repository.ReturnShortURL(url.LongURL)
+			w.WriteHeader(409)
+		} else {
+			ShortURL = short.WriteShortURL(url.LongURL)
+			okRes := URL{
+				Result: ShortURL,
+			}
+			service.MakeData(url.LongURL, ShortURL, a)
 
-	ShortURL = short.WriteShortURL(url.LongURL)
-	okRes := URL{
-		Result: ShortURL,
+			if jsonRes, err = json.Marshal(okRes); err != nil {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, "response json marshal err")
+				return
+			}
+			w.Header().Set("Location", ShortURL)
+			w.WriteHeader(201)
+			fmt.Fprint(w, string(jsonRes))
+		}
 	}
-	service.MakeData(url.LongURL, ShortURL, a)
 
-	if jsonRes, err = json.Marshal(okRes); err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintf(w, "response json marshal err")
-		return
-	}
-	w.Header().Set("Location", ShortURL)
-	w.WriteHeader(201)
-	fmt.Fprint(w, string(jsonRes))
 }
 
 //increment#1
@@ -98,23 +98,21 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
-	// if repository.Ping() == true {
-	// 	shortURL = short.MakeShortURLToDB(longURL)
-	// 	if repository.InsertDataToDB(shortURL, longURL, a) == false {
-	// 		shortURL = repository.ReturnShortURL(longURL)
-	// 		w.WriteHeader(409)
-	// 	} else {
+	if repository.Ping() == true {
+		shortURL = short.MakeShortURLToDB(longURL)
+		if repository.InsertDataToDB(shortURL, longURL, a) == false {
+			shortURL = repository.ReturnShortURL(longURL)
+			w.WriteHeader(409)
+		} else {
+			shortURL = short.WriteShortURL(longURL)
+			service.MakeData(longURL, shortURL, a)
 
-	// 		w.WriteHeader(201)
-	// 	}
-	// }
+			w.Header().Set("Location", shortURL)
+			w.WriteHeader(201)
+			w.Write([]byte(shortURL))
+		}
+	}
 
-	shortURL = short.WriteShortURL(longURL)
-	service.MakeData(longURL, shortURL, a)
-
-	w.Header().Set("Location", shortURL)
-	w.WriteHeader(201)
-	w.Write([]byte(shortURL))
 }
 
 //increment#1
