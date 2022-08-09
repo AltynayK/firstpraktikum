@@ -12,7 +12,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
@@ -49,11 +48,11 @@ func GetDatabaseDNS(a *string) {
 
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
-
+	var ShortURL string
 	w.Header().Set("content-type", "application/json")
 	var url URL
 	var jsonRes []byte
-	ShortURL := ""
+
 	err := json.NewDecoder(r.Body).Decode(&url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -72,26 +71,25 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	ShortURL = short.WriteShortURL(url.LongURL)
-	service.MakeData(url.LongURL, ShortURL, a)
-	w.WriteHeader(201)
-
 	okRes := URL{
 		Result: ShortURL,
 	}
+	service.MakeData(url.LongURL, ShortURL, a)
+
 	if jsonRes, err = json.Marshal(okRes); err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "response json marshal err")
 		return
 	}
 	w.Header().Set("Location", ShortURL)
+	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
 }
 
 //increment#1
 func PostText(w http.ResponseWriter, r *http.Request) {
-
+	var shortURL string
 	w.Header().Set("content-type", "plain/text")
-	shortURL := ""
 	url, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
@@ -113,9 +111,9 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 
 	shortURL = short.WriteShortURL(longURL)
 	service.MakeData(longURL, shortURL, a)
-	w.WriteHeader(201)
 
 	w.Header().Set("Location", shortURL)
+	w.WriteHeader(201)
 	w.Write([]byte(shortURL))
 }
 
@@ -133,24 +131,24 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if repository.Ping() == true {
-		db = repository.DB
+	// if repository.Ping() == true {
+	// 	db = repository.DB
 
-		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
-		alb := DbUrl{}
-		if err := row.Scan(&alb.originalurl); err != nil {
-			log.Fatal(err)
-		}
-		longURLL := alb.originalurl
-		w.Header().Set("Location", longURLL)
-		w.WriteHeader(307)
-		fmt.Fprint(w)
-	} else {
-		longURL := service.GetURLFromID(b)
-		w.Header().Set("Location", longURL)
-		w.WriteHeader(307)
-		fmt.Fprint(w)
-	}
+	// 	row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
+	// 	alb := DbUrl{}
+	// 	if err := row.Scan(&alb.originalurl); err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	longURLL := alb.originalurl
+	// 	w.Header().Set("Location", longURLL)
+	// 	w.WriteHeader(307)
+	// 	fmt.Fprint(w)
+	// } else {
+	longURL := service.GetURLFromID(b)
+	w.Header().Set("Location", longURL)
+	w.WriteHeader(307)
+	fmt.Fprint(w)
+	//	}
 
 }
 
@@ -182,61 +180,61 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var result string
 	w.Header().Set("content-type", "application/json")
 
-	if repository.Ping() == true {
-		db = repository.DB
+	// if repository.Ping() == true {
+	// 	db = repository.DB
 
-		rows, _ := db.Query("SELECT short_url, original_url, user_id FROM data WHERE user_id = $1", r.Context().Value(userCtxKey))
+	// 	rows, _ := db.Query("SELECT short_url, original_url, user_id FROM data WHERE user_id = $1", r.Context().Value(userCtxKey))
 
-		defer rows.Close()
-		var albums []URLStruct
+	// 	defer rows.Close()
+	// 	var albums []URLStruct
 
-		for rows.Next() {
-			alb := URLStruct{}
-			if err := rows.Scan(&alb.Shorturl, &alb.Originalurl, &alb.Userid); err != nil {
-				log.Fatal(err)
-			}
-			albums = append(albums, alb)
-		}
-		//fmt.Print(albums)
-		data, _ := json.MarshalIndent(albums, " ", " ")
-		w.Write(data)
-		return
+	// 	for rows.Next() {
+	// 		alb := URLStruct{}
+	// 		if err := rows.Scan(&alb.Shorturl, &alb.Originalurl, &alb.Userid); err != nil {
+	// 			log.Fatal(err)
+	// 		}
+	// 		albums = append(albums, alb)
+	// 	}
+	// 	//fmt.Print(albums)
+	// 	data, _ := json.MarshalIndent(albums, " ", " ")
+	// 	w.Write(data)
+	// 	return
 
-	} else {
-		file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
-		if err != nil {
-			if os.IsNotExist(err) {
-				log.Fatal("Folder does not exist.")
-				w.WriteHeader(http.StatusNoContent)
-			}
-		}
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			line := scanner.Text()
-			if result == "" {
-				result = line
-			}
-			if result != "" && line != "\n" {
-				result = result + "," + line
-			}
-		}
-		a := "[" + result + "]"
-		jsonRes = []byte(a)
-
-		err = json.Unmarshal(jsonRes, &x)
-		var x2 []*URLStruct
-		for _, v := range x {
-			if v.Userid == r.Context().Value(userCtxKey) {
-				x2 = append(x2, v)
-			}
-		}
-		if x2 == nil {
+	// } else {
+	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
+	if err != nil {
+		if os.IsNotExist(err) {
+			log.Fatal("Folder does not exist.")
 			w.WriteHeader(http.StatusNoContent)
 		}
-		data, err := json.MarshalIndent(x2, " ", " ")
-		w.Write(data)
-		return
 	}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if result == "" {
+			result = line
+		}
+		if result != "" && line != "\n" {
+			result = result + "," + line
+		}
+	}
+	a := "[" + result + "]"
+	jsonRes = []byte(a)
+
+	err = json.Unmarshal(jsonRes, &x)
+	var x2 []*URLStruct
+	for _, v := range x {
+		if v.Userid == r.Context().Value(userCtxKey) {
+			x2 = append(x2, v)
+		}
+	}
+	if x2 == nil {
+		w.WriteHeader(http.StatusNoContent)
+	}
+	data, err := json.MarshalIndent(x2, " ", " ")
+	w.Write(data)
+	return
+	//}
 }
 
 type Posts []URLs
@@ -260,20 +258,20 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 
 		a := r.Context().Value(userCtxKey).(string)
 
-		if repository.Ping() == true {
-			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
-			okRes = MultURL{
-				CorrelationID: value.CorrelationID,
-				Result:        repository.ReturnShortURL(value.LongURL),
-			}
-		} else {
-			service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
-			okRes = MultURL{
-				CorrelationID: value.CorrelationID,
-				Result:        ShortURL,
-			}
-
+		// if repository.Ping() == true {
+		// 	repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
+		// 	okRes = MultURL{
+		// 		CorrelationID: value.CorrelationID,
+		// 		Result:        repository.ReturnShortURL(value.LongURL),
+		// 	}
+		// } else {
+		service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
+		okRes = MultURL{
+			CorrelationID: value.CorrelationID,
+			Result:        ShortURL,
 		}
+
+		//}
 
 		JsonArray = append(JsonArray, okRes)
 	}
