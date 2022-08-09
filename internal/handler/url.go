@@ -61,20 +61,19 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
-	if repository.Ping() == true {
-		ShortURL = short.MakeShortURLToDB(url.LongURL)
-		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
-			ShortURL = repository.ReturnShortURL(url.LongURL)
-			w.WriteHeader(409)
-		} else {
-			w.WriteHeader(201)
-		}
-	}
-	if ShortURL == "" {
-		ShortURL = short.WriteShortURL(url.LongURL)
-		service.MakeData(url.LongURL, ShortURL, a)
-		w.WriteHeader(201)
-	}
+	// if repository.Ping() == true {
+	// 	ShortURL = short.MakeShortURLToDB(url.LongURL)
+	// 	if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
+	// 		ShortURL = repository.ReturnShortURL(url.LongURL)
+	// 		w.WriteHeader(409)
+	// 	} else {
+	// 		w.WriteHeader(201)
+	// 	}
+	// }
+
+	ShortURL = short.WriteShortURL(url.LongURL)
+	service.MakeData(url.LongURL, ShortURL, a)
+	w.WriteHeader(201)
 
 	okRes := URL{
 		Result: ShortURL,
@@ -101,21 +100,20 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
-	if repository.Ping() == true {
-		shortURL = short.MakeShortURLToDB(longURL)
-		if repository.InsertDataToDB(shortURL, longURL, a) == false {
-			shortURL = repository.ReturnShortURL(longURL)
-			w.WriteHeader(409)
-		} else {
+	// if repository.Ping() == true {
+	// 	shortURL = short.MakeShortURLToDB(longURL)
+	// 	if repository.InsertDataToDB(shortURL, longURL, a) == false {
+	// 		shortURL = repository.ReturnShortURL(longURL)
+	// 		w.WriteHeader(409)
+	// 	} else {
 
-			w.WriteHeader(201)
-		}
-	}
-	if shortURL == "" {
-		shortURL = short.WriteShortURL(longURL)
-		service.MakeData(longURL, shortURL, a)
-		w.WriteHeader(201)
-	}
+	// 		w.WriteHeader(201)
+	// 	}
+	// }
+
+	shortURL = short.WriteShortURL(longURL)
+	service.MakeData(longURL, shortURL, a)
+	w.WriteHeader(201)
 
 	w.Header().Set("Location", shortURL)
 	w.Write([]byte(shortURL))
