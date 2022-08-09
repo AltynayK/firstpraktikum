@@ -59,8 +59,8 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a := r.Context().Value(userCtxKey).(string)
-
-	if *DBdns != "" {
+	//_, exists := os.LookupEnv(*DBdns)
+	if repository.Ping() == true {
 		ShortURL = short.MakeShortURLToDB(url.LongURL)
 		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
@@ -96,7 +96,8 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	}
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
-	if *DBdns != "" {
+	//_, exists := os.LookupEnv(*DBdns)
+	if repository.Ping() == true {
 		shortURL = short.MakeShortURLToDB(longURL)
 		if repository.InsertDataToDB(shortURL, longURL, a) == false {
 			shortURL = repository.ReturnShortURL(longURL)
@@ -129,7 +130,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if *DBdns != "" {
+	if repository.Ping() == true {
 		db = repository.DB
 
 		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
@@ -178,7 +179,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var result string
 	w.Header().Set("content-type", "application/json")
 
-	if *DBdns != "" {
+	if repository.Ping() == true {
 		db = repository.DB
 
 		rows, _ := db.Query("SELECT short_url, original_url, user_id FROM data WHERE user_id = $1", r.Context().Value(userCtxKey))
@@ -256,7 +257,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 
 		a := r.Context().Value(userCtxKey).(string)
 
-		if *DBdns != "" {
+		if repository.Ping() == true {
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
 			okRes = MultURL{
 				CorrelationID: value.CorrelationID,
