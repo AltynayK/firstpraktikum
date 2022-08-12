@@ -71,19 +71,19 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		ShortURL = short.WriteShortURL(url.LongURL)
-		okRes := URL{
-			Result: ShortURL,
-		}
+
 		service.MakeData(url.LongURL, ShortURL, a)
 
-		if jsonRes, err = json.Marshal(okRes); err != nil {
-			w.WriteHeader(500)
-			fmt.Fprintf(w, "response json marshal err")
-			return
-		}
 		w.WriteHeader(201)
 	}
-
+	okRes := URL{
+		Result: ShortURL,
+	}
+	if jsonRes, err = json.Marshal(okRes); err != nil {
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "response json marshal err")
+		return
+	}
 	w.Header().Set("Location", ShortURL)
 
 	fmt.Fprint(w, string(jsonRes))
@@ -259,24 +259,25 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	var jsonRes []byte
 	var JsonArray []MultURL
 	for _, value := range url {
-		ShortURL = short.WriteShortURL(value.LongURL)
 
 		a := r.Context().Value(userCtxKey).(string)
 
-		// if repository.Ping() == true {
-		// 	repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
-		// 	okRes = MultURL{
-		// 		CorrelationID: value.CorrelationID,
-		// 		Result:        repository.ReturnShortURL(value.LongURL),
-		// 	}
-		// } else {
-		service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
-		okRes = MultURL{
-			CorrelationID: value.CorrelationID,
-			Result:        ShortURL,
-		}
+		if repository.Ping() == true {
+			ShortURL = short.MakeShortURLToDB(value.LongURL)
+			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
+			okRes = MultURL{
+				CorrelationID: value.CorrelationID,
+				Result:        repository.ReturnShortURL(value.LongURL),
+			}
+		} else {
+			ShortURL = short.WriteShortURL(value.LongURL)
+			service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
+			okRes = MultURL{
+				CorrelationID: value.CorrelationID,
+				Result:        ShortURL,
+			}
 
-		//}
+		}
 
 		JsonArray = append(JsonArray, okRes)
 	}
