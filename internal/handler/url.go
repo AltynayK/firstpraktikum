@@ -136,24 +136,24 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if repository.Ping() == true {
-	// 	db = repository.DB
+	if repository.Ping() == true {
+		db = repository.DB
 
-	// 	row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
-	// 	alb := DbUrl{}
-	// 	if err := row.Scan(&alb.originalurl); err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	longURLL := alb.originalurl
-	// 	w.Header().Set("Location", longURLL)
-	// 	w.WriteHeader(307)
-	// 	fmt.Fprint(w)
-	// } else {
-	longURL := service.GetURLFromID(b)
-	w.Header().Set("Location", longURL)
-	w.WriteHeader(307)
-	fmt.Fprint(w)
-	//	}
+		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
+		alb := DbUrl{}
+		if err := row.Scan(&alb.originalurl); err != nil {
+			log.Fatal(err)
+		}
+		longURLL := alb.originalurl
+		w.Header().Set("Location", longURLL)
+		w.WriteHeader(307)
+		fmt.Fprint(w)
+	} else {
+		longURL := service.GetURLFromID(b)
+		w.Header().Set("Location", longURL)
+		w.WriteHeader(307)
+		fmt.Fprint(w)
+	}
 
 }
 
