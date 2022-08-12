@@ -226,7 +226,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	a := "[" + result + "]"
 	jsonRes = []byte(a)
 
-	err = json.Unmarshal(jsonRes, &x)
+	json.Unmarshal(jsonRes, &x)
 	var x2 []*URLStruct
 	for _, v := range x {
 		if v.Userid == r.Context().Value(userCtxKey) {
@@ -236,7 +236,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	if x2 == nil {
 		w.WriteHeader(http.StatusNoContent)
 	}
-	data, err := json.MarshalIndent(x2, " ", " ")
+	data, _ := json.MarshalIndent(x2, " ", " ")
 	w.Write(data)
 	return
 	//}
