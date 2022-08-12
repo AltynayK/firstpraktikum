@@ -61,7 +61,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
-	if repository.Ping() == true {
+	if *DBdns != "" {
 		ShortURL = short.MakeShortURLToDB(url.LongURL)
 		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
@@ -101,7 +101,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
-	if repository.Ping() == true {
+	if *DBdns != "" {
 		shortURL = short.MakeShortURLToDB(longURL)
 		if repository.InsertDataToDB(shortURL, longURL, a) == false {
 			shortURL = repository.ReturnShortURL(longURL)
@@ -136,7 +136,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if repository.Ping() == true {
+	if *DBdns != "" {
 		db = repository.DB
 
 		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)

@@ -29,7 +29,8 @@ func init() {
 	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
 	//increment#
 	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
+	//DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altyna4y password=password dbname=somedb sslmode=disable", "DatabaseDNS")
+	DatabaseDNS = flag.String("d", "", "DatabaseDNS")
 }
 
 var Checkvar bool
