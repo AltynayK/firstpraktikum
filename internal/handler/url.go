@@ -238,8 +238,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	}
 	data, _ := json.MarshalIndent(x2, " ", " ")
 	w.Write(data)
-	return
-	//}
+
 }
 
 type Posts []URLs
