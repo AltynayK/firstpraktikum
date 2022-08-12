@@ -38,7 +38,7 @@ func ReadFile(a *string) {
 		id++
 		IDList[id] = line
 	}
-	return
+
 }
 
 func WriteURLByID(url string) int {
