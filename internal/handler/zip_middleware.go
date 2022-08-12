@@ -63,7 +63,7 @@ func Decompress(next http.Handler) http.Handler {
 	})
 }
 
-var Id uuid.UUID
+var ID uuid.UUID
 var Key []byte
 var userCtxKey = &contextKey{"user"}
 
@@ -74,11 +74,11 @@ type contextKey struct {
 func SetCookie(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session")
-		Id = uuid.NewV4()
+		ID = uuid.NewV4()
 		if err != nil {
 			cookie = &http.Cookie{
 				Name:       "session",
-				Value:      Id.String(),
+				Value:      ID.String(),
 				Path:       "",
 				Domain:     "",
 				Expires:    time.Time{},

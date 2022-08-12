@@ -16,27 +16,27 @@ func CreateTable(db *sql.DB) {
 
 }
 
-func InsertDataToDB(short_url string, original_url string, user_id string) bool {
+func InsertDataToDB(shortURL string, originalURL string, userID string) bool {
 
 	sqlStatement := `INSERT INTO data (short_url, original_url, user_id) VALUES ($1, $2, $3)`
-	_, err := DB.Exec(sqlStatement, short_url, original_url, user_id)
+	_, err := DB.Exec(sqlStatement, shortURL, originalURL, userID)
 	if err != nil {
 		return false
 	}
 	return true
 }
 
-func InsertDataToDBCor(short_url string, original_url string, user_id string, correlation_id string) bool {
+func InsertDataToDBCor(shortURL string, originalURL string, userID string, correlationID string) bool {
 
 	sqlStatementt := `INSERT INTO data (short_url, original_url, user_id, correlation_id) VALUES ($1, $2, $3, $4)`
-	_, err := DB.Exec(sqlStatementt, short_url, original_url, user_id, correlation_id)
+	_, err := DB.Exec(sqlStatementt, shortURL, originalURL, userID, correlationID)
 	if err != nil {
 		return false
 	}
 	return true
 }
 
-type DbUrls struct {
+type DBUrls struct {
 	id          int
 	shorturl    string
 	originalurl string
@@ -45,7 +45,7 @@ type DbUrls struct {
 
 func ReturnShortURL(LongURL string) string {
 	row := DB.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
-	alb := DbUrls{}
+	alb := DBUrls{}
 	if err := row.Scan(&alb.shorturl); err != nil {
 		log.Fatal(err)
 	}

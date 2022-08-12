@@ -33,7 +33,7 @@ type URLs struct {
 	LongURL       string `json:"original_url"`
 	CorrelationID string `json:"correlation_id"`
 }
-type DbUrl struct {
+type DBUrl struct {
 	id          int
 	shorturl    string
 	originalurl string
@@ -63,7 +63,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	//_, exists := os.LookupEnv(*DBdns)
 	if *DBdns != "" {
 		ShortURL = short.MakeShortURLToDB(url.LongURL)
-		if repository.InsertDataToDB(ShortURL, url.LongURL, a) == false {
+		if !repository.InsertDataToDB(ShortURL, url.LongURL, a) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
 		} else {
@@ -103,7 +103,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	//_, exists := os.LookupEnv(*DBdns)
 	if *DBdns != "" {
 		shortURL = short.MakeShortURLToDB(longURL)
-		if repository.InsertDataToDB(shortURL, longURL, a) == false {
+		if !repository.InsertDataToDB(shortURL, longURL, a) {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
 		} else {
@@ -140,7 +140,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		db = repository.DB
 
 		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
-		alb := DbUrl{}
+		alb := DBUrl{}
 		if err := row.Scan(&alb.originalurl); err != nil {
 			log.Fatal(err)
 		}
@@ -257,12 +257,12 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	var okRes MultURL
 	var ShortURL string
 	var jsonRes []byte
-	var JsonArray []MultURL
+	var JSONArray []MultURL
 	for _, value := range url {
 
 		a := r.Context().Value(userCtxKey).(string)
 
-		if repository.Ping() == true {
+		if repository.Ping() {
 			ShortURL = short.MakeShortURLToDB(value.LongURL)
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
 			okRes = MultURL{
@@ -279,10 +279,10 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 
 		}
 
-		JsonArray = append(JsonArray, okRes)
+		JSONArray = append(JSONArray, okRes)
 	}
 
-	if jsonRes, err = json.Marshal(JsonArray); err != nil {
+	if jsonRes, err = json.Marshal(JSONArray); err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "response json marshal err")
 		return
