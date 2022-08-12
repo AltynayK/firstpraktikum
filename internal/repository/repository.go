@@ -20,20 +20,14 @@ func InsertDataToDB(shortURL string, originalURL string, userID string) bool {
 
 	sqlStatement := `INSERT INTO data (short_url, original_url, user_id) VALUES ($1, $2, $3)`
 	_, err := DB.Exec(sqlStatement, shortURL, originalURL, userID)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func InsertDataToDBCor(shortURL string, originalURL string, userID string, correlationID string) bool {
 
 	sqlStatementt := `INSERT INTO data (short_url, original_url, user_id, correlation_id) VALUES ($1, $2, $3, $4)`
 	_, err := DB.Exec(sqlStatementt, shortURL, originalURL, userID, correlationID)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 type DBUrls struct {
@@ -53,8 +47,5 @@ func ReturnShortURL(LongURL string) string {
 }
 func Ping() bool {
 	err := DB.Ping()
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
