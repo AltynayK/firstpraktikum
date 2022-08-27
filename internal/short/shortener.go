@@ -18,7 +18,7 @@ func GetBaseURL(a *string) {
 func WriteShortURL(url string) string {
 	service.WriteToFile(url)
 	service.WriteURLByID(url)
-	return *Init + "/" + Hash(url)
+	return Hash(url)
 
 }
 
