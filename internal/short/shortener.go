@@ -5,6 +5,7 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
+	"github.com/speps/go-hashids"
 )
 
 var Init *string
@@ -15,9 +16,14 @@ func GetBaseURL(a *string) {
 
 //increment#1
 func WriteShortURL(url string) string {
+	service.WriteURLByID(url)
+	hd := hashids.NewData()
+	hd.Salt = url
+	hd.MinLength = 30
+	h, _ := hashids.NewWithData(hd)
+	e, _ := h.Encode([]int{45, 434, 1313, 99})
 
-	return *Init + "/" + strconv.Itoa(service.WriteURLByID(url))
-
+	return *Init + "/" + e
 }
 
 type Dbid struct {
