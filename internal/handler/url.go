@@ -49,7 +49,7 @@ func GetDatabaseDNS(a *string) {
 
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
-
+	var ShortURL string
 	w.Header().Set("content-type", "application/json")
 	var url URL
 	var jsonRes []byte
@@ -61,9 +61,8 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
-	ShortURL := short.WriteShortURL(url.LongURL)
 	if *DBdns != "" {
-
+		ShortURL = short.WriteShortURL(url.LongURL)
 		if !repository.InsertDataToDB(ShortURL, url.LongURL, a) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
@@ -71,6 +70,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(201)
 		}
 	} else {
+		ShortURL = short.WriteShortURL(url.LongURL)
 
 		service.MakeData(url.LongURL, ShortURL, a)
 
@@ -91,7 +91,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 //increment#1
 func PostText(w http.ResponseWriter, r *http.Request) {
-
+	var shortURL string
 	w.Header().Set("content-type", "plain/text")
 	url, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -100,8 +100,9 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	}
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
-	shortURL := short.WriteShortURL(longURL)
+	//_, exists := os.LookupEnv(*DBdns)
 	if *DBdns != "" {
+		shortURL = short.WriteShortURL(longURL)
 		if !repository.InsertDataToDB(shortURL, longURL, a) {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
@@ -110,7 +111,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(201)
 		}
 	} else {
-
+		shortURL = short.WriteShortURL(longURL)
 		service.MakeData(longURL, shortURL, a)
 		w.WriteHeader(201)
 
@@ -253,21 +254,22 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var okRes MultURL
-
+	var ShortURL string
 	var jsonRes []byte
 	var JSONArray []MultURL
-
 	for _, value := range url {
-		ShortURL := short.WriteShortURL(value.LongURL)
+
 		a := r.Context().Value(userCtxKey).(string)
 
 		if repository.Ping() {
+			ShortURL = short.WriteShortURL(value.LongURL)
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
 			okRes = MultURL{
 				CorrelationID: value.CorrelationID,
 				Result:        repository.ReturnShortURL(value.LongURL),
 			}
 		} else {
+			ShortURL = short.WriteShortURL(value.LongURL)
 			service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
 			okRes = MultURL{
 				CorrelationID: value.CorrelationID,
