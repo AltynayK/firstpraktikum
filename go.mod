@@ -7,6 +7,7 @@ require github.com/gorilla/mux v1.8.0
 require (
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/mattn/go-sqlite3 v1.14.14 // indirect
+	github.com/speps/go-hashids v2.0.0+incompatible // indirect
 )
 
 //	github.com/mattn/go-sqlite3 v1.14.14 // indirect
