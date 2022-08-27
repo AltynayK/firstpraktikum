@@ -1,7 +1,6 @@
 package short
 
 import (
-	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/speps/go-hashids"
 )
 
@@ -19,7 +18,7 @@ func WriteShortURL(url string) string {
 	hd.MinLength = 30
 	h, _ := hashids.NewWithData(hd)
 	e, _ := h.Encode([]int{45, 434, 1313, 99})
-	service.WriteToFile(url)
+
 	return *Init + "/" + e
 
 }
