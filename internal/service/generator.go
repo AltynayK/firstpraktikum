@@ -47,7 +47,7 @@ func WriteURLByID(url string) int {
 	}
 	id++
 	IDList[id] = url
-	WriteToFile(url)
+
 	return id
 }
 
