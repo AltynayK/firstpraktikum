@@ -61,9 +61,8 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
-	service.WriteToFile(url.LongURL)
 	if *DBdns != "" {
-		ShortURL = short.WriteShortURL(url.LongURL)
+		ShortURL = short.MakeShortURLToDB(url.LongURL)
 		if !repository.InsertDataToDB(ShortURL, url.LongURL, a) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
@@ -102,9 +101,8 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
-	service.WriteToFile(longURL)
 	if *DBdns != "" {
-		shortURL = short.WriteShortURL(longURL)
+		shortURL = short.MakeShortURLToDB(longURL)
 		if !repository.InsertDataToDB(shortURL, longURL, a) {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
@@ -264,7 +262,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		a := r.Context().Value(userCtxKey).(string)
 
 		if repository.Ping() {
-			ShortURL = short.WriteShortURL(value.LongURL)
+			ShortURL = short.MakeShortURLToDB(value.LongURL)
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
 			okRes = MultURL{
 				CorrelationID: value.CorrelationID,
