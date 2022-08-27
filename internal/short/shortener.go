@@ -16,7 +16,13 @@ func GetBaseURL(a *string) {
 
 //increment#1
 func WriteShortURL(url string) string {
-	service.WriteURLByID(url)
+	service.WriteToFile(url)
+	return *Init + "/" + strconv.Itoa(service.WriteURLByID(url))
+
+}
+
+//не используется
+func Hash(url string) string {
 	hd := hashids.NewData()
 	hd.Salt = url
 	hd.MinLength = 30
