@@ -62,7 +62,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
 	if *DBdns != "" {
-		ShortURL = short.MakeShortURLToDB(url.LongURL)
+		ShortURL = short.Hash(url.LongURL)
 		if !repository.InsertDataToDB(ShortURL, url.LongURL, a) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
@@ -102,7 +102,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	a := r.Context().Value(userCtxKey).(string)
 	//_, exists := os.LookupEnv(*DBdns)
 	if *DBdns != "" {
-		shortURL = short.MakeShortURLToDB(longURL)
+		shortURL = short.Hash(longURL)
 		if !repository.InsertDataToDB(shortURL, longURL, a) {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
