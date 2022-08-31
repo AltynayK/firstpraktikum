@@ -1,6 +1,8 @@
 package short
 
 import (
+	"strconv"
+
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/speps/go-hashids"
 )
@@ -14,12 +16,11 @@ func GetBaseURL(a *string) {
 //increment#1
 func WriteShortURL(url string) string {
 	service.WriteToFile(url)
-	service.WriteURLByID(url)
-	return Hash(url)
+	return *Init + "/" + strconv.Itoa(service.WriteURLByID(url))
 
 }
 
-//сокращает url, используется при сохранении в бд
+//сокращает url, используется при сохранении в
 func Hash(url string) string {
 	hd := hashids.NewData()
 	hd.Salt = url
