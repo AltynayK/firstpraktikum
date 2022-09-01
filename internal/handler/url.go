@@ -262,7 +262,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		a := r.Context().Value(userCtxKey).(string)
 
 		if repository.Ping() {
-			ShortURL = short.Hash(value.LongURL)
+			ShortURL = short.MakeShortURLToDB(value.LongURL)
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
 			okRes = MultURL{
 				CorrelationID: value.CorrelationID,

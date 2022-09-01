@@ -20,7 +20,7 @@ func WriteShortURL(url string) string {
 
 }
 
-//сокращает url, используется
+//
 func Hash(url string) string {
 	hd := hashids.NewData()
 	hd.Salt = url
@@ -28,5 +28,23 @@ func Hash(url string) string {
 	h, _ := hashids.NewWithData(hd)
 	e, _ := h.Encode([]int{45, 434, 1313, 99})
 
-	return *Init + "/" + e
+	return e
+}
+
+type Dbid struct {
+	maxid int
+}
+
+//increment#13
+func MakeShortURLToDB(url string) string {
+	// db := repository.DB
+	// id := db.QueryRow("SELECT id FROM data ORDER BY id DESC LIMIT 1")
+	// alb := Dbid{}
+	// if err := id.Scan(&alb.maxid); err != nil {
+	// 	alb.maxid = 0
+	// }
+	// nextid := alb.maxid + 1
+
+	//return *Init + "/" + strconv.Itoa(nextid)
+	return *Init + "/" + Hash(url)
 }
