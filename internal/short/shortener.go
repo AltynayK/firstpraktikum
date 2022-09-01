@@ -20,7 +20,7 @@ func WriteShortURL(url string) string {
 
 }
 
-//сокращает url, используется при сохранении в
+//сокращает url, используется
 func Hash(url string) string {
 	hd := hashids.NewData()
 	hd.Salt = url
