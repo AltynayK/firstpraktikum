@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"os"
 
 	"log"
 
@@ -22,10 +23,15 @@ var (
 	DatabaseDNS     *string
 )
 
-// func init() {
-// 	//increment#5
-
-// }
+func init() {
+	//increment#5
+	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
+	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
+	//increment#
+	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
+	//DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altyna4y password=password dbname=somedb sslmode=disable", "DatabaseDNS")
+	DatabaseDNS = flag.String("d", "", "DatabaseDNS")
+}
 
 var Checkvar bool
 
@@ -33,24 +39,19 @@ func main() {
 
 	mux := initHandlers()
 
-	// if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
-	// 	*ServerAddress = u
-	// }
-	// if u, f := os.LookupEnv("BASE_URL"); f {
-	// 	*BaseURL = u
-	// }
-	// if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
-	// 	*FileStoragePath = u
-	// }
-	// if u, f := os.LookupEnv("DatabaseDNS"); f {
-	// 	*DatabaseDNS = u
-	// }
-	flag.StringVar(ServerAddress, "a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
-	flag.StringVar(BaseURL, "b", "http://"+*ServerAddress, "BaseURL")
-	//increment#
-	flag.StringVar(FileStoragePath, "f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	//DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altyna4y password=password dbname=somedb sslmode=disable", "DatabaseDNS")
-	flag.StringVar(DatabaseDNS, "d", "", "DatabaseDNS")
+	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
+		*ServerAddress = u
+	}
+	if u, f := os.LookupEnv("BASE_URL"); f {
+		*BaseURL = u
+	}
+	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
+		*FileStoragePath = u
+	}
+	if u, f := os.LookupEnv("DatabaseDNS"); f {
+		*DatabaseDNS = u
+	}
+
 	flag.Parse()
 	short.GetBaseURL(BaseURL)
 	handler.GetDatabaseDNS(DatabaseDNS)
