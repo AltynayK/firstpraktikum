@@ -91,7 +91,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(201)
 		}
 	} else {
-		shortURL = short.Hash(longURL)
+		shortURL = short.WriteShortURL(longURL)
 		service.MakeData(longURL, shortURL, a)
 		w.WriteHeader(201)
 
