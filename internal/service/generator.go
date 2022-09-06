@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+
+	"github.com/AltynayK/firstpraktikum/internal/models"
 )
 
 var (
@@ -12,13 +14,6 @@ var (
 	id     int = 0
 )
 var FilePath *string
-
-type abs struct {
-	ShortURL      string `json:"short_url"`
-	LongURL       string `json:"original_url"`
-	UserID        string `json:"userID"`
-	CorrelationID string `json:"correlation_id"`
-}
 
 //increment#6
 func ReadFile(a *string) {
@@ -70,7 +65,7 @@ func WriteToFile(LongURL string) {
 }
 
 func MakeData(longURL string, shortURL string, userID string) {
-	rankings := abs{
+	rankings := models.Abs{
 		LongURL:  longURL,
 		ShortURL: shortURL,
 		UserID:   userID,
@@ -87,7 +82,7 @@ func MakeData(longURL string, shortURL string, userID string) {
 }
 
 func MakeDataForMultipleCase(shortURL string, longURL string, userID string, correlationID string) {
-	rankings := abs{
+	rankings := models.Abs{
 		CorrelationID: correlationID,
 		LongURL:       longURL,
 		ShortURL:      shortURL,

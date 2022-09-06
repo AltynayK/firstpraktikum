@@ -20,3 +20,13 @@ type DBUrl struct {
 	Originalurl string
 	userid      string
 }
+type Abs struct {
+	ShortURL      string `json:"short_url"`
+	LongURL       string `json:"original_url"`
+	UserID        string `json:"userID"`
+	CorrelationID string `json:"correlation_id"`
+}
+
+type Dbid struct {
+	Maxid int
+}

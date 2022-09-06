@@ -3,6 +3,7 @@ package short
 import (
 	"strconv"
 
+	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/speps/go-hashids"
@@ -32,19 +33,15 @@ func Hash(url string) string {
 	return e
 }
 
-type Dbid struct {
-	maxid int
-}
-
 //increment#13
 func MakeShortURLToDB(url string) string {
 	db := repository.DB
 	id := db.QueryRow("SELECT id FROM data ORDER BY id DESC LIMIT 1")
-	alb := Dbid{}
-	if err := id.Scan(&alb.maxid); err != nil {
-		alb.maxid = 0
+	alb := models.Dbid{}
+	if err := id.Scan(&alb.Maxid); err != nil {
+		alb.Maxid = 0
 	}
-	nextid := alb.maxid + 1
+	nextid := alb.Maxid + 1
 
 	return *Init + "/" + strconv.Itoa(nextid)
 	//return *Init + "/" + Hash(url)
