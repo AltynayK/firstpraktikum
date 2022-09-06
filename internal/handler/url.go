@@ -12,33 +12,13 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
-
-type URL struct {
-	LongURL string `json:"url"`
-	Result  string `json:"result"`
-	//CorrelationID string `json:"correlation_id"`
-}
-type MultURL struct {
-	CorrelationID string `json:"correlation_id"`
-	Result        string `json:"short_url"`
-}
-type URLs struct {
-	ShortURL      string `json:"short_url"`
-	LongURL       string `json:"original_url"`
-	CorrelationID string `json:"correlation_id"`
-}
-type DBUrl struct {
-	id          int
-	shorturl    string
-	originalurl string
-	userid      string
-}
 
 var db *sql.DB
 var DBdns *string
@@ -51,7 +31,7 @@ func GetDatabaseDNS(a *string) {
 func PostJSON(w http.ResponseWriter, r *http.Request) {
 	var ShortURL string
 	w.Header().Set("content-type", "application/json")
-	var url URL
+	var url models.URL
 	var jsonRes []byte
 
 	err := json.NewDecoder(r.Body).Decode(&url)
@@ -76,7 +56,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(201)
 	}
-	okRes := URL{
+	okRes := models.URL{
 		Result: ShortURL,
 	}
 	if jsonRes, err = json.Marshal(okRes); err != nil {
@@ -140,11 +120,11 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		db = repository.DB
 
 		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
-		alb := DBUrl{}
-		if err := row.Scan(&alb.originalurl); err != nil {
+		alb := models.DBUrl{}
+		if err := row.Scan(&alb.Originalurl); err != nil {
 			log.Fatal(err)
 		}
-		longURLL := alb.originalurl
+		longURLL := alb.Originalurl
 		w.Header().Set("Location", longURLL)
 		w.WriteHeader(307)
 		fmt.Fprint(w)
@@ -241,7 +221,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type Posts []URLs
+type Posts []models.URLs
 
 //increment#12
 func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
@@ -253,10 +233,10 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	var okRes MultURL
+	var okRes models.MultURL
 	var ShortURL string
 	var jsonRes []byte
-	var JSONArray []MultURL
+	var JSONArray []models.MultURL
 	for _, value := range url {
 
 		a := r.Context().Value(userCtxKey).(string)
@@ -264,14 +244,14 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		if repository.Ping() {
 			ShortURL = short.MakeShortURLToDB(value.LongURL)
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
-			okRes = MultURL{
+			okRes = models.MultURL{
 				CorrelationID: value.CorrelationID,
 				Result:        repository.ReturnShortURL(value.LongURL),
 			}
 		} else {
 			ShortURL = short.WriteShortURL(value.LongURL)
 			service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
-			okRes = MultURL{
+			okRes = models.MultURL{
 				CorrelationID: value.CorrelationID,
 				Result:        ShortURL,
 			}
