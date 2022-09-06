@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"net/http"
-	"os"
 
 	"log"
 
@@ -39,18 +38,18 @@ func main() {
 
 	mux := initHandlers()
 
-	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
-		*ServerAddress = u
-	}
-	if u, f := os.LookupEnv("BASE_URL"); f {
-		*BaseURL = u
-	}
-	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
-		*FileStoragePath = u
-	}
-	if u, f := os.LookupEnv("DatabaseDNS"); f {
-		*DatabaseDNS = u
-	}
+	// if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
+	// 	*ServerAddress = u
+	// }
+	// if u, f := os.LookupEnv("BASE_URL"); f {
+	// 	*BaseURL = u
+	// }
+	// if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
+	// 	*FileStoragePath = u
+	// }
+	// if u, f := os.LookupEnv("DatabaseDNS"); f {
+	// 	*DatabaseDNS = u
+	// }
 	flag.Parse()
 	short.GetBaseURL(BaseURL)
 	handler.GetDatabaseDNS(DatabaseDNS)
