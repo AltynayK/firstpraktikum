@@ -37,3 +37,5 @@ type DBUrls struct {
 	originalurl string
 	userid      string
 }
+
+type DBsql struct{}
