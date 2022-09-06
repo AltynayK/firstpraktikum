@@ -39,7 +39,6 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a := r.Context().Value(userCtxKey).(string)
-	//_, exists := os.LookupEnv(*DBdns)
 	if *DBdns != "" {
 		ShortURL = short.Hash(url.LongURL)
 		if !repository.InsertDataToDB(ShortURL, url.LongURL, a) {
@@ -64,7 +63,6 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Location", ShortURL)
-
 	fmt.Fprint(w, string(jsonRes))
 }
 
@@ -79,7 +77,6 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	}
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
-	//_, exists := os.LookupEnv(*DBdns)
 	if *DBdns != "" {
 		shortURL = short.Hash(longURL)
 		if !repository.InsertDataToDB(shortURL, longURL, a) {
@@ -95,9 +92,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(201)
 
 	}
-
 	w.Header().Set("Location", shortURL)
-
 	w.Write([]byte(shortURL))
 }
 
@@ -148,33 +143,10 @@ func CheckConnection(w http.ResponseWriter, req *http.Request) {
 
 //increment#9
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
-
 	var x []*models.URLStruct
 	var jsonRes []byte
 	var result string
 	w.Header().Set("content-type", "application/json")
-
-	// if repository.Ping() == true {
-	// 	db = repository.DB
-
-	// 	rows, _ := db.Query("SELECT short_url, original_url, user_id FROM data WHERE user_id = $1", r.Context().Value(userCtxKey))
-
-	// 	defer rows.Close()
-	// 	var albums []URLStruct
-
-	// 	for rows.Next() {
-	// 		alb := URLStruct{}
-	// 		if err := rows.Scan(&alb.Shorturl, &alb.Originalurl, &alb.Userid); err != nil {
-	// 			log.Fatal(err)
-	// 		}
-	// 		albums = append(albums, alb)
-	// 	}
-	// 	//fmt.Print(albums)
-	// 	data, _ := json.MarshalIndent(albums, " ", " ")
-	// 	w.Write(data)
-	// 	return
-
-	// } else {
 	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -243,12 +215,9 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 				CorrelationID: value.CorrelationID,
 				Result:        ShortURL,
 			}
-
 		}
-
 		JSONArray = append(JSONArray, okRes)
 	}
-
 	if jsonRes, err = json.Marshal(JSONArray); err != nil {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "response json marshal err")
