@@ -115,20 +115,16 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-
 	if *DBdns != "" {
 		db = repository.DB
-
 		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
 		alb := models.DBUrl{}
 		if err := row.Scan(&alb.Originalurl); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		longURL = alb.Originalurl
-
 	} else {
 		longURL = service.GetURLFromID(b)
-
 	}
 	w.Header().Set("Location", longURL)
 	w.WriteHeader(307)
