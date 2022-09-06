@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -122,7 +121,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		row := db.QueryRow("SELECT original_url FROM data WHERE id = $1", b)
 		alb := models.DBUrl{}
 		if err := row.Scan(&alb.Originalurl); err != nil {
-			log.Fatal(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		longURLL := alb.Originalurl
 		w.Header().Set("Location", longURLL)
@@ -142,25 +141,20 @@ func CheckConnection(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	db, err := sql.Open("postgres", *DBdns)
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal(err)
 	}
 	w.WriteHeader(http.StatusOK)
 }
 
 //increment#9
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
-	type URLStruct struct {
-		Shorturl    string `json:"short_url"`
-		Originalurl string `json:"original_url"`
-		Userid      string `json:"userID"`
-	}
-	var x []*URLStruct
+
+	var x []*models.URLStruct
 	var jsonRes []byte
 	var result string
 	w.Header().Set("content-type", "application/json")
@@ -189,7 +183,6 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Fatal("Folder does not exist.")
 			w.WriteHeader(http.StatusNoContent)
 		}
 	}
@@ -207,7 +200,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	jsonRes = []byte(a)
 
 	json.Unmarshal(jsonRes, &x)
-	var x2 []*URLStruct
+	var x2 []*models.URLStruct
 	for _, v := range x {
 		if v.Userid == r.Context().Value(userCtxKey) {
 			x2 = append(x2, v)

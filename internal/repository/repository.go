@@ -2,7 +2,7 @@ package repository
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
 )
@@ -36,7 +36,7 @@ func ReturnShortURL(LongURL string) string {
 	row := DB.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
 	alb := models.DBUrls{}
 	if err := row.Scan(&alb.Shorturl); err != nil {
-		log.Fatal(err)
+		fmt.Print("Error.")
 	}
 	return alb.Shorturl
 }

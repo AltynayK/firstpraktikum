@@ -3,7 +3,7 @@ package service
 import (
 	"bufio"
 	"encoding/json"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
@@ -21,7 +21,7 @@ func ReadFile(a *string) {
 	file, err := os.OpenFile(*FilePath, os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Fatal("Folder does not exist.")
+			fmt.Print("Folder does not exist.")
 		}
 	}
 	scanner := bufio.NewScanner(file)
@@ -55,12 +55,12 @@ func WriteToFile(LongURL string) {
 	f, err := os.OpenFile(*FilePath, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Fatal("Folder does not exist.")
+			fmt.Print("Folder does not exist.")
 		}
 	}
 	defer f.Close()
 	if _, err = f.WriteString(LongURL + "\n"); err != nil {
-		log.Fatal("Folder does not exist.")
+		fmt.Print("Folder does not exist.")
 	}
 }
 
@@ -74,7 +74,7 @@ func MakeData(longURL string, shortURL string, userID string) {
 	file, err := os.OpenFile("output.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Fatal("Folder does not exist.")
+			fmt.Print("Folder does not exist.")
 		}
 	}
 	file.Write(rankingsJSON)
@@ -92,7 +92,7 @@ func MakeDataForMultipleCase(shortURL string, longURL string, userID string, cor
 	file, err := os.OpenFile("outputMultiple.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Fatal("Folder does not exist.")
+			fmt.Print("Folder does not exist.")
 		}
 	}
 	file.Write(rankingsJSON)

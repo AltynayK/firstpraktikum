@@ -38,4 +38,10 @@ type DBUrls struct {
 	userid      string
 }
 
-type DBsql struct{}
+//type DBsql struct{}
+
+type URLStruct struct {
+	Shorturl    string `json:"short_url"`
+	Originalurl string `json:"original_url"`
+	Userid      string `json:"userID"`
+}

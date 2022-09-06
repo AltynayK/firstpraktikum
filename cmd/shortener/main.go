@@ -2,10 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
-
-	"log"
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
@@ -66,7 +65,7 @@ func main() {
 		DBdns: &DatabaseDNS,
 	})
 
-	log.Fatal(srv.ListenAndServe())
+	fmt.Print(srv.ListenAndServe())
 
 }
 
