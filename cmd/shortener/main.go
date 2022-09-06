@@ -16,10 +16,10 @@ import (
 )
 
 var (
-	ServerAddress   string
-	BaseURL         string
-	FileStoragePath string
-	DatabaseDNS     string
+	ServerAddress   *string
+	BaseURL         *string
+	FileStoragePath *string
+	DatabaseDNS     *string
 )
 
 // func init() {
@@ -45,24 +45,24 @@ func main() {
 	// if u, f := os.LookupEnv("DatabaseDNS"); f {
 	// 	*DatabaseDNS = u
 	// }
-	flag.StringVar(&ServerAddress, "a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
-	flag.StringVar(&BaseURL, "b", "http://"+ServerAddress, "BaseURL")
+	flag.StringVar(ServerAddress, "a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
+	flag.StringVar(BaseURL, "b", "http://"+*ServerAddress, "BaseURL")
 	//increment#
-	flag.StringVar(&FileStoragePath, "f", "texts.txt", "FileStoragePath - путь до файла LongURL")
+	flag.StringVar(FileStoragePath, "f", "texts.txt", "FileStoragePath - путь до файла LongURL")
 	//DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altyna4y password=password dbname=somedb sslmode=disable", "DatabaseDNS")
-	flag.StringVar(&DatabaseDNS, "d", "", "DatabaseDNS")
+	flag.StringVar(DatabaseDNS, "d", "", "DatabaseDNS")
 	flag.Parse()
-	short.GetBaseURL(&BaseURL)
-	handler.GetDatabaseDNS(&DatabaseDNS)
+	short.GetBaseURL(BaseURL)
+	handler.GetDatabaseDNS(DatabaseDNS)
 
 	srv := http.Server{
-		Addr:    ServerAddress,
+		Addr:    *ServerAddress,
 		Handler: mux,
 	}
-	service.ReadFile(&FileStoragePath)
+	service.ReadFile(FileStoragePath)
 
 	repository.NewPostgresDB(repository.Config{
-		DBdns: &DatabaseDNS,
+		DBdns: DatabaseDNS,
 	})
 
 	log.Fatal(srv.ListenAndServe())
