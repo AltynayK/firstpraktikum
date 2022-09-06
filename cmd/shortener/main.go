@@ -30,6 +30,7 @@ func init() {
 	flag.StringVar(&FileStoragePath, "f", "texts.txt", "FileStoragePath - путь до файла LongURL")
 	//DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altyna4y password=password dbname=somedb sslmode=disable", "DatabaseDNS")
 	flag.StringVar(&DatabaseDNS, "d", "", "DatabaseDNS")
+	flag.Parse()
 }
 
 var Checkvar bool
@@ -50,7 +51,7 @@ func main() {
 	// if u, f := os.LookupEnv("DatabaseDNS"); f {
 	// 	*DatabaseDNS = u
 	// }
-	flag.Parse()
+
 	short.GetBaseURL(&BaseURL)
 	handler.GetDatabaseDNS(&DatabaseDNS)
 

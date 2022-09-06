@@ -3,6 +3,8 @@ package repository
 import (
 	"database/sql"
 	"log"
+
+	"github.com/AltynayK/firstpraktikum/internal/models"
 )
 
 var DB *sql.DB
@@ -30,20 +32,13 @@ func InsertDataToDBCor(shortURL string, originalURL string, userID string, corre
 	return err == nil
 }
 
-type DBUrls struct {
-	id          int
-	shorturl    string
-	originalurl string
-	userid      string
-}
-
 func ReturnShortURL(LongURL string) string {
 	row := DB.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
-	alb := DBUrls{}
-	if err := row.Scan(&alb.shorturl); err != nil {
+	alb := models.DBUrls{}
+	if err := row.Scan(&alb.Shorturl); err != nil {
 		log.Fatal(err)
 	}
-	return alb.shorturl
+	return alb.Shorturl
 }
 func Ping() bool {
 	err := DB.Ping()

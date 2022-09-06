@@ -30,3 +30,10 @@ type Abs struct {
 type Dbid struct {
 	Maxid int
 }
+
+type DBUrls struct {
+	id          int
+	Shorturl    string
+	originalurl string
+	userid      string
+}
