@@ -104,6 +104,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 //increment#1
 func Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	var longURL string
 	id, ok := vars["id"]
 	if !ok {
 		w.WriteHeader(400)
@@ -123,17 +124,15 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		if err := row.Scan(&alb.Originalurl); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		longURLL := alb.Originalurl
-		w.Header().Set("Location", longURLL)
-		w.WriteHeader(307)
-		fmt.Fprint(w)
-	} else {
-		longURL := service.GetURLFromID(b)
-		w.Header().Set("Location", longURL)
-		w.WriteHeader(307)
-		fmt.Fprint(w)
-	}
+		longURL = alb.Originalurl
 
+	} else {
+		longURL = service.GetURLFromID(b)
+
+	}
+	w.Header().Set("Location", longURL)
+	w.WriteHeader(307)
+	fmt.Fprint(w)
 }
 
 //increment#10
