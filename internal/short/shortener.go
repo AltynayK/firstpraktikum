@@ -30,7 +30,7 @@ func Hash(url string) string {
 	h, _ := hashids.NewWithData(hd)
 	e, _ := h.Encode([]int{45, 434, 1313, 99})
 
-	return e
+	return *Init + "/" + e
 }
 
 //increment#13
