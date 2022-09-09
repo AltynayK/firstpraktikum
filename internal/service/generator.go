@@ -36,14 +36,14 @@ func ReadFile(a *string) {
 
 }
 
-func WriteURLByID(url string) int {
+func WriteURLByID(url string) {
 	if IDList == nil {
 		IDList = make(map[int]string)
 	}
 	id++
 	IDList[id] = url
 
-	return id
+	//return id
 }
 
 func GetURLFromID(id int) string {
