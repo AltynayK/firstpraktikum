@@ -47,7 +47,7 @@ func WriteURLByID(url string) {
 }
 
 func GetURLFromID(id int) string {
-	return IDList[id]
+	return IDList[id-1]
 }
 
 //increment#6
