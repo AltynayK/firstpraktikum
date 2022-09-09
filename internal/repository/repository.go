@@ -50,6 +50,16 @@ func ReturnShortURL(LongURL string) string {
 	}
 	return alb.Shorturl
 }
+
+func ReturnShortURLByID(id int) string {
+	row := DB.QueryRow("SELECT original_url FROM data WHERE id = $1", id)
+	alb := models.DBUrl{}
+	if err := row.Scan(&alb.Originalurl); err != nil {
+		fmt.Print("Error.")
+	}
+	return alb.Originalurl
+}
+
 func Ping() bool {
 	err := DB.Ping()
 	return err == nil

@@ -29,7 +29,6 @@ func Hash(url string) string {
 	hd.MinLength = 30
 	h, _ := hashids.NewWithData(hd)
 	e, _ := h.Encode([]int{45, 434, 1313, 99})
-
 	return *Init + "/" + e
 }
 
