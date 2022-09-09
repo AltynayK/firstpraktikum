@@ -198,18 +198,16 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		if repository.Ping() {
 			ShortURL = short.MakeShortURLToDB(value.LongURL)
 			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
-			okRes = models.MultURL{
-				CorrelationID: value.CorrelationID,
-				Result:        repository.ReturnShortURL(value.LongURL),
-			}
+			ShortURL = repository.ReturnShortURL(value.LongURL)
 		} else {
 			ShortURL = short.WriteShortURL(value.LongURL)
 			service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
-			okRes = models.MultURL{
-				CorrelationID: value.CorrelationID,
-				Result:        ShortURL,
-			}
 		}
+		okRes = models.MultURL{
+			CorrelationID: value.CorrelationID,
+			Result:        ShortURL,
+		}
+
 		JSONArray = append(JSONArray, okRes)
 	}
 	if jsonRes, err = json.Marshal(JSONArray); err != nil {
