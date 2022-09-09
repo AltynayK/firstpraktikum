@@ -18,8 +18,8 @@ func GetBaseURL(a *string) {
 //increment#1
 func WriteShortURL(url string) string {
 	service.WriteToFile(url)
-	service.WriteURLByID(url)
-	return *Init + "/" + Hash(url)
+
+	return *Init + "/" + strconv.Itoa(service.WriteURLByID(url))
 
 }
 
