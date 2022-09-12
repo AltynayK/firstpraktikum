@@ -40,7 +40,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a := r.Context().Value(userCtxKey).(string)
-	if repository.Ping() {
+	if *DBdns != "" {
 		ShortURL = short.Hash(url.LongURL)
 		if !d.InsertData(ShortURL, url.LongURL, a) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
@@ -76,7 +76,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	}
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
-	if repository.Ping() {
+	if *DBdns != "" {
 		shortURL = short.Hash(longURL)
 		if !d.InsertData(shortURL, longURL, a) {
 			shortURL = repository.ReturnShortURL(longURL)
@@ -107,7 +107,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	if repository.Ping() {
+	if *DBdns != "" {
 		longURL = d.GetLongURLByID(b)
 	} else {
 		longURL = f.GetLongURLByID(b)
@@ -138,7 +138,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var jsonRes []byte
 	var result string
 	w.Header().Set("content-type", "application/json")
-	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0664)
+	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		if os.IsNotExist(err) {
 			w.WriteHeader(http.StatusNoContent)
@@ -201,6 +201,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 			CorrelationID: value.CorrelationID,
 			Result:        ShortURL,
 		}
+
 		JSONArray = append(JSONArray, okRes)
 	}
 	if jsonRes, err = json.Marshal(JSONArray); err != nil {
