@@ -15,7 +15,7 @@ var FilePath *string
 //increment#6
 func ReadFile(a *string) {
 	FilePath = a
-	file, err := os.OpenFile(*FilePath, os.O_RDONLY|os.O_CREATE, 0777)
+	file, err := os.OpenFile(*FilePath, os.O_RDONLY|os.O_CREATE, 0664)
 	if err != nil {
 		if os.IsNotExist(err) {
 			fmt.Print("Folder does not exist.")
