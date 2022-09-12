@@ -13,7 +13,6 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
-	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -25,6 +24,11 @@ var DBdns *string
 func GetDatabaseDNS(a *string) {
 	DBdns = a
 }
+
+var d = repository.DataBase{}
+var f = repository.File{}
+
+//var F, D repository.Repo = &repository.File{}, &repository.DataBase{}
 
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +45,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	a := r.Context().Value(userCtxKey).(string)
 	if *DBdns != "" {
 		ShortURL = short.Hash(url.LongURL)
-		if !repository.InsertDataToDB(ShortURL, url.LongURL, a) {
+		if !d.InsertData(ShortURL, url.LongURL, a) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
 		} else {
@@ -50,7 +54,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	} else {
 		ShortURL = short.WriteShortURL(url.LongURL)
 
-		service.MakeData(url.LongURL, ShortURL, a)
+		f.InsertData(url.LongURL, ShortURL, a)
 
 		w.WriteHeader(201)
 	}
@@ -79,7 +83,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	a := r.Context().Value(userCtxKey).(string)
 	if *DBdns != "" {
 		shortURL = short.Hash(longURL)
-		if !repository.InsertDataToDB(shortURL, longURL, a) {
+		if !d.InsertData(shortURL, longURL, a) {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
 		} else {
@@ -88,7 +92,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		shortURL = short.WriteShortURL(longURL)
-		service.MakeData(longURL, shortURL, a)
+		f.InsertData(longURL, shortURL, a)
 		w.WriteHeader(201)
 
 	}
@@ -111,9 +115,9 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if *DBdns != "" {
-		longURL = repository.ReturnShortURLByID(b)
+		longURL = d.GetLongURLByID(b)
 	} else {
-		longURL = service.GetURLFromID(b)
+		longURL = f.GetLongURLByID(b)
 	}
 	w.Header().Set("Location", longURL)
 	w.WriteHeader(307)
@@ -197,11 +201,11 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 
 		if repository.Ping() {
 			ShortURL = short.MakeShortURLToDB(value.LongURL)
-			repository.InsertDataToDBCor(ShortURL, value.LongURL, a, okRes.CorrelationID)
+			d.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 			ShortURL = repository.ReturnShortURL(value.LongURL)
 		} else {
 			ShortURL = short.WriteShortURL(value.LongURL)
-			service.MakeDataForMultipleCase(ShortURL, value.LongURL, a, okRes.CorrelationID)
+			f.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		}
 		okRes = models.MultURL{
 			CorrelationID: value.CorrelationID,

@@ -2,11 +2,8 @@ package service
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"os"
-
-	"github.com/AltynayK/firstpraktikum/internal/models"
 )
 
 var (
@@ -46,9 +43,9 @@ func WriteURLByID(url string) int {
 	return id
 }
 
-func GetURLFromID(id int) string {
-	return IDList[id]
-}
+// func GetURLFromID(id int) string {
+// 	return IDList[id]
+// }
 
 //increment#6
 func WriteToFile(LongURL string) {
@@ -64,37 +61,37 @@ func WriteToFile(LongURL string) {
 	}
 }
 
-func MakeData(longURL string, shortURL string, userID string) {
-	rankings := models.Abs{
-		LongURL:  longURL,
-		ShortURL: shortURL,
-		UserID:   userID,
-	}
-	rankingsJSON, _ := json.Marshal(rankings)
-	file, err := os.OpenFile("output.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
-	if err != nil {
-		if os.IsNotExist(err) {
-			fmt.Print("Folder does not exist.")
-		}
-	}
-	file.Write(rankingsJSON)
-	file.WriteString("\n")
-}
+// func MakeData(longURL string, shortURL string, userID string) {
+// 	rankings := models.Abs{
+// 		LongURL:  longURL,
+// 		ShortURL: shortURL,
+// 		UserID:   userID,
+// 	}
+// 	rankingsJSON, _ := json.Marshal(rankings)
+// 	file, err := os.OpenFile("output.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+// 	if err != nil {
+// 		if os.IsNotExist(err) {
+// 			fmt.Print("Folder does not exist.")
+// 		}
+// 	}
+// 	file.Write(rankingsJSON)
+// 	file.WriteString("\n")
+// }
 
-func MakeDataForMultipleCase(shortURL string, longURL string, userID string, correlationID string) {
-	rankings := models.Abs{
-		CorrelationID: correlationID,
-		LongURL:       longURL,
-		ShortURL:      shortURL,
-		UserID:        userID,
-	}
-	rankingsJSON, _ := json.Marshal(rankings)
-	file, err := os.OpenFile("outputMultiple.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
-	if err != nil {
-		if os.IsNotExist(err) {
-			fmt.Print("Folder does not exist.")
-		}
-	}
-	file.Write(rankingsJSON)
-	file.WriteString("\n")
-}
+// func MakeDataForMultipleCase(shortURL string, longURL string, userID string, correlationID string) {
+// 	rankings := models.Abs{
+// 		CorrelationID: correlationID,
+// 		LongURL:       longURL,
+// 		ShortURL:      shortURL,
+// 		UserID:        userID,
+// 	}
+// 	rankingsJSON, _ := json.Marshal(rankings)
+// 	file, err := os.OpenFile("outputMultiple.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+// 	if err != nil {
+// 		if os.IsNotExist(err) {
+// 			fmt.Print("Folder does not exist.")
+// 		}
+// 	}
+// 	file.Write(rankingsJSON)
+// 	file.WriteString("\n")
+// }
