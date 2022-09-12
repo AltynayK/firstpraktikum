@@ -28,15 +28,12 @@ func GetDatabaseDNS(a *string) {
 var d = repository.DataBase{}
 var f = repository.File{}
 
-//var F, D repository.Repo = &repository.File{}, &repository.DataBase{}
-
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
 	var ShortURL string
 	w.Header().Set("content-type", "application/json")
 	var url models.URL
 	var jsonRes []byte
-
 	err := json.NewDecoder(r.Body).Decode(&url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -53,9 +50,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		ShortURL = short.WriteShortURL(url.LongURL)
-
 		f.InsertData(url.LongURL, ShortURL, a)
-
 		w.WriteHeader(201)
 	}
 	okRes := models.URL{
@@ -87,14 +82,12 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
 		} else {
-
 			w.WriteHeader(201)
 		}
 	} else {
 		shortURL = short.WriteShortURL(longURL)
 		f.InsertData(longURL, shortURL, a)
 		w.WriteHeader(201)
-
 	}
 	w.Header().Set("Location", shortURL)
 	w.Write([]byte(shortURL))
@@ -176,7 +169,6 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	}
 	data, _ := json.MarshalIndent(x2, " ", " ")
 	w.Write(data)
-
 }
 
 type Posts []models.URLs
@@ -196,9 +188,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	var jsonRes []byte
 	var JSONArray []models.MultURL
 	for _, value := range url {
-
 		a := r.Context().Value(userCtxKey).(string)
-
 		if repository.Ping() {
 			ShortURL = short.MakeShortURLToDB(value.LongURL)
 			d.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
@@ -211,7 +201,6 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 			CorrelationID: value.CorrelationID,
 			Result:        ShortURL,
 		}
-
 		JSONArray = append(JSONArray, okRes)
 	}
 	if jsonRes, err = json.Marshal(JSONArray); err != nil {

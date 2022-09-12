@@ -19,10 +19,8 @@ func GetBaseURL(a *string) {
 func WriteShortURL(url string) string {
 	service.WriteToFile(url)
 	return *Init + "/" + strconv.Itoa(service.WriteURLByID(url))
-
 }
 
-//
 func Hash(url string) string {
 	hd := hashids.NewData()
 	hd.Salt = url
@@ -41,7 +39,5 @@ func MakeShortURLToDB(url string) string {
 		alb.Maxid = 0
 	}
 	nextid := alb.Maxid + 1
-
 	return *Init + "/" + strconv.Itoa(nextid)
-	//return *Init + "/" + Hash(url)
 }
