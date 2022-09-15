@@ -28,6 +28,7 @@ func GetDatabaseDNS(a *string) {
 
 var d = repository.DataBase{}
 var f = repository.File{}
+var l = repository.Lists{}
 
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
@@ -51,8 +52,9 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		service.WriteToFile(url.LongURL)
-		ShortURL = short.WriteShortURL(url.LongURL)
+		ShortURL = short.Hash(url.LongURL)
 		f.InsertData(url.LongURL, ShortURL, a)
+		l.InsertData(url.LongURL)
 		w.WriteHeader(201)
 	}
 	okRes := models.URL{
@@ -88,8 +90,9 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		service.WriteToFile(longURL)
-		shortURL = short.WriteShortURL(longURL)
+		shortURL = short.Hash(longURL)
 		f.InsertData(longURL, shortURL, a)
+		l.InsertData(longURL)
 		w.WriteHeader(201)
 	}
 	w.Header().Set("Location", shortURL)
@@ -198,7 +201,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 			ShortURL = repository.ReturnShortURL(value.LongURL)
 		} else {
 			service.WriteToFile(value.LongURL)
-			ShortURL = short.WriteShortURL(value.LongURL)
+			ShortURL = short.Hash(value.LongURL)
 			f.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		}
 		okRes = models.MultURL{

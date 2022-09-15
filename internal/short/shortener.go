@@ -5,7 +5,6 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
-	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/speps/go-hashids"
 )
 
@@ -16,10 +15,10 @@ func GetBaseURL(a *string) {
 }
 
 //increment#1
-func WriteShortURL(url string) string {
+// func WriteShortURL(url string) string {
 
-	return *Init + "/" + strconv.Itoa(service.WriteURLByID(url))
-}
+// 	return *Init + "/" + strconv.Itoa(service.WriteURLByID(url))
+// }
 
 func Hash(url string) string {
 	hd := hashids.NewData()

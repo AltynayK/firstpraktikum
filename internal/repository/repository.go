@@ -20,6 +20,7 @@ type Repo interface {
 
 type File struct{}
 type DataBase struct{}
+type Lists struct{}
 
 func (d *DataBase) InsertData(shortURL string, originalURL string, userID string) bool {
 	sqlStatement := `INSERT INTO data (short_url, original_url, user_id) VALUES ($1, $2, $3)`
@@ -41,6 +42,16 @@ func (f *File) InsertData(longURL string, shortURL string, userID string) {
 	}
 	file.Write(rankingsJSON)
 	file.WriteString("\n")
+}
+
+//var id = len(service.IDList) - 1
+
+func (l *Lists) InsertData(longURL string) {
+	if service.IDList == nil {
+		service.IDList = make(map[int]string)
+	}
+	//id++
+	service.IDList[len(service.IDList)] = longURL
 }
 
 func (d *DataBase) InsertMultipleData(shortURL string, originalURL string, userID string, correlationID string) bool {

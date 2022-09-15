@@ -33,15 +33,13 @@ func ReadFile(a *string) {
 
 }
 
-func WriteURLByID(url string) int {
-	if IDList == nil {
-		IDList = make(map[int]string)
-	}
-	id++
-	IDList[id] = url
-
-	return id
-}
+// func WriteURLByID(url string) {
+// 	if IDList == nil {
+// 		IDList = make(map[int]string)
+// 	}
+// 	id++
+// 	IDList[id] = url
+// }
 
 func WriteToFile(LongURL string) {
 	f, err := os.OpenFile(*FilePath, os.O_APPEND|os.O_WRONLY, 0600)
