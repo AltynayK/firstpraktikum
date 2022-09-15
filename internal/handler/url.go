@@ -19,12 +19,7 @@ import (
 )
 
 var db *sql.DB
-var DBdns *string
-
-func GetDatabaseDNS(a *string) {
-	DBdns = a
-}
-
+var cfg models.Config
 var d = repository.DataBase{}
 var f = repository.File{}
 
@@ -40,7 +35,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a := r.Context().Value(userCtxKey).(string)
-	if *DBdns != "" {
+	if *cfg.DBdns != "" {
 		ShortURL = short.Hash(url.LongURL)
 		if !d.InsertData(ShortURL, url.LongURL, a) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
@@ -76,7 +71,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	}
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
-	if *DBdns != "" {
+	if *cfg.DBdns != "" {
 		shortURL = short.Hash(longURL)
 		if !d.InsertData(shortURL, longURL, a) {
 			shortURL = repository.ReturnShortURL(longURL)
@@ -107,7 +102,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	if *DBdns != "" {
+	if *cfg.DBdns != "" {
 		longURL = d.GetLongURLByID(b)
 	} else {
 		longURL = f.GetLongURLByID(b)
@@ -120,7 +115,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 //increment#10
 func CheckConnection(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("content-type", "application/json")
-	db, err := sql.Open("postgres", *DBdns)
+	db, err := sql.Open("postgres", *cfg.DBdns)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

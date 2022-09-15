@@ -3,14 +3,11 @@ package repository
 import (
 	"database/sql"
 
+	"github.com/AltynayK/firstpraktikum/internal/models"
 	_ "github.com/lib/pq"
 )
 
-type Config struct {
-	DBdns *string
-}
-
-func NewPostgresDB(cfg Config) (*sql.DB, error) {
+func NewPostgresDB(cfg models.Config) (*sql.DB, error) {
 	db, err := sql.Open("postgres", *cfg.DBdns)
 	if err != nil {
 		return nil, err
