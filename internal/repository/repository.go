@@ -80,15 +80,6 @@ func (f *File) GetLongURLByID(id int) string {
 	return service.IDList[id]
 }
 
-func CreateTable(db *sql.DB) {
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar UNIQUE, user_id varchar, correlation_id varchar)")
-	if err != nil {
-		panic(err)
-	}
-	DB = db
-
-}
-
 func ReturnShortURL(LongURL string) string {
 	row := DB.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
 	alb := models.DBUrls{}
