@@ -44,14 +44,13 @@ func (f *File) InsertData(longURL string, shortURL string, userID string) {
 	file.WriteString("\n")
 }
 
-//var id = len(service.IDList) - 1
-
 func (l *Lists) InsertData(longURL string) {
 	if service.IDList == nil {
 		service.IDList = make(map[int]string)
 	}
-	//id++
-	service.IDList[len(service.IDList)] = longURL
+	service.ID++
+	service.IDList[service.ID] = longURL
+	fmt.Print(len(service.IDList))
 }
 
 func (d *DataBase) InsertMultipleData(shortURL string, originalURL string, userID string, correlationID string) bool {

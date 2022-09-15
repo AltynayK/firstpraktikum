@@ -8,7 +8,7 @@ import (
 
 var (
 	IDList map[int]string
-	id     int = 0
+	ID     int = 0
 )
 var FilePath *string
 
@@ -27,8 +27,8 @@ func ReadFile(a *string) {
 		if IDList == nil {
 			IDList = make(map[int]string)
 		}
-		id++
-		IDList[id] = line
+		ID++
+		IDList[ID] = line
 	}
 
 }
