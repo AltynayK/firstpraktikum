@@ -32,7 +32,7 @@ var l = repository.Lists{}
 
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
-	var ShortURL string
+
 	w.Header().Set("content-type", "application/json")
 	var url models.URL
 	var jsonRes []byte
@@ -42,8 +42,9 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a := r.Context().Value(userCtxKey).(string)
+	ShortURL := short.WriteShortURL(url.LongURL)
 	if *DBdns != "" {
-		ShortURL = short.WriteShortURL(url.LongURL)
+
 		if !d.InsertData(ShortURL, url.LongURL, a) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
@@ -51,11 +52,8 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(201)
 		}
 	} else {
-
 		service.WriteToFile(url.LongURL)
-		ShortURL = short.WriteShortURL(url.LongURL)
 		f.InsertData(url.LongURL, ShortURL, a)
-
 		w.WriteHeader(201)
 	}
 	okRes := models.URL{
@@ -72,7 +70,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 //increment#1
 func PostText(w http.ResponseWriter, r *http.Request) {
-	var shortURL string
+
 	w.Header().Set("content-type", "plain/text")
 	url, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -80,9 +78,10 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	longURL := string(url)
+	shortURL := short.WriteShortURL(longURL)
 	a := r.Context().Value(userCtxKey).(string)
 	if *DBdns != "" {
-		shortURL = short.WriteShortURL(longURL)
+
 		if !d.InsertData(shortURL, longURL, a) {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
@@ -90,11 +89,8 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(201)
 		}
 	} else {
-
 		service.WriteToFile(longURL)
-		shortURL = short.WriteShortURL(longURL)
 		f.InsertData(longURL, shortURL, a)
-		//
 		w.WriteHeader(201)
 	}
 	w.Header().Set("Location", shortURL)
