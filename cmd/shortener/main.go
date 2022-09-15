@@ -59,6 +59,7 @@ func main() {
 		Addr:    ServerAddress,
 		Handler: mux,
 	}
+
 	service.ReadFile(&FileStoragePath)
 
 	repository.NewPostgresDB(repository.Config{

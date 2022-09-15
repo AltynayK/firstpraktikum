@@ -43,7 +43,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	a := r.Context().Value(userCtxKey).(string)
 	if *DBdns != "" {
-		ShortURL = short.Hash(url.LongURL)
+		ShortURL = short.WriteShortURL(url.LongURL)
 		if !d.InsertData(ShortURL, url.LongURL, a) {
 			ShortURL = repository.ReturnShortURL(url.LongURL)
 			w.WriteHeader(409)
@@ -82,7 +82,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 	a := r.Context().Value(userCtxKey).(string)
 	if *DBdns != "" {
-		shortURL = short.Hash(longURL)
+		shortURL = short.WriteShortURL(longURL)
 		if !d.InsertData(shortURL, longURL, a) {
 			shortURL = repository.ReturnShortURL(longURL)
 			w.WriteHeader(409)
@@ -198,7 +198,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
 		if repository.Ping() {
-			ShortURL = short.MakeShortURLToDB(value.LongURL)
+			ShortURL = short.WriteShortURL(value.LongURL)
 			d.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 			ShortURL = repository.ReturnShortURL(value.LongURL)
 		} else {
