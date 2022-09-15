@@ -50,7 +50,7 @@ func (l *Lists) InsertData(longURL string) {
 	}
 	service.ID++
 	service.IDList[service.ID] = longURL
-	fmt.Print(len(service.IDList))
+	//fmt.Print(len(service.IDList))
 }
 
 func (d *DataBase) InsertMultipleData(shortURL string, originalURL string, userID string, correlationID string) bool {
@@ -87,7 +87,7 @@ func (d *DataBase) GetLongURLByID(id int) string {
 }
 
 func (f *File) GetLongURLByID(id int) string {
-	return service.IDList[id]
+	return service.IDList[id-1]
 }
 
 func ReturnShortURL(LongURL string) string {
