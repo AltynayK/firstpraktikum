@@ -86,7 +86,7 @@ func (d *DataBase) GetLongURLByID(id int) string {
 	return alb.Originalurl
 }
 
-func (f *File) GetLongURLByID(id int) string {
+func (l *Lists) GetLongURLByID(id int) string {
 	//fmt.Print(service.IDList[id])
 	return service.IDList[id]
 

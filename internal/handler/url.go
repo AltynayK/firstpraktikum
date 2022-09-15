@@ -51,10 +51,11 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(201)
 		}
 	} else {
+		l.InsertData(url.LongURL)
 		service.WriteToFile(url.LongURL)
 		ShortURL = short.WriteShortURL(url.LongURL)
 		f.InsertData(url.LongURL, ShortURL, a)
-		l.InsertData(url.LongURL)
+
 		w.WriteHeader(201)
 	}
 	okRes := models.URL{
@@ -89,10 +90,11 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(201)
 		}
 	} else {
+		l.InsertData(longURL)
 		service.WriteToFile(longURL)
 		shortURL = short.WriteShortURL(longURL)
 		f.InsertData(longURL, shortURL, a)
-		l.InsertData(longURL)
+		//
 		w.WriteHeader(201)
 	}
 	w.Header().Set("Location", shortURL)
@@ -116,7 +118,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	if *DBdns != "" {
 		longURL = d.GetLongURLByID(b)
 	} else {
-		longURL = f.GetLongURLByID(b)
+		longURL = l.GetLongURLByID(b)
 	}
 	w.Header().Set("Location", longURL)
 	w.WriteHeader(307)
