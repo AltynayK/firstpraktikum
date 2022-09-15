@@ -45,6 +45,3 @@ type URLStruct struct {
 	Originalurl string `json:"original_url"`
 	Userid      string `json:"userID"`
 }
-type Config struct {
-	DBdns *string
-}

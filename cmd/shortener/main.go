@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
-	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
@@ -54,6 +53,7 @@ func main() {
 
 	flag.Parse()
 	short.GetBaseURL(&BaseURL)
+	handler.GetDatabaseDNS(&DatabaseDNS)
 
 	srv := http.Server{
 		Addr:    ServerAddress,
@@ -61,7 +61,7 @@ func main() {
 	}
 	service.ReadFile(&FileStoragePath)
 
-	repository.NewPostgresDB(models.Config{
+	repository.NewPostgresDB(repository.Config{
 		DBdns: &DatabaseDNS,
 	})
 
