@@ -15,10 +15,12 @@ func GetBaseURL(a *string) {
 	Init = a
 }
 
+var l = repository.Lists{}
+
 //increment#1
 func WriteShortURL(url string) string {
 
-	return *Init + "/" + shorting()
+	return *Init + "/" + strconv.Itoa(l.InsertData(url))
 }
 
 func Hash(url string) string {
