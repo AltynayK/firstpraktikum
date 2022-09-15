@@ -1,11 +1,11 @@
 package short
 
 import (
+	"math/rand"
 	"strconv"
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
-	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/speps/go-hashids"
 )
 
@@ -18,7 +18,7 @@ func GetBaseURL(a *string) {
 //increment#1
 func WriteShortURL(url string) string {
 
-	return *Init + "/" + strconv.Itoa(service.WriteURLByID(url))
+	return *Init + "/" + shorting()
 }
 
 func Hash(url string) string {
@@ -40,4 +40,14 @@ func MakeShortURLToDB(url string) string {
 	}
 	nextid := alb.Maxid + 1
 	return *Init + "/" + strconv.Itoa(nextid)
+}
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func shorting() string {
+	b := make([]byte, 5)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
 }
