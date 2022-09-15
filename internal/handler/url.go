@@ -52,7 +52,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		service.WriteToFile(url.LongURL)
-		ShortURL = short.Hash(url.LongURL)
+		ShortURL = short.WriteShortURL(url.LongURL)
 		f.InsertData(url.LongURL, ShortURL, a)
 		l.InsertData(url.LongURL)
 		w.WriteHeader(201)
@@ -90,7 +90,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		service.WriteToFile(longURL)
-		shortURL = short.Hash(longURL)
+		shortURL = short.WriteShortURL(longURL)
 		f.InsertData(longURL, shortURL, a)
 		l.InsertData(longURL)
 		w.WriteHeader(201)
@@ -201,7 +201,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 			ShortURL = repository.ReturnShortURL(value.LongURL)
 		} else {
 			service.WriteToFile(value.LongURL)
-			ShortURL = short.Hash(value.LongURL)
+			ShortURL = short.WriteShortURL(value.LongURL)
 			f.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		}
 		okRes = models.MultURL{
