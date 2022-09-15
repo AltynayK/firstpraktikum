@@ -13,6 +13,7 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
+	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -49,6 +50,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(201)
 		}
 	} else {
+		service.WriteToFile(url.LongURL)
 		ShortURL = short.WriteShortURL(url.LongURL)
 		f.InsertData(url.LongURL, ShortURL, a)
 		w.WriteHeader(201)
@@ -85,6 +87,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(201)
 		}
 	} else {
+		service.WriteToFile(longURL)
 		shortURL = short.WriteShortURL(longURL)
 		f.InsertData(longURL, shortURL, a)
 		w.WriteHeader(201)
@@ -194,6 +197,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 			d.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 			ShortURL = repository.ReturnShortURL(value.LongURL)
 		} else {
+			service.WriteToFile(value.LongURL)
 			ShortURL = short.WriteShortURL(value.LongURL)
 			f.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		}
