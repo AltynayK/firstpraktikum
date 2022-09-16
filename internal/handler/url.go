@@ -13,7 +13,6 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
-	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -175,19 +174,22 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var okRes models.MultURL
-	var ShortURL string
+
 	var jsonRes []byte
 	var JSONArray []models.MultURL
+
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
-		if repository.Ping() {
-			ShortURL = short.MakeShortURLToDB(value.LongURL)
-			d.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
+		ShortURL := short.WriteShortURL(value.LongURL)
+		//ShortURL = short.MakeShortURLToDB(value.LongURL)
+
+		repo := repository.New()
+		ok := repo.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
+		if !ok {
 			ShortURL = repository.ReturnShortURL(value.LongURL)
+			w.WriteHeader(409)
 		} else {
-			service.WriteToFile(value.LongURL)
-			ShortURL = short.WriteShortURL(value.LongURL)
-			f.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
+			w.WriteHeader(201)
 		}
 		okRes = models.MultURL{
 			CorrelationID: value.CorrelationID,
