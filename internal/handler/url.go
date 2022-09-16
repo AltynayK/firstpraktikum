@@ -184,11 +184,11 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		repo := repository.New()
 		ok := repo.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		if !ok {
-			ShortURL = repository.ReturnShortURL(value.LongURL)
 			w.WriteHeader(409)
 		} else {
 			w.WriteHeader(201)
 		}
+		ShortURL = repository.ReturnShortURL(value.LongURL)
 		okRes = models.MultURL{
 			CorrelationID: value.CorrelationID,
 			Result:        ShortURL,
