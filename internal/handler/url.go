@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"bufio"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
+	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -119,7 +119,6 @@ func CheckConnection(w http.ResponseWriter, req *http.Request) {
 func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var x []*models.URLStruct
 	var jsonRes []byte
-	var result string
 	w.Header().Set("content-type", "application/json")
 	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
@@ -127,17 +126,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 		}
 	}
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if result == "" {
-			result = line
-		}
-		if result != "" && line != "\n" {
-			result = result + "," + line
-		}
-	}
-	a := "[" + result + "]"
+	a := "[" + service.ScanFile(file) + "]"
 	jsonRes = []byte(a)
 	json.Unmarshal(jsonRes, &x)
 	var x2 []*models.URLStruct

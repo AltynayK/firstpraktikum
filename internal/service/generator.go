@@ -54,3 +54,18 @@ func WriteToFile(LongURL string) {
 		fmt.Print("Folder does not exist.")
 	}
 }
+
+func ScanFile(file *os.File) string {
+	var result string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if result == "" {
+			result = line
+		}
+		if result != "" && line != "\n" {
+			result = result + "," + line
+		}
+	}
+	return result
+}
