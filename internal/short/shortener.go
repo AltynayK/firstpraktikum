@@ -4,7 +4,6 @@ import (
 	"math/rand"
 	"strconv"
 
-	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/speps/go-hashids"
 )
@@ -31,16 +30,6 @@ func Hash(url string) string {
 }
 
 //increment#13
-func MakeShortURLToDB(url string) string {
-	db := repository.DB
-	id := db.QueryRow("SELECT id FROM data ORDER BY id DESC LIMIT 1")
-	alb := models.Dbid{}
-	if err := id.Scan(&alb.Maxid); err != nil {
-		alb.Maxid = 0
-	}
-	nextid := alb.Maxid + 1
-	return *Init + "/" + strconv.Itoa(nextid)
-}
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 

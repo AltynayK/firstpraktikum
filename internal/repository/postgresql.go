@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	_ "github.com/lib/pq"
@@ -44,6 +45,7 @@ func (d *DataBase) InsertData(shortURL string, originalURL string, userID string
 }
 
 func (d *DataBase) InsertMultipleData(shortURL string, originalURL string, userID string, correlationID string) bool {
+	shortURL = MakeShortURLToDB(originalURL)
 	sqlStatementt := `INSERT INTO data (short_url, original_url, user_id, correlation_id) VALUES ($1, $2, $3, $4)`
 	_, err := DB.Exec(sqlStatementt, shortURL, originalURL, userID, correlationID)
 	return err == nil
@@ -69,4 +71,21 @@ func ReturnShortURL(LongURL string) string {
 func Ping() bool {
 	err := DB.Ping()
 	return err == nil
+}
+
+var Init *string
+
+func GetBaseURLL(a *string) {
+	Init = a
+}
+
+func MakeShortURLToDB(url string) string {
+	db := DB
+	id := db.QueryRow("SELECT id FROM data ORDER BY id DESC LIMIT 1")
+	alb := models.Dbid{}
+	if err := id.Scan(&alb.Maxid); err != nil {
+		alb.Maxid = 0
+	}
+	nextid := alb.Maxid + 1
+	return *Init + "/" + strconv.Itoa(nextid)
 }

@@ -55,7 +55,7 @@ func main() {
 	short.GetBaseURL(&BaseURL)
 	handler.GetDatabaseDNS(&DatabaseDNS)
 	repository.GetDatabaseDNSs(&DatabaseDNS)
-
+	repository.GetBaseURLL(&BaseURL)
 	srv := http.Server{
 		Addr:    ServerAddress,
 		Handler: mux,
