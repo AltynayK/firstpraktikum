@@ -28,7 +28,7 @@ func init() {
 	flag.StringVar(&BaseURL, "b", "http://"+ServerAddress, "BaseURL")
 	//increment#
 	flag.StringVar(&FileStoragePath, "f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	//DatabaseDNS = flag.String("d", "host=localhost port=5432 user=altyna4y password=password dbname=somedb sslmode=disable", "DatabaseDNS")
+	//flag.StringVar(&DatabaseDNS, "d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
 	flag.StringVar(&DatabaseDNS, "d", "", "DatabaseDNS")
 }
 
@@ -54,6 +54,7 @@ func main() {
 	flag.Parse()
 	short.GetBaseURL(&BaseURL)
 	handler.GetDatabaseDNS(&DatabaseDNS)
+	repository.GetDatabaseDNSs(&DatabaseDNS)
 
 	srv := http.Server{
 		Addr:    ServerAddress,

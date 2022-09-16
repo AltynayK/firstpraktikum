@@ -28,7 +28,6 @@ func GetDatabaseDNS(a *string) {
 
 var d = repository.DataBase{}
 var f = repository.File{}
-var l = repository.Lists{}
 
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
@@ -43,19 +42,30 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	a := r.Context().Value(userCtxKey).(string)
 	ShortURL := short.WriteShortURL(url.LongURL)
-	if *DBdns != "" {
-
-		if !d.InsertData(ShortURL, url.LongURL, a) {
-			ShortURL = repository.ReturnShortURL(url.LongURL)
-			w.WriteHeader(409)
-		} else {
-			w.WriteHeader(201)
-		}
+	repo := repository.New()
+	ok := repo.InsertData(ShortURL, url.LongURL, a)
+	if !ok {
+		ShortURL = repository.ReturnShortURL(url.LongURL)
+		w.WriteHeader(409)
 	} else {
-		service.WriteToFile(url.LongURL)
-		f.InsertData(url.LongURL, ShortURL, a)
 		w.WriteHeader(201)
 	}
+	// repository.Repo.InsertData(repository.New(), ShortURL, url.LongURL, a)
+	// if *DBdns != "" {
+
+	// 	if !d.InsertData(ShortURL, url.LongURL, a) {
+	// 		ShortURL = repository.ReturnShortURL(url.LongURL)
+	// 		w.WriteHeader(409)
+	// 	} else {
+	// 		w.WriteHeader(201)
+	// 	}
+	// } else {
+
+	// 	if !f.InsertData(ShortURL, url.LongURL, a) {
+	// 		w.WriteHeader(409)
+	// 	}
+	// 	w.WriteHeader(201)
+	// }
 	okRes := models.URL{
 		Result: ShortURL,
 	}
@@ -80,19 +90,30 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 	shortURL := short.WriteShortURL(longURL)
 	a := r.Context().Value(userCtxKey).(string)
-	if *DBdns != "" {
-
-		if !d.InsertData(shortURL, longURL, a) {
-			shortURL = repository.ReturnShortURL(longURL)
-			w.WriteHeader(409)
-		} else {
-			w.WriteHeader(201)
-		}
+	repo := repository.New()
+	ok := repo.InsertData(shortURL, longURL, a)
+	if !ok {
+		shortURL = repository.ReturnShortURL(longURL)
+		w.WriteHeader(409)
 	} else {
-		service.WriteToFile(longURL)
-		f.InsertData(longURL, shortURL, a)
 		w.WriteHeader(201)
 	}
+	//repository.Repo.InsertData(repository.New(), shortURL, longURL, a)
+	// if *DBdns != "" {
+
+	// 	if !d.InsertData(shortURL, longURL, a) {
+	// 		shortURL = repository.ReturnShortURL(longURL)
+	// 		w.WriteHeader(409)
+	// 	} else {
+	// 		w.WriteHeader(201)
+	// 	}
+	// } else {
+
+	// 	if !f.InsertData(shortURL, longURL, a) {
+	// 		w.WriteHeader(409)
+	// 	}
+	// 	w.WriteHeader(201)
+	// }
 	w.Header().Set("Location", shortURL)
 	w.Write([]byte(shortURL))
 }
@@ -111,11 +132,14 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
 		return
 	}
-	if *DBdns != "" {
-		longURL = d.GetLongURLByID(b)
-	} else {
-		longURL = l.GetLongURLByID(b)
-	}
+	repo := repository.New()
+	longURL = repo.GetLongURLByID(b)
+	// if *DBdns != "" {
+	// 	longURL = d.GetLongURLByID(b)
+	// } else {
+	// 	longURL = f.GetLongURLByID(b)
+	// }
+
 	w.Header().Set("Location", longURL)
 	w.WriteHeader(307)
 	fmt.Fprint(w)
