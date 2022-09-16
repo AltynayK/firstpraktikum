@@ -35,6 +35,7 @@ func (f *File) InsertData(shortURL string, longURL string, userID string) bool {
 	return err == nil
 }
 func (f *File) InsertMultipleData(shortURL string, longURL string, userID string, correlationID string) bool {
+	service.WriteToFile(longURL)
 	rankings := models.Abs{
 		CorrelationID: correlationID,
 		LongURL:       longURL,

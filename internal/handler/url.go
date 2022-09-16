@@ -13,7 +13,6 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
-	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -31,7 +30,6 @@ var f = repository.File{}
 
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("content-type", "application/json")
 	var url models.URL
 	var jsonRes []byte
@@ -50,22 +48,6 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(201)
 	}
-	// repository.Repo.InsertData(repository.New(), ShortURL, url.LongURL, a)
-	// if *DBdns != "" {
-
-	// 	if !d.InsertData(ShortURL, url.LongURL, a) {
-	// 		ShortURL = repository.ReturnShortURL(url.LongURL)
-	// 		w.WriteHeader(409)
-	// 	} else {
-	// 		w.WriteHeader(201)
-	// 	}
-	// } else {
-
-	// 	if !f.InsertData(ShortURL, url.LongURL, a) {
-	// 		w.WriteHeader(409)
-	// 	}
-	// 	w.WriteHeader(201)
-	// }
 	okRes := models.URL{
 		Result: ShortURL,
 	}
@@ -80,7 +62,6 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 //increment#1
 func PostText(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("content-type", "plain/text")
 	url, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -98,22 +79,6 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(201)
 	}
-	//repository.Repo.InsertData(repository.New(), shortURL, longURL, a)
-	// if *DBdns != "" {
-
-	// 	if !d.InsertData(shortURL, longURL, a) {
-	// 		shortURL = repository.ReturnShortURL(longURL)
-	// 		w.WriteHeader(409)
-	// 	} else {
-	// 		w.WriteHeader(201)
-	// 	}
-	// } else {
-
-	// 	if !f.InsertData(shortURL, longURL, a) {
-	// 		w.WriteHeader(409)
-	// 	}
-	// 	w.WriteHeader(201)
-	// }
 	w.Header().Set("Location", shortURL)
 	w.Write([]byte(shortURL))
 }
@@ -134,12 +99,6 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	}
 	repo := repository.New()
 	longURL = repo.GetLongURLByID(b)
-	// if *DBdns != "" {
-	// 	longURL = d.GetLongURLByID(b)
-	// } else {
-	// 	longURL = f.GetLongURLByID(b)
-	// }
-
 	w.Header().Set("Location", longURL)
 	w.WriteHeader(307)
 	fmt.Fprint(w)
@@ -212,25 +171,24 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var okRes models.MultURL
-	var ShortURL string
 	var jsonRes []byte
 	var JSONArray []models.MultURL
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
-		if repository.Ping() {
-			ShortURL = short.MakeShortURLToDB(value.LongURL)
-			d.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
+		ShortURL := short.WriteShortURL(value.LongURL)
+		//ShortURL = short.MakeShortURLToDB(value.LongURL)
+		repo := repository.New()
+		ok := repo.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
+		if !ok {
 			ShortURL = repository.ReturnShortURL(value.LongURL)
+			w.WriteHeader(409)
 		} else {
-			service.WriteToFile(value.LongURL)
-			ShortURL = short.WriteShortURL(value.LongURL)
-			f.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
+			w.WriteHeader(201)
 		}
 		okRes = models.MultURL{
 			CorrelationID: value.CorrelationID,
 			Result:        ShortURL,
 		}
-
 		JSONArray = append(JSONArray, okRes)
 	}
 	if jsonRes, err = json.Marshal(JSONArray); err != nil {
@@ -240,5 +198,4 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
-
 }
