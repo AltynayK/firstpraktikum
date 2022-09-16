@@ -25,10 +25,6 @@ func GetDatabaseDNS(a *string) {
 	DBdns = a
 }
 
-var d = repository.DataBase{}
-var f = repository.File{}
-
-//increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var url models.URL
