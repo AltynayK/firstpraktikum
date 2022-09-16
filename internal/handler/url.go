@@ -30,7 +30,6 @@ var f = repository.File{}
 
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("content-type", "application/json")
 	var url models.URL
 	var jsonRes []byte
@@ -49,7 +48,6 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(201)
 	}
-
 	okRes := models.URL{
 		Result: ShortURL,
 	}
@@ -64,7 +62,6 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 //increment#1
 func PostText(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("content-type", "plain/text")
 	url, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -146,7 +143,6 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	}
 	a := "[" + result + "]"
 	jsonRes = []byte(a)
-
 	json.Unmarshal(jsonRes, &x)
 	var x2 []*models.URLStruct
 	for _, v := range x {
@@ -174,10 +170,8 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var okRes models.MultURL
-
 	var jsonRes []byte
 	var JSONArray []models.MultURL
-
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
 		ShortURL := short.WriteShortURL(value.LongURL)
@@ -193,7 +187,6 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 			CorrelationID: value.CorrelationID,
 			Result:        ShortURL,
 		}
-
 		JSONArray = append(JSONArray, okRes)
 	}
 	if jsonRes, err = json.Marshal(JSONArray); err != nil {
@@ -203,5 +196,4 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
-
 }
