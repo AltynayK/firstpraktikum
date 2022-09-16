@@ -13,6 +13,7 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
+	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -30,6 +31,7 @@ var f = repository.File{}
 
 //increment#2
 func PostJSON(w http.ResponseWriter, r *http.Request) {
+
 	w.Header().Set("content-type", "application/json")
 	var url models.URL
 	var jsonRes []byte
@@ -48,6 +50,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(201)
 	}
+
 	okRes := models.URL{
 		Result: ShortURL,
 	}
@@ -62,6 +65,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 
 //increment#1
 func PostText(w http.ResponseWriter, r *http.Request) {
+
 	w.Header().Set("content-type", "plain/text")
 	url, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -171,24 +175,25 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var okRes models.MultURL
+	var ShortURL string
 	var jsonRes []byte
 	var JSONArray []models.MultURL
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
-		ShortURL := short.WriteShortURL(value.LongURL)
-		//ShortURL = short.MakeShortURLToDB(value.LongURL)
-		repo := repository.New()
-		ok := repo.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
-		if !ok {
+		if repository.Ping() {
+			ShortURL = short.MakeShortURLToDB(value.LongURL)
+			d.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 			ShortURL = repository.ReturnShortURL(value.LongURL)
-			w.WriteHeader(409)
 		} else {
-			w.WriteHeader(201)
+			service.WriteToFile(value.LongURL)
+			ShortURL = short.WriteShortURL(value.LongURL)
+			f.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		}
 		okRes = models.MultURL{
 			CorrelationID: value.CorrelationID,
 			Result:        ShortURL,
 		}
+
 		JSONArray = append(JSONArray, okRes)
 	}
 	if jsonRes, err = json.Marshal(JSONArray); err != nil {
@@ -198,4 +203,5 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(201)
 	fmt.Fprint(w, string(jsonRes))
+
 }
