@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
-	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
@@ -16,16 +15,21 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var conf models.Config
+var (
+	ServerAddress   string
+	BaseURL         string
+	FileStoragePath string
+	DatabaseDNS     string
+)
 
 func init() {
 	//increment#5
-	flag.StringVar(&conf.ServerAddress, "a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
-	flag.StringVar(&conf.BaseURL, "b", "http://"+conf.ServerAddress, "BaseURL")
+	flag.StringVar(&ServerAddress, "a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
+	flag.StringVar(&BaseURL, "b", "http://"+ServerAddress, "BaseURL")
 	//increment#
-	flag.StringVar(&conf.FileStoragePath, "f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	flag.StringVar(&conf.DatabaseDNS, "d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
-	//flag.StringVar(&conf.DatabaseDNS, "d", "", "DatabaseDNS")
+	flag.StringVar(&FileStoragePath, "f", "texts.txt", "FileStoragePath - путь до файла LongURL")
+	//flag.StringVar(&DatabaseDNS, "d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
+	flag.StringVar(&DatabaseDNS, "d", "", "DatabaseDNS")
 }
 
 func main() {
@@ -33,32 +37,32 @@ func main() {
 	mux := initHandlers()
 
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
-		conf.ServerAddress = u
+		ServerAddress = u
 	}
 	if u, f := os.LookupEnv("BASE_URL"); f {
-		conf.BaseURL = u
+		BaseURL = u
 	}
 	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
-		conf.FileStoragePath = u
+		FileStoragePath = u
 	}
 	if u, f := os.LookupEnv("DatabaseDNS"); f {
-		conf.DatabaseDNS = u
+		DatabaseDNS = u
 	}
 
 	flag.Parse()
-	short.GetBaseURL(&conf.BaseURL)
-	handler.GetDatabaseDNS(&conf.DatabaseDNS)
-	repository.GetDatabaseDNSs(&conf.DatabaseDNS)
-	repository.GetBaseURLL(&conf.BaseURL)
+	short.GetBaseURL(&BaseURL)
+	handler.GetDatabaseDNS(&DatabaseDNS)
+	repository.GetDatabaseDNSs(&DatabaseDNS)
+	repository.GetBaseURLL(&BaseURL)
 	srv := http.Server{
-		Addr:    conf.ServerAddress,
+		Addr:    ServerAddress,
 		Handler: mux,
 	}
 
-	service.ReadFile(&conf.FileStoragePath)
+	service.ReadFile(&FileStoragePath)
 
 	repository.NewPostgresDB(repository.Config{
-		DBdns: &conf.DatabaseDNS,
+		DBdns: &DatabaseDNS,
 	})
 
 	fmt.Print(srv.ListenAndServe())

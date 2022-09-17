@@ -19,7 +19,6 @@ import (
 )
 
 var db *sql.DB
-
 var DBdns *string
 
 func GetDatabaseDNS(a *string) {
