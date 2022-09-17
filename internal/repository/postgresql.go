@@ -45,7 +45,7 @@ func (d *DataBase) InsertData(shortURL string, originalURL string, userID string
 }
 
 func (d *DataBase) InsertMultipleData(shortURL string, originalURL string, userID string, correlationID string) bool {
-	shortURL = MakeShortURLToDB(originalURL)
+
 	sqlStatementt := `INSERT INTO data (short_url, original_url, user_id, correlation_id) VALUES ($1, $2, $3, $4)`
 	_, err := DB.Exec(sqlStatementt, shortURL, originalURL, userID, correlationID)
 	return err == nil

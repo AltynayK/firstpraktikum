@@ -160,6 +160,7 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
 		ShortURL := short.WriteShortURL(value.LongURL)
+		ShortURL = repository.MakeShortURLToDB(value.LongURL)
 		repo := repository.New()
 		ok := repo.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		if !ok {
