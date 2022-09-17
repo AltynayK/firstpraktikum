@@ -61,7 +61,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "plain/text")
 	url, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), 400)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	longURL := string(url)
