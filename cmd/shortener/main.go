@@ -32,8 +32,6 @@ func init() {
 	flag.StringVar(&DatabaseDNS, "d", "", "DatabaseDNS")
 }
 
-var Checkvar bool
-
 func main() {
 
 	mux := initHandlers()

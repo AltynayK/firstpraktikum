@@ -40,15 +40,15 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	ok := repo.InsertData(ShortURL, url.LongURL, a)
 	if !ok {
 		ShortURL = repository.ReturnShortURL(url.LongURL)
-		w.WriteHeader(409)
+		w.WriteHeader(http.StatusConflict)
 	} else {
-		w.WriteHeader(201)
+		w.WriteHeader(http.StatusCreated)
 	}
 	okRes := models.URL{
 		Result: ShortURL,
 	}
 	if jsonRes, err = json.Marshal(okRes); err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "response json marshal err")
 		return
 	}
@@ -71,9 +71,9 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	ok := repo.InsertData(shortURL, longURL, a)
 	if !ok {
 		shortURL = repository.ReturnShortURL(longURL)
-		w.WriteHeader(409)
+		w.WriteHeader(http.StatusConflict)
 	} else {
-		w.WriteHeader(201)
+		w.WriteHeader(http.StatusCreated)
 	}
 	w.Header().Set("Location", shortURL)
 	w.Write([]byte(shortURL))
@@ -85,18 +85,18 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	var longURL string
 	id, ok := vars["id"]
 	if !ok {
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	b, err := strconv.Atoi(id)
 	if err != nil && b < 1 {
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	repo := repository.New()
 	longURL = repo.GetLongURLByID(b)
 	w.Header().Set("Location", longURL)
-	w.WriteHeader(307)
+	w.WriteHeader(http.StatusTemporaryRedirect)
 	fmt.Fprint(w)
 }
 
@@ -120,7 +120,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var x []*models.URLStruct
 	var jsonRes []byte
 	w.Header().Set("content-type", "application/json")
-	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0777)
+	file, err := os.OpenFile("./output.txt", os.O_RDONLY|os.O_CREATE, 0664)
 	if err != nil {
 		if os.IsNotExist(err) {
 			w.WriteHeader(http.StatusNoContent)
@@ -163,9 +163,9 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		repo := repository.New()
 		ok := repo.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
 		if !ok {
-			w.WriteHeader(409)
+			w.WriteHeader(http.StatusConflict)
 		} else {
-			w.WriteHeader(201)
+			w.WriteHeader(http.StatusCreated)
 		}
 		ShortURL = repository.ReturnShortURL(value.LongURL)
 		okRes = models.MultURL{
@@ -175,10 +175,10 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		JSONArray = append(JSONArray, okRes)
 	}
 	if jsonRes, err = json.Marshal(JSONArray); err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "response json marshal err")
 		return
 	}
-	w.WriteHeader(201)
+	w.WriteHeader(http.StatusCreated)
 	fmt.Fprint(w, string(jsonRes))
 }
