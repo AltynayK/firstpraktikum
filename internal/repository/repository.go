@@ -20,6 +20,7 @@ func GetDatabaseDNSs(a *string) {
 func New() Repo {
 	switch {
 	case *DBdns != "":
+
 		return NewDataBase()
 	default:
 		return NewFile()
