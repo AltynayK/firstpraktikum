@@ -9,9 +9,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// type Config struct {
-// 	DBdns *string
-//}
 type DataBase struct {
 }
 
@@ -79,12 +76,6 @@ func Ping() bool {
 	return err == nil
 }
 
-var Init *string
-
-func GetBaseURLL(a *string) {
-	Init = a
-}
-
 func MakeShortURLToDB(url string) string {
 	db := DB
 	id := db.QueryRow("SELECT id FROM data ORDER BY id DESC LIMIT 1")
@@ -93,5 +84,5 @@ func MakeShortURLToDB(url string) string {
 		alb.Maxid = 0
 	}
 	nextid := alb.Maxid + 1
-	return *Init + "/" + strconv.Itoa(nextid)
+	return *baseURL + "/" + strconv.Itoa(nextid)
 }

@@ -8,7 +8,6 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
-	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 
 	_ "github.com/lib/pq"
@@ -48,17 +47,12 @@ func main() {
 
 	flag.Parse()
 	short.GetBaseURL(&BaseURL)
-	repository.GetDataConfig(&DatabaseDNS)
-	repository.GetBaseURLL(&BaseURL)
+	repository.GetDataConfig(&DatabaseDNS, &FileStoragePath, &BaseURL)
+
 	srv := http.Server{
 		Addr:    ServerAddress,
 		Handler: mux,
 	}
-	service.ReadFile(&FileStoragePath)
-
-	// repository.NewPostgresDB(repository.Config{
-	// 	DBdns: &DatabaseDNS,
-	// })
 
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Print(err)
