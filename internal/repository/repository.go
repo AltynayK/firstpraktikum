@@ -13,20 +13,16 @@ type Repo interface {
 }
 
 var DBdns *string
-var fileStoragePath *string
 
-func GetDataConfig(a *string, b *string) {
+func GetDatabaseDNSs(a *string) {
 	DBdns = a
-	fileStoragePath = b
 }
-
 func New() Repo {
 	switch {
 	case *DBdns != "":
-		NewPostgresDB(DBdns)
+
 		return NewDataBase()
 	default:
-		//service.ReadFile(fileStoragePath)
 		return NewFile()
 	}
 }
