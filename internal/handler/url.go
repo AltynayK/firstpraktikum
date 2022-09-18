@@ -47,24 +47,24 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a := r.Context().Value(userCtxKey).(string)
-	ShortURL := short.WriteShortURL(url.LongURL)
+	shortURL := short.WriteShortURL(url.LongURL)
 	repo := repository.New()
-	ok := repo.InsertData(ShortURL, url.LongURL, a)
+	ok := repo.InsertData(shortURL, url.LongURL, a)
 	if !ok {
-		ShortURL = repository.ReturnShortURL(url.LongURL)
+		shortURL = repository.ReturnShortURL(url.LongURL)
 		w.WriteHeader(http.StatusConflict)
 	} else {
 		w.WriteHeader(http.StatusCreated)
 	}
 	okRes := models.URL{
-		Result: ShortURL,
+		Result: shortURL,
 	}
 	if jsonRes, err = json.Marshal(okRes); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "response json marshal err")
 		return
 	}
-	w.Header().Set("Location", ShortURL)
+	w.Header().Set("Location", shortURL)
 	fmt.Fprint(w, string(jsonRes))
 }
 
@@ -168,18 +168,18 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	var JSONArray []models.MultURL
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
-		ShortURL := repository.MakeShortURLToDB(value.LongURL)
+		shortURL := repository.MakeShortURLToDB(value.LongURL)
 		repo := repository.New()
-		ok := repo.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
+		ok := repo.InsertMultipleData(shortURL, value.LongURL, a, okRes.CorrelationID)
 		if !ok {
 			w.WriteHeader(http.StatusConflict)
 		} else {
 			w.WriteHeader(http.StatusCreated)
 		}
-		ShortURL = repository.ReturnShortURL(value.LongURL)
+		shortURL = repository.ReturnShortURL(value.LongURL)
 		okRes = models.MultURL{
 			CorrelationID: value.CorrelationID,
-			Result:        ShortURL,
+			Result:        shortURL,
 		}
 		JSONArray = append(JSONArray, okRes)
 	}
