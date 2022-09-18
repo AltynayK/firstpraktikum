@@ -160,16 +160,17 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	content, _ := ioutil.ReadAll(r.Body)
 	err := json.Unmarshal(content, &url)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Print(err)
 		return
 	}
 	var okRes models.MultURL
 	var jsonRes []byte
 	var JSONArray []models.MultURL
+	repo := repository.New()
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
 		shortURL := repository.MakeShortURLToDB(value.LongURL)
-		repo := repository.New()
+
 		ok := repo.InsertMultipleData(shortURL, value.LongURL, a, okRes.CorrelationID)
 		if !ok {
 			w.WriteHeader(http.StatusConflict)
@@ -188,6 +189,6 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "response json marshal err")
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
+
 	fmt.Fprint(w, string(jsonRes))
 }
