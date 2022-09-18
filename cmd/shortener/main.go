@@ -11,7 +11,6 @@ import (
 	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 
-	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
 
@@ -33,9 +32,7 @@ func init() {
 }
 
 func main() {
-
-	mux := initHandlers()
-
+	mux := handler.InitHandlers()
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
 		ServerAddress = u
 	}
@@ -58,30 +55,14 @@ func main() {
 		Addr:    ServerAddress,
 		Handler: mux,
 	}
-
 	service.ReadFile(&FileStoragePath)
 
 	repository.NewPostgresDB(repository.Config{
 		DBdns: &DatabaseDNS,
 	})
 
-	fmt.Print(srv.ListenAndServe())
-
-}
-
-func initHandlers() *mux.Router {
-
-	router := mux.NewRouter()
-	router.Use(handler.Decompress)
-	router.Use(handler.GzipHandler)
-	router.Use(handler.SetCookie)
-	//router.Use(handler.CheckCookie)
-
-	router.HandleFunc("/", handler.PostText).Methods("POST")
-	router.HandleFunc("/api/shorten", handler.PostJSON).Methods("POST")
-	router.HandleFunc("/{id:[0-9]+}", handler.Get).Methods("GET")
-	router.HandleFunc("/api/user/urls", handler.GetAllUrls).Methods("GET")
-	router.HandleFunc("/ping", handler.CheckConnection).Methods("GET")
-	router.HandleFunc("/api/shorten/batch", handler.PostMultipleUrls).Methods("POST")
-	return router
+	//fmt.Print(srv.ListenAndServe())
+	if err := srv.ListenAndServe(); err != nil {
+		fmt.Print(err)
+	}
 }

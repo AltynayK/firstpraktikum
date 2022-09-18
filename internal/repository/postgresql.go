@@ -12,7 +12,8 @@ import (
 type Config struct {
 	DBdns *string
 }
-type DataBase struct{}
+type DataBase struct {
+}
 
 func NewDataBase() Repo {
 	return &DataBase{}

@@ -18,11 +18,30 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var db *sql.DB
 var DBdns *string
 
 func GetDatabaseDNS(a *string) {
 	DBdns = a
+}
+
+type Handler struct {
+}
+
+func InitHandlers() *mux.Router {
+
+	router := mux.NewRouter()
+	router.Use(Decompress)
+	router.Use(GzipHandler)
+	router.Use(SetCookie)
+	//router.Use(handler.CheckCookie)
+
+	router.HandleFunc("/", PostText).Methods("POST")
+	router.HandleFunc("/api/shorten", PostJSON).Methods("POST")
+	router.HandleFunc("/{id:[0-9]+}", Get).Methods("GET")
+	router.HandleFunc("/api/user/urls", GetAllUrls).Methods("GET")
+	router.HandleFunc("/ping", CheckConnection).Methods("GET")
+	router.HandleFunc("/api/shorten/batch", PostMultipleUrls).Methods("POST")
+	return router
 }
 
 func PostJSON(w http.ResponseWriter, r *http.Request) {
