@@ -168,18 +168,18 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	var JSONArray []models.MultURL
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
-		ShortURL := repository.MakeShortURLToDB(value.LongURL)
+		shortURL := repository.MakeShortURLToDB(value.LongURL)
 		repo := repository.New()
-		ok := repo.InsertMultipleData(ShortURL, value.LongURL, a, okRes.CorrelationID)
+		ok := repo.InsertMultipleData(shortURL, value.LongURL, a, okRes.CorrelationID)
 		if !ok {
 			w.WriteHeader(http.StatusConflict)
 		} else {
 			w.WriteHeader(http.StatusCreated)
 		}
-		ShortURL = repository.ReturnShortURL(value.LongURL)
+		shortURL = repository.ReturnShortURL(value.LongURL)
 		okRes = models.MultURL{
 			CorrelationID: value.CorrelationID,
-			Result:        ShortURL,
+			Result:        shortURL,
 		}
 		JSONArray = append(JSONArray, okRes)
 	}

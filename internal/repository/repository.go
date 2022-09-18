@@ -2,8 +2,6 @@ package repository
 
 import (
 	"database/sql"
-
-	"github.com/AltynayK/firstpraktikum/internal/service"
 )
 
 var DB *sql.DB
@@ -28,7 +26,7 @@ func New() Repo {
 		NewPostgresDB(DBdns)
 		return NewDataBase()
 	default:
-		service.ReadFile(fileStoragePath)
+		//service.ReadFile(fileStoragePath)
 		return NewFile()
 	}
 }

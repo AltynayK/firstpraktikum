@@ -8,6 +8,7 @@ import (
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
+	"github.com/AltynayK/firstpraktikum/internal/service"
 	"github.com/AltynayK/firstpraktikum/internal/short"
 
 	_ "github.com/lib/pq"
@@ -53,7 +54,7 @@ func main() {
 		Addr:    ServerAddress,
 		Handler: mux,
 	}
-	// service.ReadFile(&FileStoragePath)
+	service.ReadFile(&FileStoragePath)
 
 	// repository.NewPostgresDB(repository.Config{
 	// 	DBdns: &DatabaseDNS,
