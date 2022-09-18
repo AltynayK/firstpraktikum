@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -122,14 +121,11 @@ func Get(w http.ResponseWriter, r *http.Request) {
 //increment#10
 func CheckConnection(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("content-type", "application/json")
-	db, err := sql.Open("postgres", *DBdns)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-	defer db.Close()
-	err = db.Ping()
-	if err != nil {
+
+	ok := repository.Ping()
+	if !ok {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 }

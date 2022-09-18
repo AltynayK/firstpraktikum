@@ -70,7 +70,12 @@ func ReturnShortURL(LongURL string) string {
 }
 
 func Ping() bool {
-	err := DB.Ping()
+	db, err := sql.Open("postgres", *DBdns)
+
+	if err != nil {
+		return err == nil
+	}
+	err = db.Ping()
 	return err == nil
 }
 
