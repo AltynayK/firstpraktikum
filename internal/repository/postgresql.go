@@ -9,17 +9,17 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type Config struct {
-	DBdns *string
-}
+// type Config struct {
+// 	DBdns *string
+// }
 type DataBase struct {
 }
 
 func NewDataBase() Repo {
 	return &DataBase{}
 }
-func NewPostgresDB(cfg Config) (*sql.DB, error) {
-	db, err := sql.Open("postgres", *cfg.DBdns)
+func NewPostgresDB(cfg *string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", *cfg)
 	if err != nil {
 		return nil, err
 	}

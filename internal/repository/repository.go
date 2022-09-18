@@ -2,6 +2,8 @@ package repository
 
 import (
 	"database/sql"
+
+	"github.com/AltynayK/firstpraktikum/internal/service"
 )
 
 var DB *sql.DB
@@ -13,16 +15,20 @@ type Repo interface {
 }
 
 var DBdns *string
+var fileStoragePath *string
 
-func GetDatabaseDNSs(a *string) {
+func GetDataConfig(a *string, b *string) {
 	DBdns = a
+	fileStoragePath = b
 }
 
 func New() Repo {
 	switch {
 	case *DBdns != "":
+		NewPostgresDB(DBdns)
 		return NewDataBase()
 	default:
+		service.ReadFile(fileStoragePath)
 		return NewFile()
 	}
 }
