@@ -14,13 +14,13 @@ type Repo interface {
 
 var DBdns *string
 
-func GetDatabaseDNSs(a *string) {
+func GetDataConfig(a *string) {
 	DBdns = a
 }
 func New() Repo {
 	switch {
 	case *DBdns != "":
-
+		NewPostgresDB(DBdns)
 		return NewDataBase()
 	default:
 		return NewFile()

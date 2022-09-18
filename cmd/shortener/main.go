@@ -48,7 +48,7 @@ func main() {
 
 	flag.Parse()
 	short.GetBaseURL(&BaseURL)
-	repository.GetDatabaseDNSs(&DatabaseDNS)
+	repository.GetDataConfig(&DatabaseDNS)
 	repository.GetBaseURLL(&BaseURL)
 	srv := http.Server{
 		Addr:    ServerAddress,
@@ -56,9 +56,9 @@ func main() {
 	}
 	service.ReadFile(&FileStoragePath)
 
-	repository.NewPostgresDB(repository.Config{
-		DBdns: &DatabaseDNS,
-	})
+	// repository.NewPostgresDB(repository.Config{
+	// 	DBdns: &DatabaseDNS,
+	// })
 
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Print(err)
