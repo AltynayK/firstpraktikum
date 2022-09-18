@@ -48,7 +48,6 @@ func main() {
 
 	flag.Parse()
 	short.GetBaseURL(&BaseURL)
-	handler.GetDatabaseDNS(&DatabaseDNS)
 	repository.GetDatabaseDNSs(&DatabaseDNS)
 	repository.GetBaseURLL(&BaseURL)
 	srv := http.Server{

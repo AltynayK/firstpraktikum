@@ -17,12 +17,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var DBdns *string
-
-func GetDatabaseDNS(a *string) {
-	DBdns = a
-}
-
 type Handler struct {
 }
 
