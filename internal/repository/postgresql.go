@@ -10,13 +10,10 @@ import (
 )
 
 type Config struct {
-	DBdns   *string
-	BaseURL *string
+	DBdns *string
 }
 type DataBase struct {
 }
-
-var cfg Config
 
 func NewDataBase() Repo {
 	return &DataBase{}
@@ -82,11 +79,11 @@ func Ping() bool {
 	return err == nil
 }
 
-// var Init *string
+var Init *string
 
-// func GetBaseURLL(a *string) {
-// 	Init = a
-// }
+func GetBaseURLL(a *string) {
+	Init = a
+}
 
 func MakeShortURLToDB(url string) string {
 	db := DB
@@ -96,5 +93,5 @@ func MakeShortURLToDB(url string) string {
 		alb.Maxid = 0
 	}
 	nextid := alb.Maxid + 1
-	return *cfg.BaseURL + "/" + strconv.Itoa(nextid)
+	return *Init + "/" + strconv.Itoa(nextid)
 }
