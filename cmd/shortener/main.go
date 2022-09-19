@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
@@ -32,6 +33,19 @@ func init() {
 func main() {
 	flag.Parse()
 	mux := handler.InitHandlers()
+	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
+		ServerAddress = u
+	}
+	if u, f := os.LookupEnv("BASE_URL"); f {
+		BaseURL = u
+	}
+	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
+		FileStoragePath = u
+	}
+	if u, f := os.LookupEnv("DatabaseDNS"); f {
+		DatabaseDNS = u
+	}
+
 	short.GetBaseURL(&BaseURL)
 	repository.GetDataConfig(&DatabaseDNS, &FileStoragePath, &BaseURL)
 
