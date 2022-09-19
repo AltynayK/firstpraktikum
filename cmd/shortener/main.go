@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/AltynayK/firstpraktikum/internal/handler"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
@@ -14,43 +13,47 @@ import (
 )
 
 var (
-	ServerAddress   string
-	BaseURL         string
-	FileStoragePath string
-	DatabaseDNS     string
+	ServerAddress   *string
+	BaseURL         *string
+	FileStoragePath *string
+	DatabaseDNS     *string
 )
 
-func init() {
-	//increment#5
-	flag.StringVar(&ServerAddress, "a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
-	flag.StringVar(&BaseURL, "b", "http://"+ServerAddress, "BaseURL")
-	//increment#
-	flag.StringVar(&FileStoragePath, "f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	//flag.StringVar(&DatabaseDNS, "d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
-	flag.StringVar(&DatabaseDNS, "d", "", "DatabaseDNS")
-}
+// func init() {
+// 	//increment#5
+// 	flag.StringVar(&ServerAddress, "a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
+// 	flag.StringVar(&BaseURL, "b", "http://"+ServerAddress, "BaseURL")
+// 	//increment#
+// 	flag.StringVar(&FileStoragePath, "f", "texts.txt", "FileStoragePath - путь до файла LongURL")
+// 	//flag.StringVar(&DatabaseDNS, "d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
+// 	flag.StringVar(&DatabaseDNS, "d", "", "DatabaseDNS")
+// }
 
 func main() {
+	ServerAddress = flag.String("a", "127.0.0.1:8080", "ServerAddress - адрес запуска HTTP-сервера")
+	BaseURL = flag.String("b", "http://"+*ServerAddress, "BaseURL")
+	FileStoragePath = flag.String("f", "texts.txt", "FileStoragePath - путь до файла LongURL")
+	DatabaseDNS = flag.String("d", "", "DatabaseDNS")
 	flag.Parse()
 	mux := handler.InitHandlers()
-	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
-		ServerAddress = u
-	}
-	if u, f := os.LookupEnv("BASE_URL"); f {
-		BaseURL = u
-	}
-	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
-		FileStoragePath = u
-	}
-	if u, f := os.LookupEnv("DatabaseDNS"); f {
-		DatabaseDNS = u
-	}
+	// if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
+	// 	ServerAddress = u
+	// }
+	// if u, f := os.LookupEnv("BASE_URL"); f {
+	// 	BaseURL = u
+	// }
+	// if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
+	// 	FileStoragePath = u
+	// }
+	// if u, f := os.LookupEnv("DatabaseDNS"); f {
+	// 	DatabaseDNS = u
+	// }
 
-	short.GetBaseURL(&BaseURL)
-	repository.GetDataConfig(&DatabaseDNS, &FileStoragePath, &BaseURL)
+	short.GetBaseURL(BaseURL)
+	repository.GetDataConfig(DatabaseDNS, FileStoragePath, BaseURL)
 
 	srv := http.Server{
-		Addr:    ServerAddress,
+		Addr:    *ServerAddress,
 		Handler: mux,
 	}
 
