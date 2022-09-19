@@ -31,6 +31,7 @@ func init() {
 }
 
 func main() {
+
 	mux := handler.InitHandlers()
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
 		ServerAddress = u
@@ -46,6 +47,7 @@ func main() {
 	}
 
 	flag.Parse()
+
 	short.GetBaseURL(&BaseURL)
 	repository.GetDataConfig(&DatabaseDNS, &FileStoragePath, &BaseURL)
 
@@ -57,4 +59,5 @@ func main() {
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Print(err)
 	}
+
 }
