@@ -62,8 +62,8 @@ func (d *DataBase) GetLongURLByID(id int) string {
 	}
 	return alb.Originalurl
 }
-func (d *DataBase) ReturnShortURL(LongURL string) string {
-	row := d.db.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
+func ReturnShortURL(LongURL string) string {
+	row := DB.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
 	alb := models.DBUrls{}
 	if err := row.Scan(&alb.Shorturl); err != nil {
 		fmt.Print("Error.")
@@ -81,8 +81,8 @@ func Ping() bool {
 	return err == nil
 }
 
-func (d *DataBase) MakeShortURLToDB(url string) string {
-	db := d.db
+func MakeShortURLToDB(url string) string {
+	db := DB
 	id := db.QueryRow("SELECT id FROM data ORDER BY id DESC LIMIT 1")
 	alb := models.Dbid{}
 	if err := id.Scan(&alb.Maxid); err != nil {
