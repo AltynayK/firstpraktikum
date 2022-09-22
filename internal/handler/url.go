@@ -174,12 +174,10 @@ func (s *Handler) GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 }
 
-type Posts []models.URLs
-
 //increment#12
 func (s *Handler) PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
-	var url Posts
+	var url []models.URLs
 	content, _ := ioutil.ReadAll(r.Body)
 	err := json.Unmarshal(content, &url)
 	if err != nil {
