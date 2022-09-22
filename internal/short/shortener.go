@@ -4,19 +4,14 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 )
-
-var Init *string
-
-func GetBaseURL(a *string) {
-	Init = a
-}
 
 //increment#1
 func WriteShortURL(url string) string {
 
-	return *Init + "/" + strconv.Itoa(repository.InsertData(url))
+	return app.NewConfig().BaseURL + "/" + strconv.Itoa(repository.InsertData(url))
 }
 
 // func Hash(url string) string {
