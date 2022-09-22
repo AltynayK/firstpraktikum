@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/handler"
@@ -30,22 +31,22 @@ import (
 // }
 
 func main() {
-
-	mux := handler.InitHandlers()
-	// if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
-	// 	ServerAddress = u
-	// }
-	// if u, f := os.LookupEnv("BASE_URL"); f {
-	// 	BaseURL = u
-	// }
-	// if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
-	// 	FileStoragePath = u
-	// }
-	// if u, f := os.LookupEnv("DatabaseDNS"); f {
-
-	// 	DatabaseDNS = u
-	// }
 	config := app.NewConfig()
+	mux := handler.InitHandlers()
+	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
+		config.ServerAddress = u
+	}
+	if u, f := os.LookupEnv("BASE_URL"); f {
+		config.BaseURL = u
+	}
+	if u, flg := os.LookupEnv("FILE_STORAGE_PATH"); flg {
+		config.FileStoragePath = u
+	}
+	if u, f := os.LookupEnv("DatabaseDNS"); f {
+
+		config.DatabaseDNS = u
+	}
+
 	short.GetBaseURL(&config.BaseURL)
 	repository.GetDataConfig(&config.DatabaseDNS, &config.FileStoragePath, &config.BaseURL)
 
