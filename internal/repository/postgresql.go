@@ -11,14 +11,13 @@ import (
 )
 
 type DataBase struct {
-	db *sql.DB
 }
 
 func NewDataBase() Repo {
 	return &DataBase{}
 }
-func NewPostgresDB(dns *string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", *dns)
+func NewPostgresDB(cfg *string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", *cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -43,19 +42,19 @@ func CreateTable(db *sql.DB) {
 }
 func (d *DataBase) InsertData(shortURL string, originalURL string, userID string) bool {
 	sqlStatement := `INSERT INTO data (short_url, original_url, user_id) VALUES ($1, $2, $3)`
-	_, err := d.db.Exec(sqlStatement, shortURL, originalURL, userID)
+	_, err := DB.Exec(sqlStatement, shortURL, originalURL, userID)
 	return err == nil
 }
 
 func (d *DataBase) InsertMultipleData(shortURL string, originalURL string, userID string, correlationID string) bool {
 
 	sqlStatementt := `INSERT INTO data (short_url, original_url, user_id, correlation_id) VALUES ($1, $2, $3, $4)`
-	_, err := d.db.Exec(sqlStatementt, shortURL, originalURL, userID, correlationID)
+	_, err := DB.Exec(sqlStatementt, shortURL, originalURL, userID, correlationID)
 	return err == nil
 }
 
 func (d *DataBase) GetLongURLByID(id int) string {
-	row := d.db.QueryRow("SELECT original_url FROM data WHERE id = $1", id)
+	row := DB.QueryRow("SELECT original_url FROM data WHERE id = $1", id)
 	alb := models.DBUrl{}
 	if err := row.Scan(&alb.Originalurl); err != nil {
 		fmt.Print("Error.")
