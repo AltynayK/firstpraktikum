@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
@@ -18,8 +19,21 @@ import (
 )
 
 type Handler struct {
+	config *app.Config
 }
 
+func NewHandler(config *app.Config) {
+	mux := InitHandlers()
+
+	srv := http.Server{
+		Addr:    config.ServerAddress,
+		Handler: mux,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		fmt.Print(err)
+	}
+}
 func InitHandlers() *mux.Router {
 
 	router := mux.NewRouter()

@@ -1,13 +1,9 @@
 package repository
 
 import (
-	"database/sql"
-
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 )
-
-var DB *sql.DB
 
 type Repo interface {
 	InsertData(string, string, string) bool
