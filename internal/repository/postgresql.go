@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	_ "github.com/lib/pq"
 )
@@ -67,7 +68,7 @@ func ReturnShortURL(LongURL string) string {
 }
 
 func Ping() bool {
-	db, err := sql.Open("postgres", *DBdns)
+	db, err := sql.Open("postgres", app.NewConfig().DatabaseDNS)
 
 	if err != nil {
 		return err == nil
@@ -84,5 +85,5 @@ func MakeShortURLToDB(url string) string {
 		alb.Maxid = 0
 	}
 	nextid := alb.Maxid + 1
-	return *baseURL + "/" + strconv.Itoa(nextid)
+	return app.NewConfig().BaseURL + "/" + strconv.Itoa(nextid)
 }
