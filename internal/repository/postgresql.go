@@ -10,16 +10,15 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var DB *sql.DB
-
 type DataBase struct {
+	db *sql.DB
 }
 
 func NewDataBase() Repo {
 	return &DataBase{}
 }
-func NewPostgresDB(cfg *string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", *cfg)
+func NewPostgresDB(dns *string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", *dns)
 	if err != nil {
 		return nil, err
 	}
@@ -31,6 +30,9 @@ func NewPostgresDB(cfg *string) (*sql.DB, error) {
 	return db, nil
 
 }
+
+var DB *sql.DB
+
 func CreateTable(db *sql.DB) {
 	_, err := db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar UNIQUE, user_id varchar, correlation_id varchar)")
 	if err != nil {
@@ -41,27 +43,27 @@ func CreateTable(db *sql.DB) {
 }
 func (d *DataBase) InsertData(shortURL string, originalURL string, userID string) bool {
 	sqlStatement := `INSERT INTO data (short_url, original_url, user_id) VALUES ($1, $2, $3)`
-	_, err := DB.Exec(sqlStatement, shortURL, originalURL, userID)
+	_, err := d.db.Exec(sqlStatement, shortURL, originalURL, userID)
 	return err == nil
 }
 
 func (d *DataBase) InsertMultipleData(shortURL string, originalURL string, userID string, correlationID string) bool {
 
 	sqlStatementt := `INSERT INTO data (short_url, original_url, user_id, correlation_id) VALUES ($1, $2, $3, $4)`
-	_, err := DB.Exec(sqlStatementt, shortURL, originalURL, userID, correlationID)
+	_, err := d.db.Exec(sqlStatementt, shortURL, originalURL, userID, correlationID)
 	return err == nil
 }
 
 func (d *DataBase) GetLongURLByID(id int) string {
-	row := DB.QueryRow("SELECT original_url FROM data WHERE id = $1", id)
+	row := d.db.QueryRow("SELECT original_url FROM data WHERE id = $1", id)
 	alb := models.DBUrl{}
 	if err := row.Scan(&alb.Originalurl); err != nil {
 		fmt.Print("Error.")
 	}
 	return alb.Originalurl
 }
-func ReturnShortURL(LongURL string) string {
-	row := DB.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
+func (d *DataBase) ReturnShortURL(LongURL string) string {
+	row := d.db.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
 	alb := models.DBUrls{}
 	if err := row.Scan(&alb.Shorturl); err != nil {
 		fmt.Print("Error.")
@@ -79,8 +81,8 @@ func Ping() bool {
 	return err == nil
 }
 
-func MakeShortURLToDB(url string) string {
-	db := DB
+func (d *DataBase) MakeShortURLToDB(url string) string {
+	db := d.db
 	id := db.QueryRow("SELECT id FROM data ORDER BY id DESC LIMIT 1")
 	alb := models.Dbid{}
 	if err := id.Scan(&alb.Maxid); err != nil {
