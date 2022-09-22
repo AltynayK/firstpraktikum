@@ -9,5 +9,6 @@ import (
 
 func main() {
 	config := app.NewConfig()
-	handler.NewHandler(config)
+	s := handler.NewHandler(config)
+	s.Run(config)
 }

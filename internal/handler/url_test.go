@@ -31,7 +31,7 @@ func (h *Handler) TestGet(t *testing.T) {
 			// создаём новый Recorder
 			w := httptest.NewRecorder()
 			// определяем хендлер
-			h := http.HandlerFunc(Get)
+			h := http.HandlerFunc(h.Get)
 			// запускаем сервер
 			h.ServeHTTP(w, request)
 			res := w.Result()

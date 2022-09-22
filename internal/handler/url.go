@@ -20,10 +20,18 @@ import (
 
 type Handler struct {
 	config *app.Config
+	repo   repository.Repo
 }
 
-func NewHandler(config *app.Config) {
-	mux := InitHandlers()
+func NewHandler(config *app.Config) *Handler {
+
+	return &Handler{
+		config: config,
+		repo:   repository.New(),
+	}
+}
+func (s *Handler) Run(config *app.Config) {
+	mux := s.InitHandlers()
 
 	srv := http.Server{
 		Addr:    config.ServerAddress,
@@ -33,8 +41,10 @@ func NewHandler(config *app.Config) {
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Print(err)
 	}
+
 }
-func InitHandlers() *mux.Router {
+
+func (s *Handler) InitHandlers() *mux.Router {
 
 	router := mux.NewRouter()
 	router.Use(Decompress)
@@ -42,16 +52,16 @@ func InitHandlers() *mux.Router {
 	router.Use(SetCookie)
 	//router.Use(handler.CheckCookie)
 
-	router.HandleFunc("/", PostText).Methods("POST")
-	router.HandleFunc("/api/shorten", PostJSON).Methods("POST")
-	router.HandleFunc("/{id:[0-9]+}", Get).Methods("GET")
-	router.HandleFunc("/api/user/urls", GetAllUrls).Methods("GET")
-	router.HandleFunc("/ping", CheckConnection).Methods("GET")
-	router.HandleFunc("/api/shorten/batch", PostMultipleUrls).Methods("POST")
+	router.HandleFunc("/", s.PostText).Methods("POST")
+	router.HandleFunc("/api/shorten", s.PostJSON).Methods("POST")
+	router.HandleFunc("/{id:[0-9]+}", s.Get).Methods("GET")
+	router.HandleFunc("/api/user/urls", s.GetAllUrls).Methods("GET")
+	router.HandleFunc("/ping", s.CheckConnection).Methods("GET")
+	router.HandleFunc("/api/shorten/batch", s.PostMultipleUrls).Methods("POST")
 	return router
 }
 
-func PostJSON(w http.ResponseWriter, r *http.Request) {
+func (s *Handler) PostJSON(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var url models.URL
 	var jsonRes []byte
@@ -62,8 +72,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	a := r.Context().Value(userCtxKey).(string)
 	shortURL := short.WriteShortURL(url.LongURL)
-	repo := repository.New()
-	ok := repo.InsertData(shortURL, url.LongURL, a)
+	ok := s.repo.InsertData(shortURL, url.LongURL, a)
 	if !ok {
 		shortURL = repository.ReturnShortURL(url.LongURL)
 		w.WriteHeader(http.StatusConflict)
@@ -83,7 +92,7 @@ func PostJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 //increment#1
-func PostText(w http.ResponseWriter, r *http.Request) {
+func (s *Handler) PostText(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "plain/text")
 	url, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -93,8 +102,8 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 	longURL := string(url)
 	shortURL := short.WriteShortURL(longURL)
 	a := r.Context().Value(userCtxKey).(string)
-	repo := repository.New()
-	ok := repo.InsertData(shortURL, longURL, a)
+	//repo := repository.New()
+	ok := s.repo.InsertData(shortURL, longURL, a)
 	if !ok {
 		shortURL = repository.ReturnShortURL(longURL)
 		w.WriteHeader(http.StatusConflict)
@@ -106,7 +115,7 @@ func PostText(w http.ResponseWriter, r *http.Request) {
 }
 
 //increment#1
-func Get(w http.ResponseWriter, r *http.Request) {
+func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	var longURL string
 	id, ok := vars["id"]
@@ -119,15 +128,15 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	repo := repository.New()
-	longURL = repo.GetLongURLByID(b)
+	//repo := repository.New()
+	longURL = s.repo.GetLongURLByID(b)
 	w.Header().Set("Location", longURL)
 	w.WriteHeader(http.StatusTemporaryRedirect)
 	fmt.Fprint(w)
 }
 
 //increment#10
-func CheckConnection(w http.ResponseWriter, req *http.Request) {
+func (s *Handler) CheckConnection(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
 	ok := repository.Ping()
@@ -139,7 +148,7 @@ func CheckConnection(w http.ResponseWriter, req *http.Request) {
 }
 
 //increment#9
-func GetAllUrls(w http.ResponseWriter, r *http.Request) {
+func (s *Handler) GetAllUrls(w http.ResponseWriter, r *http.Request) {
 	var x []*models.URLStruct
 	var jsonRes []byte
 	w.Header().Set("content-type", "application/json")
@@ -168,7 +177,7 @@ func GetAllUrls(w http.ResponseWriter, r *http.Request) {
 type Posts []models.URLs
 
 //increment#12
-func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
+func (s *Handler) PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var url Posts
 	content, _ := ioutil.ReadAll(r.Body)
@@ -180,12 +189,12 @@ func PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	var okRes models.MultURL
 	var jsonRes []byte
 	var JSONArray []models.MultURL
-	repo := repository.New()
+	//repo := repository.New()
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
 		shortURL := repository.MakeShortURLToDB(value.LongURL)
 
-		ok := repo.InsertMultipleData(shortURL, value.LongURL, a, okRes.CorrelationID)
+		ok := s.repo.InsertMultipleData(shortURL, value.LongURL, a, okRes.CorrelationID)
 		if !ok {
 			w.WriteHeader(http.StatusConflict)
 		} else {
