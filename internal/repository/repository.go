@@ -11,14 +11,14 @@ type Repo interface {
 	GetLongURLByID(int) string
 }
 
-func New() Repo {
-	conf := app.NewConfig()
+func New(config *app.Config) Repo {
+
 	switch {
-	case conf.DatabaseDNS != "":
-		NewPostgresDB(&conf.DatabaseDNS)
+	case config.DatabaseDNS != "":
+		NewPostgresDB(&config.DatabaseDNS)
 		return NewDataBase()
 	default:
-		service.ReadFile(&conf.FileStoragePath)
+		service.ReadFile(&config.FileStoragePath)
 		return NewFile()
 	}
 }

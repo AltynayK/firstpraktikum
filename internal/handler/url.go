@@ -27,7 +27,7 @@ func NewHandler(config *app.Config) *Handler {
 
 	return &Handler{
 		config: config,
-		repo:   repository.New(),
+		repo:   repository.New(config),
 	}
 }
 func (s *Handler) Run(config *app.Config) {
