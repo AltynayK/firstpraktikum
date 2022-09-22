@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 
+	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 )
 
@@ -14,23 +15,14 @@ type Repo interface {
 	GetLongURLByID(int) string
 }
 
-var DBdns *string
-var fileStoragePath *string
-var baseURL *string
-
-func GetDataConfig(a *string, b *string, c *string) {
-	DBdns = a
-	fileStoragePath = b
-	baseURL = c
-
-}
 func New() Repo {
+	conf := app.NewConfig()
 	switch {
-	case *DBdns != "":
-		NewPostgresDB(DBdns)
+	case conf.DatabaseDNS != "":
+		NewPostgresDB(&conf.DatabaseDNS)
 		return NewDataBase()
 	default:
-		service.ReadFile(fileStoragePath)
+		service.ReadFile(&conf.FileStoragePath)
 		return NewFile()
 	}
 }
