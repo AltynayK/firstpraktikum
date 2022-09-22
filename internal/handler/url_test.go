@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func (h *Handler) TestGet(t *testing.T) {
+func (s *Handler) TestGet(t *testing.T) {
 
 	type want struct {
 		code int
@@ -31,7 +31,7 @@ func (h *Handler) TestGet(t *testing.T) {
 			// создаём новый Recorder
 			w := httptest.NewRecorder()
 			// определяем хендлер
-			h := http.HandlerFunc(h.Get)
+			h := http.HandlerFunc(s.Get)
 			// запускаем сервер
 			h.ServeHTTP(w, request)
 			res := w.Result()
