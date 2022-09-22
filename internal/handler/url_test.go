@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestGet(t *testing.T) {
+func (h *Handler) TestGet(t *testing.T) {
 
 	type want struct {
 		code int
