@@ -18,31 +18,29 @@ type DataBase struct {
 func NewDataBase(config *app.Config) Repo {
 	return &DataBase{
 		config: config,
-		dB:     DB,
+		dB:     NewPostgresDB(&config.DatabaseDNS),
 	}
 }
-func NewPostgresDB(cfg *string) (*sql.DB, error) {
+func NewPostgresDB(cfg *string) *sql.DB {
 	db, err := sql.Open("postgres", *cfg)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 	err = db.Ping()
 	if err != nil {
-		return nil, err
+		return nil
 	}
+
 	CreateTable(db)
-	return db, nil
+	return db
 
 }
-
-var DB *sql.DB
 
 func CreateTable(db *sql.DB) {
 	_, err := db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar UNIQUE, user_id varchar, correlation_id varchar)")
 	if err != nil {
 		panic(err)
 	}
-	DB = db
 
 }
 func (d *DataBase) InsertData(shortURL string, originalURL string, userID string) bool {
