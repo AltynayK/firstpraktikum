@@ -30,20 +30,20 @@ func NewPostgresDB(cfg *string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	CreateTable(db)
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar UNIQUE, user_id varchar, correlation_id varchar)")
+	if err != nil {
+		panic(err)
+	}
 
 	return db, nil
 
 }
 
-func CreateTable(db *sql.DB) {
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar UNIQUE, user_id varchar, correlation_id varchar)")
-	if err != nil {
-		panic(err)
-	}
-	// DB = db
+// func CreateTable(db *sql.DB) {
 
-}
+// 	DB = db
+
+// }
 func (d *DataBase) InsertData(shortURL string, originalURL string, userID string) bool {
 	sqlStatement := `INSERT INTO data (short_url, original_url, user_id) VALUES ($1, $2, $3)`
 	_, err := d.db.Exec(sqlStatement, shortURL, originalURL, userID)
