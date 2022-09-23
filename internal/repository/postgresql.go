@@ -11,10 +11,13 @@ import (
 )
 
 type DataBase struct {
+	config *app.Config
 }
 
-func NewDataBase() Repo {
-	return &DataBase{}
+func NewDataBase(config *app.Config) Repo {
+	return &DataBase{
+		config: config,
+	}
 }
 func NewPostgresDB(cfg *string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", *cfg)
@@ -88,5 +91,5 @@ func (d *DataBase) MakeShortURL(url string) string {
 		alb.Maxid = 0
 	}
 	nextid := alb.Maxid + 1
-	return app.NewConfig().BaseURL + "/" + strconv.Itoa(nextid)
+	return d.config.BaseURL + "/" + strconv.Itoa(nextid)
 }
