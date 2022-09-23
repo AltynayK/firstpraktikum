@@ -18,7 +18,7 @@ func New(config *app.Config) Repo {
 	switch {
 	case config.DatabaseDNS != "":
 		NewPostgresDB(&config.DatabaseDNS)
-		return NewDataBase(config)
+		return NewDataBase()
 	default:
 		service.ReadFile(&config.FileStoragePath)
 		return NewFile()
