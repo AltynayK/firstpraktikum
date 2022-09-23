@@ -13,7 +13,6 @@ import (
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
-	"github.com/AltynayK/firstpraktikum/internal/short"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
@@ -71,10 +70,10 @@ func (s *Handler) PostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a := r.Context().Value(userCtxKey).(string)
-	shortURL := short.WriteShortURL(url.LongURL)
+	shortURL := s.repo.MakeShortURL(url.LongURL)
 	ok := s.repo.InsertData(shortURL, url.LongURL, a)
 	if !ok {
-		shortURL = repository.ReturnShortURL(url.LongURL)
+		shortURL = s.repo.ReturnShortURL(url.LongURL)
 		w.WriteHeader(http.StatusConflict)
 	} else {
 		w.WriteHeader(http.StatusCreated)
@@ -100,12 +99,12 @@ func (s *Handler) PostText(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	longURL := string(url)
-	shortURL := short.WriteShortURL(longURL)
+	shortURL := s.repo.MakeShortURL(longURL)
 	a := r.Context().Value(userCtxKey).(string)
 	//repo := repository.New()
 	ok := s.repo.InsertData(shortURL, longURL, a)
 	if !ok {
-		shortURL = repository.ReturnShortURL(longURL)
+		shortURL = s.repo.ReturnShortURL(longURL)
 		w.WriteHeader(http.StatusConflict)
 	} else {
 		w.WriteHeader(http.StatusCreated)
@@ -190,7 +189,7 @@ func (s *Handler) PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	//repo := repository.New()
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
-		shortURL := repository.MakeShortURLToDB(value.LongURL)
+		shortURL := s.repo.MakeShortURL(value.LongURL)
 
 		ok := s.repo.InsertMultipleData(shortURL, value.LongURL, a, okRes.CorrelationID)
 		if !ok {
@@ -198,7 +197,7 @@ func (s *Handler) PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 		} else {
 			w.WriteHeader(http.StatusCreated)
 		}
-		shortURL = repository.ReturnShortURL(value.LongURL)
+		shortURL = s.repo.ReturnShortURL(value.LongURL)
 		okRes = models.MultURL{
 			CorrelationID: value.CorrelationID,
 			Result:        shortURL,

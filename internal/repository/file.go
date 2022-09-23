@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
+	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/service"
 )
@@ -66,4 +68,12 @@ func (f *File) GetLongURLByID(id int) string {
 	//fmt.Print(service.IDList[id])
 	return service.IDList[id]
 
+}
+
+func (f *File) MakeShortURL(url string) string {
+
+	return app.NewConfig().BaseURL + "/" + strconv.Itoa(InsertData(url))
+}
+func (f *File) ReturnShortURL(url string) string {
+	return url
 }
