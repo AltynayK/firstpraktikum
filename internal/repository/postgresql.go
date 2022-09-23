@@ -12,11 +12,13 @@ import (
 
 type DataBase struct {
 	config *app.Config
+	dB     *sql.DB
 }
 
 func NewDataBase(config *app.Config) Repo {
 	return &DataBase{
 		config: config,
+		dB:     DB,
 	}
 }
 func NewPostgresDB(cfg *string) (*sql.DB, error) {
@@ -45,19 +47,19 @@ func CreateTable(db *sql.DB) {
 }
 func (d *DataBase) InsertData(shortURL string, originalURL string, userID string) bool {
 	sqlStatement := `INSERT INTO data (short_url, original_url, user_id) VALUES ($1, $2, $3)`
-	_, err := DB.Exec(sqlStatement, shortURL, originalURL, userID)
+	_, err := d.dB.Exec(sqlStatement, shortURL, originalURL, userID)
 	return err == nil
 }
 
 func (d *DataBase) InsertMultipleData(shortURL string, originalURL string, userID string, correlationID string) bool {
 
 	sqlStatementt := `INSERT INTO data (short_url, original_url, user_id, correlation_id) VALUES ($1, $2, $3, $4)`
-	_, err := DB.Exec(sqlStatementt, shortURL, originalURL, userID, correlationID)
+	_, err := d.dB.Exec(sqlStatementt, shortURL, originalURL, userID, correlationID)
 	return err == nil
 }
 
 func (d *DataBase) GetLongURLByID(id int) string {
-	row := DB.QueryRow("SELECT original_url FROM data WHERE id = $1", id)
+	row := d.dB.QueryRow("SELECT original_url FROM data WHERE id = $1", id)
 	alb := models.DBUrl{}
 	if err := row.Scan(&alb.Originalurl); err != nil {
 		fmt.Print("Error.")
@@ -65,7 +67,7 @@ func (d *DataBase) GetLongURLByID(id int) string {
 	return alb.Originalurl
 }
 func (d *DataBase) ReturnShortURL(LongURL string) string {
-	row := DB.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
+	row := d.dB.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
 	alb := models.DBUrls{}
 	if err := row.Scan(&alb.Shorturl); err != nil {
 		fmt.Print("Error.")
@@ -84,8 +86,7 @@ func Ping() bool {
 }
 
 func (d *DataBase) MakeShortURL(url string) string {
-	db := DB
-	id := db.QueryRow("SELECT id FROM data ORDER BY id DESC LIMIT 1")
+	id := d.dB.QueryRow("SELECT id FROM data ORDER BY id DESC LIMIT 1")
 	alb := models.Dbid{}
 	if err := id.Scan(&alb.Maxid); err != nil {
 		alb.Maxid = 0
