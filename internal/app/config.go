@@ -29,7 +29,6 @@ func init() {
 	flag.StringVar(&DatabaseDNS, "d", "", "DatabaseDNS")
 }
 func NewConfig() *Config {
-
 	flag.Parse()
 	if u, f := os.LookupEnv("SERVER_ADDRESS"); f {
 		ServerAddress = u
