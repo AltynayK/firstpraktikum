@@ -11,6 +11,7 @@ type Repo interface {
 	GetLongURLByID(int) string
 	MakeShortURL(string) string
 	ReturnShortURL(string) string
+	CheckStatus(int) bool
 }
 
 func New(config *app.Config) Repo {

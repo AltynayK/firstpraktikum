@@ -77,3 +77,6 @@ func (f *File) MakeShortURL(url string) string {
 func (f *File) ReturnShortURL(url string) string {
 	return url
 }
+func (f *File) CheckStatus(id int) bool {
+	return true
+}
