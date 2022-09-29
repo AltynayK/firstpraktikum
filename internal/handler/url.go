@@ -133,11 +133,9 @@ func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	status = s.repo.CheckStatus(b)
 	if status == false {
 		w.WriteHeader(http.StatusGone)
-	} else {
-		w.WriteHeader(http.StatusTemporaryRedirect)
 	}
 	w.Header().Set("Location", longURL)
-
+	w.WriteHeader(http.StatusTemporaryRedirect)
 	fmt.Fprint(w)
 }
 
