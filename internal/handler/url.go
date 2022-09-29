@@ -131,7 +131,7 @@ func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	//repo := repository.New()
 	longURL = s.repo.GetLongURLByID(b)
 	status = s.repo.CheckStatus(b)
-	if status == false {
+	if !status {
 		w.WriteHeader(http.StatusGone)
 	}
 	w.Header().Set("Location", longURL)
