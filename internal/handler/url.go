@@ -117,7 +117,7 @@ func (s *Handler) PostText(w http.ResponseWriter, r *http.Request) {
 func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	var longURL string
-	var status bool
+	//var status bool
 	id, ok := vars["id"]
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
@@ -130,12 +130,12 @@ func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	//repo := repository.New()
 	longURL = s.repo.GetLongURLByID(b)
-	status = s.repo.CheckStatus(b)
-	if !status {
-		w.WriteHeader(http.StatusGone)
-	} else {
-		w.WriteHeader(http.StatusTemporaryRedirect)
-	}
+	// status = s.repo.CheckStatus(b)
+	// if !status {
+	// 	w.WriteHeader(http.StatusGone)
+	// } else {
+	// 	w.WriteHeader(http.StatusTemporaryRedirect)
+	// }
 	w.Header().Set("Location", longURL)
 	fmt.Fprint(w)
 }
