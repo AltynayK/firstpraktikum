@@ -117,7 +117,7 @@ func (s *Handler) PostText(w http.ResponseWriter, r *http.Request) {
 func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	var longURL string
-	var status bool
+	status := true
 	id, ok := vars["id"]
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
