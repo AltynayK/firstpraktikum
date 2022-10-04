@@ -57,6 +57,7 @@ func (s *Handler) InitHandlers() *mux.Router {
 	router.HandleFunc("/api/user/urls", s.GetAllUrls).Methods("GET")
 	router.HandleFunc("/ping", s.CheckConnection).Methods("GET")
 	router.HandleFunc("/api/shorten/batch", s.PostMultipleUrls).Methods("POST")
+	router.HandleFunc("/api/user/urls", s.DeleteUrls).Methods("DELETE")
 	return router
 }
 
@@ -216,4 +217,20 @@ func (s *Handler) PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprint(w, string(jsonRes))
+}
+
+func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("content-type", "application/json")
+	var url []string
+	content, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(content, &url)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	for _, value := range url {
+		s.repo.ChangeStatus(strconv.Atoi(value))
+	}
+	w.WriteHeader(http.StatusAccepted)
 }

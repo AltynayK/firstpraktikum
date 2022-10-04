@@ -63,3 +63,5 @@
 {"short_url":"http://127.0.0.1:8080/63","original_url":"https://agifthhub.com/","userID":"1e31d250-d98b-4771-b5d0-1fc79c53eb0a","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/64","original_url":"https://golandddgndddаvcfoded.com/","userID":"1e31d250-d98b-4771-b5d0-1fc79c53eb0a","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/69","original_url":"https://github.com/","userID":"30e59fdc-4cb9-4edb-a458-1d723bb25ca8","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/70","original_url":"https://github.com/","userID":"18349e63-b63c-48ee-930d-7f040571fcf4","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/71","original_url":"https://github.com/","userID":"18349e63-b63c-48ee-930d-7f040571fcf4","correlation_id":""}

@@ -101,3 +101,6 @@ func (d *DataBase) CheckStatus(id int) bool {
 	}
 	return alb.Active
 }
+func (d *DataBase) ChangeStatus(id int, err error) {
+	d.dB.QueryRow("UPDATE data SET active=false WHERE id = $1", id)
+}

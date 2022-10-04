@@ -12,6 +12,7 @@ type Repo interface {
 	MakeShortURL(string) string
 	ReturnShortURL(string) string
 	CheckStatus(int) bool
+	ChangeStatus(int, error)
 }
 
 func New(config *app.Config) Repo {

@@ -80,3 +80,6 @@ func (f *File) ReturnShortURL(url string) string {
 func (f *File) CheckStatus(id int) bool {
 	return true
 }
+func (f *File) ChangeStatus(id int, err error) {
+	return
+}
