@@ -106,8 +106,8 @@ func (d *DataBase) CheckDeletion(id int) bool {
 // 	d.dB.QueryRow("UPDATE data SET active=false WHERE id = $1", id)
 // }
 func (d *DataBase) DeleteMultiple(id []int) {
-	for i := range id {
-		d.dB.QueryRow("UPDATE data SET active=false WHERE id = $1", i)
+	for _, i := range id {
+		d.dB.QueryRow("UPDATE data SET active=false WHERE id = ANY($1)", i)
 	}
 
 }
