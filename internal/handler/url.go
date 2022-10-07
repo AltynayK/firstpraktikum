@@ -20,6 +20,7 @@ import (
 type Handler struct {
 	config *app.Config
 	repo   repository.Repo
+	ch     chan int
 }
 
 func NewHandler(config *app.Config) *Handler {
@@ -131,7 +132,7 @@ func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	//repo := repository.New()
 	longURL = s.repo.GetLongURLByID(b)
-	status = s.repo.CheckStatus(b)
+	status = s.repo.CheckDeletion(b)
 	if !status {
 		w.WriteHeader(http.StatusGone)
 	}
@@ -223,6 +224,7 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("content-type", "application/json")
 	var url []string
+	var slice []int
 	content, _ := ioutil.ReadAll(r.Body)
 	err := json.Unmarshal(content, &url)
 	if err != nil {
@@ -230,7 +232,12 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, value := range url {
-		s.repo.ChangeStatus(strconv.Atoi(value))
+		a, err := strconv.Atoi(value)
+		if err != nil {
+			fmt.Print("error")
+		}
+		slice = append(slice, a)
 	}
+	s.repo.DeleteMultiple(slice)
 	w.WriteHeader(http.StatusAccepted)
 }

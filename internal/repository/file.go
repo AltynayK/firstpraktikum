@@ -77,9 +77,9 @@ func (f *File) MakeShortURL(url string) string {
 func (f *File) ReturnShortURL(url string) string {
 	return url
 }
-func (f *File) CheckStatus(id int) bool {
+func (f *File) CheckDeletion(id int) bool {
 	return true
 }
-func (f *File) ChangeStatus(id int, err error) {
+func (f *File) DeleteMultiple([]int) {
 
 }

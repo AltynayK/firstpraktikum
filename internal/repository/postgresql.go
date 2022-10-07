@@ -93,7 +93,7 @@ func (d *DataBase) MakeShortURL(url string) string {
 	return d.config.BaseURL + "/" + strconv.Itoa(nextid)
 }
 
-func (d *DataBase) CheckStatus(id int) bool {
+func (d *DataBase) CheckDeletion(id int) bool {
 	row := d.dB.QueryRow("SELECT active FROM data WHERE id = $1", id)
 	alb := models.DBUrl{}
 	if err := row.Scan(&alb.Active); err != nil {
@@ -101,6 +101,13 @@ func (d *DataBase) CheckStatus(id int) bool {
 	}
 	return alb.Active
 }
-func (d *DataBase) ChangeStatus(id int, err error) {
-	d.dB.QueryRow("UPDATE data SET active=false WHERE id = $1", id)
+
+// func (d *DataBase) Delete(id int, err error) {
+// 	d.dB.QueryRow("UPDATE data SET active=false WHERE id = $1", id)
+// }
+func (d *DataBase) DeleteMultiple(id []int) {
+	for i := range id {
+		d.dB.QueryRow("UPDATE data SET active=false WHERE id = $1", i)
+	}
+
 }
