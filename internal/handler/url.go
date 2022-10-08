@@ -134,17 +134,15 @@ func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	longURL = s.repo.GetLongURLByID(b)
 	status = s.repo.CheckDeletion(b)
 	if !status {
-		w.WriteHeader(http.StatusGone)
-		w.Header().Set("Location", longURL)
 
+		w.Header().Set("Location", longURL)
+		w.WriteHeader(http.StatusGone)
 		fmt.Fprint(w)
 		return
 	}
 
-	w.WriteHeader(http.StatusTemporaryRedirect)
-
 	w.Header().Set("Location", longURL)
-
+	w.WriteHeader(http.StatusTemporaryRedirect)
 	fmt.Fprint(w)
 }
 
