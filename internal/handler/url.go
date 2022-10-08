@@ -20,7 +20,7 @@ import (
 type Handler struct {
 	config *app.Config
 	repo   repository.Repo
-	ch     chan int
+	Ch     chan []int
 }
 
 func NewHandler(config *app.Config) *Handler {
@@ -231,6 +231,7 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 		fmt.Print(err)
 		return
 	}
+	chh := make(chan []int)
 	for _, value := range url {
 		a, err := strconv.Atoi(value)
 		if err != nil {
@@ -238,6 +239,13 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 		}
 		slice = append(slice, a)
 	}
-	s.repo.DeleteMultiple(slice)
+
+	chh <- slice
+	go s.DeleteUrl(chh)
 	w.WriteHeader(http.StatusAccepted)
+}
+
+func (s *Handler) DeleteUrl(ch chan []int) {
+
+	s.repo.DeleteMultiple(<-ch)
 }
