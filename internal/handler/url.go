@@ -59,6 +59,7 @@ func (s *Handler) InitHandlers() *mux.Router {
 	router.HandleFunc("/ping", s.CheckConnection).Methods("GET")
 	router.HandleFunc("/api/shorten/batch", s.PostMultipleUrls).Methods("POST")
 	router.HandleFunc("/api/user/urls", s.DeleteUrls).Methods("DELETE")
+	go s.DeleteURL()
 	return router
 }
 
@@ -246,11 +247,12 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 	}
 
 	chh <- slice
-	s.DeleteURL(chh)
+	s.Ch = chh
+
 	w.WriteHeader(http.StatusAccepted)
 }
 
-func (s *Handler) DeleteURL(ch chan []int) {
+func (s *Handler) DeleteURL() {
 
-	s.repo.DeleteMultiple(<-ch)
+	s.repo.DeleteMultiple(<-s.Ch)
 }
