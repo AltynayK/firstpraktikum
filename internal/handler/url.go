@@ -241,11 +241,11 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 	}
 
 	chh <- slice
-	s.DeleteUrl(chh)
+	s.DeleteURL(chh)
 	w.WriteHeader(http.StatusAccepted)
 }
 
-func (s *Handler) DeleteUrl(ch chan []int) {
+func (s *Handler) DeleteURL(ch chan []int) {
 
 	s.repo.DeleteMultiple(<-ch)
 }
