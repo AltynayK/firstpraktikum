@@ -136,8 +136,11 @@ func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	if !status {
 		w.WriteHeader(http.StatusGone)
 	}
+	if status == true {
+		w.WriteHeader(http.StatusTemporaryRedirect)
+	}
 	w.Header().Set("Location", longURL)
-	w.WriteHeader(http.StatusTemporaryRedirect)
+
 	fmt.Fprint(w)
 }
 
