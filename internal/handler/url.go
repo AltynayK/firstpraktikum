@@ -1,13 +1,16 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/signal"
 	"strconv"
+	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/models"
@@ -31,6 +34,8 @@ func NewHandler(config *app.Config) *Handler {
 	}
 }
 func (s *Handler) Run(config *app.Config) {
+	ctx, cancel := context.WithCancel(context.Background())
+	go handleSignals(cancel)
 	mux := s.InitHandlers()
 
 	srv := http.Server{
@@ -41,7 +46,29 @@ func (s *Handler) Run(config *app.Config) {
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Print(err)
 	}
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Print("server stopped")
+			return
+		default:
+			time.Sleep(3 * time.Second)
+		}
 
+	}
+
+}
+func handleSignals(cancel context.CancelFunc) {
+	sigCh := make(chan os.Signal)
+	signal.Notify(sigCh, os.Interrupt)
+	for {
+		sig := <-sigCh
+		switch sig {
+		case os.Interrupt:
+			cancel()
+			return
+		}
+	}
 }
 
 func (s *Handler) InitHandlers() *mux.Router {
