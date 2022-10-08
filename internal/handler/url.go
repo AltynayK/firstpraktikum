@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
-	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/models"
@@ -51,8 +50,6 @@ func (s *Handler) Run(config *app.Config) {
 		case <-ctx.Done():
 			fmt.Print("server stopped")
 			return
-		default:
-			time.Sleep(3 * time.Second)
 		}
 
 	}
