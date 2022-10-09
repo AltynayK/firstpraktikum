@@ -288,8 +288,8 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 	}
 	chh <- slice
 	s.Ch = chh
-	//close(chh)
-	s.DeleteURL()
+	close(chh)
+	go s.DeleteURL()
 	w.WriteHeader(http.StatusAccepted)
 
 }
