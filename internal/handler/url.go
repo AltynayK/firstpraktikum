@@ -287,16 +287,11 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 		}
 		slice = append(slice, a)
 	}
-	for {
-		select {
-		case chh <- slice:
-			s.Ch = chh
-			w.WriteHeader(http.StatusAccepted)
-		default:
-			time.Sleep(20 * time.Millisecond)
-		}
 
-	}
+	chh <- slice
+	s.Ch = chh
+	close(chh)
+	w.WriteHeader(http.StatusAccepted)
 
 }
 
