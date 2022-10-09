@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/models"
@@ -257,5 +258,5 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 func (s *Handler) DeleteURL() {
 
 	s.repo.DeleteMultiple(<-s.Ch)
-
+	time.Sleep(500 * time.Millisecond)
 }
