@@ -101,7 +101,7 @@ func (s *Handler) InitHandlers() *mux.Router {
 	router.HandleFunc("/ping", s.CheckConnection).Methods("GET")
 	router.HandleFunc("/api/shorten/batch", s.PostMultipleUrls).Methods("POST")
 	router.HandleFunc("/api/user/urls", s.DeleteUrls).Methods("DELETE")
-	go s.DeleteURL()
+	//go s.DeleteURL()
 	return router
 }
 
@@ -241,7 +241,6 @@ func (s *Handler) PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	var okRes models.MultURL
 	var jsonRes []byte
 	var JSONArray []models.MultURL
-	//repo := repository.New()
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
 		shortURL := s.repo.MakeShortURL(value.LongURL)
@@ -279,7 +278,7 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 		fmt.Print(err)
 		return
 	}
-	chh := make(chan []int)
+	chh := make(chan []int, 5)
 	for _, value := range url {
 		a, err := strconv.Atoi(value)
 		if err != nil {
@@ -287,16 +286,18 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 		}
 		slice = append(slice, a)
 	}
-
 	chh <- slice
 	s.Ch = chh
 	close(chh)
+	go s.DeleteURL()
 	w.WriteHeader(http.StatusAccepted)
 
 }
 
 func (s *Handler) DeleteURL() {
+	var data []int
 
-	s.repo.DeleteMultiple(<-s.Ch)
+	data = <-s.Ch
+	s.repo.DeleteMultiple(data)
 
 }
