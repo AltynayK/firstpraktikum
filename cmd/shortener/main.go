@@ -15,6 +15,7 @@ import (
 func main() {
 	config := app.NewConfig()
 	s := handler.NewHandler(config)
+	s.Run(config)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
@@ -25,6 +26,5 @@ func main() {
 		stop()
 		fmt.Println("signal received")
 	}
-	s.Run(config)
 
 }
