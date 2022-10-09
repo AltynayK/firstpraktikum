@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
+	"github.com/AltynayK/firstpraktikum/internal/closer"
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
@@ -45,36 +47,40 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 		Addr:    config.ServerAddress,
 		Handler: mux,
 	}
+	c := &closer.Closer{}
+
+	c.Add(srv.Shutdown)
+
+	c.Add(func(ctx context.Context) error {
+		time.Sleep(3 * time.Second)
+
+		return nil
+	})
+
+	// c.Add(func(ctx context.Context) error {
+	// 	return errors.New("oops error occurred")
+	// })
+
+	// c.Add(func(ctx context.Context) error {
+	// 	return errors.New("uh-oh, another error occurred")
+	// })
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			fmt.Print(err)
+			log.Fatalf("listen and serve: %v", err)
 		}
 	}()
-	fmt.Printf("listening on %s", config.ServerAddress)
+
+	log.Printf("listening on %s", config.ServerAddress)
 	<-ctx.Done()
 
-	fmt.Println("shutting down server gracefully")
+	log.Println("shutting down server gracefully")
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 
-	if err := srv.Shutdown(shutdownCtx); err != nil {
-		return fmt.Errorf("shutdown: %w", err)
-	}
-
-	longShutdown := make(chan struct{}, 1)
-
-	go func() {
-		time.Sleep(3 * time.Second)
-		longShutdown <- struct{}{}
-	}()
-
-	select {
-	case <-shutdownCtx.Done():
-		return fmt.Errorf("server shutdown: %w", ctx.Err())
-	case <-longShutdown:
-		fmt.Println("finished")
+	if err := c.Close(shutdownCtx); err != nil {
+		return fmt.Errorf("closer: %v", err)
 	}
 
 	return nil
