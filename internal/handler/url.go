@@ -8,9 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/signal"
 	"strconv"
-	"syscall"
 	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
@@ -27,6 +25,10 @@ type Handler struct {
 	Ch     chan []int
 }
 
+const (
+	shutdownTimeout = 5 * time.Second
+)
+
 func NewHandler(config *app.Config) *Handler {
 
 	return &Handler{
@@ -35,7 +37,7 @@ func NewHandler(config *app.Config) *Handler {
 	}
 }
 
-func (s *Handler) Run(config *app.Config) {
+func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 
 	mux := s.InitHandlers()
 
@@ -44,16 +46,38 @@ func (s *Handler) Run(config *app.Config) {
 		Handler: mux,
 	}
 
-	if err := srv.ListenAndServe(); err != nil {
-		fmt.Print(err)
-	}
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
-	<-quit
-	if err := srv.Shutdown(context.Background()); err != nil {
-		fmt.Print(err)
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Print(err)
+		}
+	}()
+	fmt.Printf("listening on %s", config.ServerAddress)
+	<-ctx.Done()
+
+	fmt.Println("shutting down server gracefully")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer cancel()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		return fmt.Errorf("shutdown: %w", err)
 	}
 
+	longShutdown := make(chan struct{}, 1)
+
+	go func() {
+		time.Sleep(3 * time.Second)
+		longShutdown <- struct{}{}
+	}()
+
+	select {
+	case <-shutdownCtx.Done():
+		return fmt.Errorf("server shutdown: %w", ctx.Err())
+	case <-longShutdown:
+		fmt.Println("finished")
+	}
+
+	return nil
 }
 
 func (s *Handler) InitHandlers() *mux.Router {
