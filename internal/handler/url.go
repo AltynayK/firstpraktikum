@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -32,7 +33,7 @@ func NewHandler(config *app.Config) *Handler {
 	}
 }
 
-func (s *Handler) Run(config *app.Config) {
+func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 
 	mux := s.InitHandlers()
 
@@ -43,6 +44,19 @@ func (s *Handler) Run(config *app.Config) {
 
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Print(err)
+	}
+	defer srv.Close()
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Print("server stopped")
+			return nil
+
+		default:
+
+			fmt.Println("for loop")
+		}
+		time.Sleep(500 * time.Millisecond)
 	}
 
 }
