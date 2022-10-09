@@ -3,8 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/signal"
+	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/handler"
@@ -15,21 +14,25 @@ func main() {
 	config := app.NewConfig()
 	s := handler.NewHandler(config)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	go handleSignals(cancel)
-	if err := s.Run(ctx, config); err != nil {
-		fmt.Print(err)
-	}
+	s.Run(config)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	doWork(ctx)
 }
-func handleSignals(cancel context.CancelFunc) {
-	sigCh := make(chan os.Signal)
-	signal.Notify(sigCh, os.Interrupt)
+
+func doWork(ctx context.Context) {
+	newCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	fmt.Print("starting working ...")
+
 	for {
-		sig := <-sigCh
-		switch sig {
-		case os.Interrupt:
-			cancel()
+		select {
+		case <-newCtx.Done():
+			fmt.Print("ctx done")
 			return
+		default:
+			fmt.Print("working...")
+			time.Sleep(1 * time.Second)
 		}
 	}
 }

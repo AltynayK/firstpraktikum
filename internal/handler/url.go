@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -33,7 +32,7 @@ func NewHandler(config *app.Config) *Handler {
 	}
 }
 
-func (s *Handler) Run(ctx context.Context, config *app.Config) error {
+func (s *Handler) Run(config *app.Config) {
 
 	mux := s.InitHandlers()
 
@@ -44,19 +43,6 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 
 	if err := srv.ListenAndServe(); err != nil {
 		fmt.Print(err)
-	}
-	defer srv.Close()
-	for {
-		select {
-		case <-ctx.Done():
-			fmt.Print("server stopped")
-			return nil
-
-		default:
-
-			fmt.Println("for loop")
-		}
-		time.Sleep(500 * time.Millisecond)
 	}
 
 }
@@ -262,15 +248,21 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 		}
 		slice = append(slice, a)
 	}
+	for {
+		select {
+		case chh <- slice:
+			s.Ch = chh
+			w.WriteHeader(http.StatusAccepted)
+		default:
+			time.Sleep(20 * time.Millisecond)
+		}
 
-	chh <- slice
-	s.Ch = chh
+	}
 
-	w.WriteHeader(http.StatusAccepted)
 }
 
 func (s *Handler) DeleteURL() {
 
 	s.repo.DeleteMultiple(<-s.Ch)
-	time.Sleep(500 * time.Millisecond)
+
 }
