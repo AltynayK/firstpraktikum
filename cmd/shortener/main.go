@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/signal"
-	"syscall"
+	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/handler"
@@ -14,10 +15,16 @@ import (
 func main() {
 	config := app.NewConfig()
 	s := handler.NewHandler(config)
-	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
-	if err := s.Run(ctx, config); err != nil {
-		fmt.Print(err)
+
+	select {
+	case <-time.After(10 * time.Second):
+		fmt.Println("missed signal")
+	case <-ctx.Done():
+		stop()
+		fmt.Println("signal received")
 	}
+	s.Run(config)
 
 }
