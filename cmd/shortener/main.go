@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
@@ -17,37 +18,45 @@ func main() {
 	config := app.NewConfig()
 	s := handler.NewHandler(config)
 	s.Run(config)
-	parent, pCancel := context.WithCancel(context.Background())
-	child, _ := context.WithCancel(parent)
-	wg := &sync.WaitGroup{}
-	for i := 0; i < 10; i++ {
-		go work(wg, child)
-	}
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt)
-	defer signal.Stop(c)
-	select {
-	case <-c:
-		pCancel()
-		fmt.Println("Waiting everyone to finish...")
-		wg.Wait()
-		fmt.Println("Exiting")
-		os.Exit(0)
-	}
+	ctx, cancel := context.WithCancel(context.Background())
 
-}
-func work(wg *sync.WaitGroup, ctx context.Context) {
-	done := false
+	go func() {
+		exit := make(chan os.Signal, 1)
+		signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
+		cancel()
+	}()
+
+	var wg sync.WaitGroup
+
 	wg.Add(1)
-	for !done {
-		fmt.Println("Doing something...")
-		time.Sleep(time.Second)
-		select {
-		case <-ctx.Done():
-			fmt.Println("Done")
-			done = true
-		default:
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case <-ctx.Done():
+				fmt.Println("Break the loop")
+				break
+			case <-time.After(1 * time.Second):
+				fmt.Println("Hello in a loop")
+			}
 		}
-	}
-	wg.Done()
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			select {
+			case <-ctx.Done():
+				fmt.Println("Break the loop")
+				break
+			case <-time.After(1 * time.Second):
+				fmt.Println("Ciao in a loop")
+			}
+		}
+	}()
+
+	wg.Wait()
+	fmt.Println("Main done")
+
 }
