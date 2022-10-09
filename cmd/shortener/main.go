@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -13,32 +14,28 @@ func main() {
 	config := app.NewConfig()
 	s := handler.NewHandler(config)
 	s.Run(config)
-	tooLate := make(chan struct{})
-	proCh := make(chan string)
+	forever := make(chan struct{})
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go func(ctx context.Context) {
+		for {
+			select {
+			case <-ctx.Done(): // if cancel() execute
+				forever <- struct{}{}
+				return
+			default:
+				fmt.Println("execute loop")
+			}
+
+			time.Sleep(500 * time.Millisecond)
+		}
+	}(ctx)
 
 	go func() {
-		for {
-			fmt.Println("working")
-			time.Sleep(1 * time.Second)
-			select {
-			case <-tooLate:
-				fmt.Println("stopped")
-				return
-			case proCh <- "processed":
-			default:
-			}
-			fmt.Println("done here")
-
-		}
+		time.Sleep(2 * time.Second)
+		cancel()
 	}()
-	select {
-	case proc := <-proCh:
-		fmt.Println(proc)
-	case <-time.After(1 * time.Second):
-		fmt.Println("too late")
-		close(tooLate)
-	}
 
-	time.Sleep(4 * time.Second)
-	fmt.Print("finish\n")
+	<-forever
+	fmt.Println("finish")
 }
