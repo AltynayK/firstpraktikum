@@ -1,13 +1,16 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
@@ -42,6 +45,12 @@ func (s *Handler) Run(config *app.Config) {
 	}
 
 	if err := srv.ListenAndServe(); err != nil {
+		fmt.Print(err)
+	}
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+	if err := srv.Shutdown(context.Background()); err != nil {
 		fmt.Print(err)
 	}
 
