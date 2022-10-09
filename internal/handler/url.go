@@ -257,4 +257,5 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 func (s *Handler) DeleteURL() {
 
 	s.repo.DeleteMultiple(<-s.Ch)
+
 }

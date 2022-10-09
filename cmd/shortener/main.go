@@ -3,10 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/signal"
-	"sync"
-	"syscall"
 	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
@@ -18,39 +14,28 @@ func main() {
 	config := app.NewConfig()
 	s := handler.NewHandler(config)
 	s.Run(config)
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
+	forever := make(chan struct{})
+	ctx, cancel := context.WithCancel(context.Background())
 
-	var wg sync.WaitGroup
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	go func(ctx context.Context) {
 		for {
 			select {
-			case <-ctx.Done():
-				fmt.Println("Break the loop")
+			case <-ctx.Done(): // if cancel() execute
+				forever <- struct{}{}
 				return
-			case <-time.After(1 * time.Second):
-				fmt.Println("Hello in a loop")
+			default:
+				fmt.Println("execute loop")
 			}
-		}
-	}()
 
-	wg.Add(1)
+			time.Sleep(500 * time.Millisecond)
+		}
+	}(ctx)
+
 	go func() {
-		defer wg.Done()
-		for {
-			select {
-			case <-ctx.Done():
-				fmt.Println("Break the loop")
-				return
-			case <-time.After(1 * time.Second):
-				fmt.Println("Ciao in a loop")
-			}
-		}
+		time.Sleep(2 * time.Second)
+		cancel()
 	}()
 
-	wg.Wait()
-	fmt.Println("Main done")
+	<-forever
+	fmt.Println("finish")
 }
