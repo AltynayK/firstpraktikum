@@ -299,7 +299,9 @@ func (s *Handler) urlsForDelete() {
 		select {
 		case data := <-s.Ch:
 			s.repo.DeleteMultiple(data)
-			fmt.Print(data)
+		default:
+			fmt.Print("Нет ничего доступного")
+
 		}
 
 	}
