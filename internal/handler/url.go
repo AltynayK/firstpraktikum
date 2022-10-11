@@ -47,40 +47,13 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 		Addr:    config.ServerAddress,
 		Handler: mux,
 	}
-	forever := make(chan struct{})
-	ctxx, cancel := context.WithCancel(context.Background())
-	go func() {
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen and serve: %v", err)
-			<-ctx.Done()
-		}
 
-	}()
-	<-ctxx.Done()
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("listen and serve: %v", err)
 
-	go func(ctxx context.Context) {
-		for {
-			select {
-			case <-ctxx.Done(): // if cancel() execute
-				forever <- struct{}{}
-				return
-			default:
-				fmt.Println("execute loop")
-			}
-
-			time.Sleep(500 * time.Millisecond)
-		}
-	}(ctxx)
-
-	go func() {
-		time.Sleep(2 * time.Second)
-		cancel()
-	}()
-
-	<-forever
-	fmt.Println("finish")
-
+	}
 	return nil
+
 }
 
 func (s *Handler) InitHandlers() *mux.Router {
@@ -294,15 +267,9 @@ func (s *Handler) WriteDataToChan(url []string) {
 }
 
 func (s *Handler) urlsForDelete() {
-
-	for {
-		select {
-		case data := <-s.Ch:
-			s.repo.DeleteMultiple(data)
-		default:
-			fmt.Print("Нет ничего доступного")
-
-		}
-
+	var data []int
+	for i := range s.Ch {
+		data = i
+		s.repo.DeleteMultiple(data)
 	}
 }
