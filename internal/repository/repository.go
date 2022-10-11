@@ -12,7 +12,7 @@ type Repo interface {
 	MakeShortURL(string) string
 	ReturnShortURL(string) string
 	CheckDeletion(int) bool
-	DeleteMultiple([]int)
+	DeleteMultiple([]int) error
 }
 
 func New(config *app.Config) Repo {

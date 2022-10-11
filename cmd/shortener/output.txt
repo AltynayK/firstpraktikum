@@ -65,3 +65,10 @@
 {"short_url":"http://127.0.0.1:8080/69","original_url":"https://github.com/","userID":"30e59fdc-4cb9-4edb-a458-1d723bb25ca8","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/70","original_url":"https://github.com/","userID":"18349e63-b63c-48ee-930d-7f040571fcf4","correlation_id":""}
 {"short_url":"http://127.0.0.1:8080/71","original_url":"https://github.com/","userID":"18349e63-b63c-48ee-930d-7f040571fcf4","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/72","original_url":"https://gitfgffhcguvbd.com/","userID":"0b920221-b1a6-45bc-a54b-c4dc055be753","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/73","original_url":"https://gitfgffhcguvbd.com/","userID":"0b920221-b1a6-45bc-a54b-c4dc055be753","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/74","original_url":"https://gitfgffhcguvbd.com/","userID":"0b920221-b1a6-45bc-a54b-c4dc055be753","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/75","original_url":"https://gitfgffhcguvbd.com/","userID":"0b920221-b1a6-45bc-a54b-c4dc055be753","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/76","original_url":"https://gitfgffhcguvbd.com/","userID":"0b920221-b1a6-45bc-a54b-c4dc055be753","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/77","original_url":"https://gitfgffhcguvbd.com/","userID":"0b920221-b1a6-45bc-a54b-c4dc055be753","correlation_id":""}
+{"short_url":"http://127.0.0.1:8080/78","original_url":"https://gitfgffhcguvbd.com/","userID":"0b920221-b1a6-45bc-a54b-c4dc055be753","correlation_id":""}
