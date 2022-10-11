@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
-	"github.com/AltynayK/firstpraktikum/internal/closer"
 	"github.com/AltynayK/firstpraktikum/internal/models"
 	"github.com/AltynayK/firstpraktikum/internal/repository"
 	"github.com/AltynayK/firstpraktikum/internal/service"
@@ -36,6 +35,7 @@ func NewHandler(config *app.Config) *Handler {
 	return &Handler{
 		config: config,
 		repo:   repository.New(config),
+		Ch:     make(chan []int, 5),
 	}
 }
 
@@ -47,41 +47,38 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 		Addr:    config.ServerAddress,
 		Handler: mux,
 	}
-	c := &closer.Closer{}
-
-	c.Add(srv.Shutdown)
-
-	c.Add(func(ctx context.Context) error {
-		time.Sleep(3 * time.Second)
-
-		return nil
-	})
-
-	// c.Add(func(ctx context.Context) error {
-	// 	return errors.New("oops error occurred")
-	// })
-
-	// c.Add(func(ctx context.Context) error {
-	// 	return errors.New("uh-oh, another error occurred")
-	// })
-
+	forever := make(chan struct{})
+	ctxx, cancel := context.WithCancel(context.Background())
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen and serve: %v", err)
+			<-ctx.Done()
 		}
+
+	}()
+	<-ctxx.Done()
+
+	go func(ctxx context.Context) {
+		for {
+			select {
+			case <-ctxx.Done(): // if cancel() execute
+				forever <- struct{}{}
+				return
+			default:
+				fmt.Println("execute loop")
+			}
+
+			time.Sleep(500 * time.Millisecond)
+		}
+	}(ctxx)
+
+	go func() {
+		time.Sleep(2 * time.Second)
+		cancel()
 	}()
 
-	log.Printf("listening on %s", config.ServerAddress)
-	<-ctx.Done()
-
-	log.Println("shutting down server gracefully")
-
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
-	defer cancel()
-
-	if err := c.Close(shutdownCtx); err != nil {
-		return fmt.Errorf("closer: %v", err)
-	}
+	<-forever
+	fmt.Println("finish")
 
 	return nil
 }
@@ -101,7 +98,7 @@ func (s *Handler) InitHandlers() *mux.Router {
 	router.HandleFunc("/ping", s.CheckConnection).Methods("GET")
 	router.HandleFunc("/api/shorten/batch", s.PostMultipleUrls).Methods("POST")
 	router.HandleFunc("/api/user/urls", s.DeleteUrls).Methods("DELETE")
-	//go s.DeleteURL()
+	go s.urlsForDelete()
 	return router
 }
 
@@ -271,14 +268,20 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("content-type", "application/json")
 	var url []string
-	var slice []int
 	content, _ := ioutil.ReadAll(r.Body)
 	err := json.Unmarshal(content, &url)
 	if err != nil {
 		fmt.Print(err)
 		return
 	}
-	chh := make(chan []int, 5)
+
+	s.WriteDataToChan(url)
+
+	w.WriteHeader(http.StatusAccepted)
+
+}
+func (s *Handler) WriteDataToChan(url []string) {
+	var slice []int
 	for _, value := range url {
 		a, err := strconv.Atoi(value)
 		if err != nil {
@@ -286,16 +289,18 @@ func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 		}
 		slice = append(slice, a)
 	}
-	chh <- slice
-	s.Ch = chh
-	close(chh)
-	go s.DeleteURL()
-	w.WriteHeader(http.StatusAccepted)
+	s.Ch <- slice
 
 }
 
-func (s *Handler) DeleteURL() {
-	data := <-s.Ch
-	s.repo.DeleteMultiple(data)
+func (s *Handler) urlsForDelete() {
 
+	for {
+		select {
+		case data := <-s.Ch:
+			s.repo.DeleteMultiple(data)
+			fmt.Print(data)
+		}
+
+	}
 }
