@@ -11,9 +11,8 @@ import (
 func main() {
 	config := app.NewConfig()
 	s := handler.NewHandler(config)
+	s.Run(config)
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
-	s.Run(config)
 
 }
