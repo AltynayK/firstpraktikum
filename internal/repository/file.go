@@ -82,5 +82,5 @@ func (f *File) CheckDeletion(id int) bool {
 	return false
 }
 func (f *File) DeleteMultiple([]int) error {
-	return errors.New("Not implemented")
+	return errors.New("not implemented")
 }
