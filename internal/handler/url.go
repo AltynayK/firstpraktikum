@@ -1,12 +1,10 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -39,7 +37,7 @@ func NewHandler(config *app.Config) *Handler {
 	}
 }
 
-func (s *Handler) Run(ctx context.Context, config *app.Config) error {
+func (s *Handler) Run(config *app.Config) {
 
 	mux := s.InitHandlers()
 
@@ -48,11 +46,9 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 		Handler: mux,
 	}
 
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("listen and serve: %v", err)
-
+	if err := srv.ListenAndServe(); err != nil {
+		fmt.Print(err)
 	}
-	return nil
 
 }
 
