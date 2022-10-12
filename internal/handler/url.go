@@ -19,9 +19,9 @@ import (
 )
 
 type Handler struct {
-	config         *app.Config
-	repo           repository.Repo
-	chanURLstoring chan []int
+	config           *app.Config
+	repo             repository.Repo
+	queueForDeletion chan []int
 }
 
 const (
@@ -33,9 +33,9 @@ var wg sync.WaitGroup
 func NewHandler(config *app.Config) *Handler {
 
 	return &Handler{
-		config:         config,
-		repo:           repository.New(config),
-		chanURLstoring: make(chan []int, chanVal),
+		config:           config,
+		repo:             repository.New(config),
+		queueForDeletion: make(chan []int, chanVal),
 	}
 }
 
@@ -261,7 +261,7 @@ func (s *Handler) WriteDataToChan(processingUrls []string) {
 		}
 		slice = append(slice, a)
 	}
-	s.chanURLstoring <- slice
+	s.queueForDeletion <- slice
 	wg.Add(1)
 	wg.Wait()
 	fmt.Println("exit")
@@ -270,7 +270,7 @@ func (s *Handler) WriteDataToChan(processingUrls []string) {
 func (s *Handler) urlsForDelete() {
 
 	var data []int
-	for i := range s.chanURLstoring {
+	for i := range s.queueForDeletion {
 		data = i
 		s.repo.DeleteMultiple(data)
 		wg.Done()
