@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
+	"os/signal"
+	"syscall"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/handler"
@@ -12,11 +14,11 @@ import (
 func main() {
 	config := app.NewConfig()
 	s := handler.NewHandler(config)
-	s.Run(config)
-	_, cancel := context.WithCancel(context.Background())
-	defer func() {
-		cancel()
-		fmt.Println("Run cancel in defer...")
-	}()
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
+	if err := s.Run(ctx, config); err != nil {
+		log.Fatal(err)
+	}
 
 }
