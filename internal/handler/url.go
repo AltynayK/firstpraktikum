@@ -19,9 +19,9 @@ import (
 )
 
 type Handler struct {
-	config *app.Config
-	repo   repository.Repo
-	Ch     chan []int
+	config         *app.Config
+	repo           repository.Repo
+	chanURLstoring chan []int
 }
 
 const (
@@ -33,9 +33,9 @@ var wg sync.WaitGroup
 func NewHandler(config *app.Config) *Handler {
 
 	return &Handler{
-		config: config,
-		repo:   repository.New(config),
-		Ch:     make(chan []int, chanVal),
+		config:         config,
+		repo:           repository.New(config),
+		chanURLstoring: make(chan []int, chanVal),
 	}
 }
 
@@ -239,29 +239,29 @@ func (s *Handler) PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("content-type", "application/json")
-	var url []string
+	var processingUrls []string
 	content, _ := ioutil.ReadAll(r.Body)
-	err := json.Unmarshal(content, &url)
+	err := json.Unmarshal(content, &processingUrls)
 	if err != nil {
 		fmt.Print(err)
 		return
 	}
 
-	s.WriteDataToChan(url)
+	s.WriteDataToChan(processingUrls)
 
 	w.WriteHeader(http.StatusAccepted)
 
 }
-func (s *Handler) WriteDataToChan(url []string) {
+func (s *Handler) WriteDataToChan(processingUrls []string) {
 	var slice []int
-	for _, value := range url {
+	for _, value := range processingUrls {
 		a, err := strconv.Atoi(value)
 		if err != nil {
 			fmt.Print("error")
 		}
 		slice = append(slice, a)
 	}
-	s.Ch <- slice
+	s.chanURLstoring <- slice
 	wg.Add(1)
 	wg.Wait()
 	fmt.Println("exit")
@@ -270,7 +270,7 @@ func (s *Handler) WriteDataToChan(url []string) {
 func (s *Handler) urlsForDelete() {
 
 	var data []int
-	for i := range s.Ch {
+	for i := range s.chanURLstoring {
 		data = i
 		s.repo.DeleteMultiple(data)
 		wg.Done()
