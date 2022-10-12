@@ -28,6 +28,8 @@ const (
 	chanVal = 5
 )
 
+var wg sync.WaitGroup
+
 func NewHandler(config *app.Config) *Handler {
 
 	return &Handler{
@@ -68,6 +70,7 @@ func (s *Handler) InitHandlers() *mux.Router {
 	router.HandleFunc("/api/shorten/batch", s.PostMultipleUrls).Methods("POST")
 	router.HandleFunc("/api/user/urls", s.DeleteUrls).Methods("DELETE")
 	go s.urlsForDelete()
+
 	return router
 }
 
@@ -259,25 +262,18 @@ func (s *Handler) WriteDataToChan(url []string) {
 		slice = append(slice, a)
 	}
 	s.Ch <- slice
-
+	wg.Add(1)
+	wg.Wait()
+	fmt.Println("exit")
 }
 
 func (s *Handler) urlsForDelete() {
-	var wg sync.WaitGroup
-	wg.Add(1)
-	//var data []int
-	// for i := range s.Ch {
-	// 	data = i
-	// 	s.repo.DeleteMultiple(data)
-	// }
-	for {
-		data, ok := <-s.Ch
-		if !ok {
-			fmt.Println("Shut Down")
-			defer wg.Done()
-			return
-		}
+
+	var data []int
+	for i := range s.Ch {
+		data = i
 		s.repo.DeleteMultiple(data)
+		wg.Done()
 	}
 
 }

@@ -109,6 +109,8 @@ func (d *DataBase) DeleteMultiple(id []int) error {
 
 	for _, i := range id {
 		d.dB.QueryRow("UPDATE data SET active=false WHERE id = $1", i)
+
 	}
+
 	return nil
 }

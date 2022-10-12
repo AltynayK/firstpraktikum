@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/handler"
@@ -13,6 +14,9 @@ func main() {
 	s := handler.NewHandler(config)
 	s.Run(config)
 	_, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	defer func() {
+		cancel()
+		fmt.Println("Run cancel in defer...")
+	}()
 
 }
