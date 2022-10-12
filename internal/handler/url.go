@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
+	"sync"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/models"
@@ -25,7 +25,7 @@ type Handler struct {
 }
 
 const (
-	shutdownTimeout = 5 * time.Second
+	chanVal = 5
 )
 
 func NewHandler(config *app.Config) *Handler {
@@ -33,7 +33,7 @@ func NewHandler(config *app.Config) *Handler {
 	return &Handler{
 		config: config,
 		repo:   repository.New(config),
-		Ch:     make(chan []int, 5),
+		Ch:     make(chan []int, chanVal),
 	}
 }
 
@@ -263,9 +263,21 @@ func (s *Handler) WriteDataToChan(url []string) {
 }
 
 func (s *Handler) urlsForDelete() {
-	var data []int
-	for i := range s.Ch {
-		data = i
+	var wg sync.WaitGroup
+	wg.Add(1)
+	//var data []int
+	// for i := range s.Ch {
+	// 	data = i
+	// 	s.repo.DeleteMultiple(data)
+	// }
+	for {
+		data, ok := <-s.Ch
+		if !ok {
+			fmt.Println("Shut Down")
+			defer wg.Done()
+			return
+		}
 		s.repo.DeleteMultiple(data)
 	}
+
 }
