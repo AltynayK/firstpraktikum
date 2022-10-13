@@ -65,8 +65,8 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
-	<-s.queueForDeletion
-	s.db.Close()
+	// <-s.queueForDeletion
+	// s.db.Close()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		return err
 	}
@@ -78,12 +78,12 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 	// 	longShutdown <- struct{}{}
 	// }()
 
-	select {
-	case <-shutdownCtx.Done():
-		return fmt.Errorf("server shutdown: %w", ctx.Err())
-		// case <-longShutdown:
-		// 	fmt.Println("finished")
-	}
+	// select {
+	// case <-shutdownCtx.Done():
+	// 	return fmt.Errorf("server shutdown: %w", ctx.Err())
+	// 	// case <-longShutdown:
+	// 	// 	fmt.Println("finished")
+	// }
 
 	return nil
 
