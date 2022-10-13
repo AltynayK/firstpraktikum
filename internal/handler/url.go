@@ -68,20 +68,6 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 		return err
 	}
 
-	// longShutdown := make(chan struct{}, 1)
-
-	// go func() {
-	// 	time.Sleep(3 * time.Second)
-	// 	longShutdown <- struct{}{}
-	// }()
-
-	// select {
-	// case <-shutdownCtx.Done():
-	// 	return fmt.Errorf("server shutdown: %w", ctx.Err())
-	// 	// case <-longShutdown:
-	// 	// 	fmt.Println("finished")
-	// }
-
 	return nil
 
 }
@@ -294,9 +280,6 @@ func (s *Handler) WriteDataToChan(processingUrls []string) {
 		slice = append(slice, a)
 	}
 	s.queueForDeletion <- slice
-	// wg.Add(1)
-	// wg.Wait()
-	// fmt.Println("exit")
 }
 
 func (s *Handler) urlsForDelete() {
@@ -305,7 +288,6 @@ func (s *Handler) urlsForDelete() {
 	for i := range s.queueForDeletion {
 		data = i
 		s.repo.DeleteMultiple(data)
-		// wg.Done()
 	}
 
 }
