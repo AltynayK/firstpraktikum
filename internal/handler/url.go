@@ -297,9 +297,9 @@ func (s *Handler) WriteDataToChan(processingUrls []string) {
 		slice = append(slice, a)
 	}
 	s.queueForDeletion <- slice
-	// wg.Add(1)
-	// wg.Wait()
-	//fmt.Println("exit")
+	wg.Add(1)
+	wg.Wait()
+	fmt.Println("exit")
 }
 
 func (s *Handler) urlsForDelete() {
@@ -308,7 +308,7 @@ func (s *Handler) urlsForDelete() {
 	for i := range s.queueForDeletion {
 		data = i
 		s.repo.DeleteMultiple(data)
-		// wg.Done()
+		wg.Done()
 	}
 
 }
