@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
@@ -32,8 +31,6 @@ const (
 	chanVal         = 5
 	shutdownTimeout = 5 * time.Second
 )
-
-var wg sync.WaitGroup
 
 func NewHandler(config *app.Config) *Handler {
 
@@ -65,8 +62,8 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
-	// <-s.queueForDeletion
-	// s.db.Close()
+	<-s.queueForDeletion
+	s.db.Close()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		return err
 	}
