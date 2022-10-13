@@ -62,7 +62,7 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
-	<-s.queueForDeletion
+	close(s.queueForDeletion)
 	s.db.Close()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		return err
