@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -24,6 +25,7 @@ type Handler struct {
 	config           *app.Config
 	repo             repository.Repo
 	queueForDeletion chan []int
+	db               *sql.DB
 }
 
 const (
@@ -63,24 +65,25 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
-
+	<-s.queueForDeletion
+	s.db.Close()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		return err
 	}
 
-	longShutdown := make(chan struct{}, 1)
+	// longShutdown := make(chan struct{}, 1)
 
-	go func() {
-		time.Sleep(3 * time.Second)
-		longShutdown <- struct{}{}
-	}()
+	// go func() {
+	// 	time.Sleep(3 * time.Second)
+	// 	longShutdown <- struct{}{}
+	// }()
 
-	select {
-	case <-shutdownCtx.Done():
-		return fmt.Errorf("server shutdown: %w", ctx.Err())
-	case <-longShutdown:
-		fmt.Println("finished")
-	}
+	// select {
+	// case <-shutdownCtx.Done():
+	// 	return fmt.Errorf("server shutdown: %w", ctx.Err())
+	// case <-longShutdown:
+	// 	fmt.Println("finished")
+	// }
 
 	return nil
 
@@ -294,9 +297,9 @@ func (s *Handler) WriteDataToChan(processingUrls []string) {
 		slice = append(slice, a)
 	}
 	s.queueForDeletion <- slice
-	wg.Add(1)
-	wg.Wait()
-	fmt.Println("exit")
+	// wg.Add(1)
+	// wg.Wait()
+	//fmt.Println("exit")
 }
 
 func (s *Handler) urlsForDelete() {
@@ -305,7 +308,7 @@ func (s *Handler) urlsForDelete() {
 	for i := range s.queueForDeletion {
 		data = i
 		s.repo.DeleteMultiple(data)
-		wg.Done()
+		// wg.Done()
 	}
 
 }
