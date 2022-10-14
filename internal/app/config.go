@@ -25,8 +25,8 @@ func init() {
 	flag.StringVar(&BaseURL, "b", "http://"+ServerAddress, "BaseURL")
 	//increment#
 	flag.StringVar(&FileStoragePath, "f", "texts.txt", "FileStoragePath - путь до файла LongURL")
-	flag.StringVar(&DatabaseDNS, "d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
-	//flag.StringVar(&DatabaseDNS, "d", "", "DatabaseDNS")
+	//flag.StringVar(&DatabaseDNS, "d", "host=localhost port=5432 user=altynay password=password dbname=somedb sslmode=disable", "DatabaseDNS")
+	flag.StringVar(&DatabaseDNS, "d", "", "DatabaseDNS")
 }
 
 func NewConfig() *Config {
