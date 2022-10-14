@@ -38,6 +38,7 @@ func NewHandler(config *app.Config) *Handler {
 		config:           config,
 		repo:             repository.New(config),
 		queueForDeletion: make(chan []int, chanVal),
+		db:               repository.NewPostgresDB(&config.DatabaseDNS),
 	}
 }
 
@@ -64,6 +65,7 @@ func (s *Handler) Run(ctx context.Context, config *app.Config) error {
 	defer cancel()
 	close(s.queueForDeletion)
 	s.db.Close()
+
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		return err
 	}
