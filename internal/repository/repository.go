@@ -11,6 +11,8 @@ type Repo interface {
 	GetLongURLByID(int) string
 	MakeShortURL(string) string
 	ReturnShortURL(string) string
+	CheckDeletion(int) bool
+	DeleteMultiple([]int) error
 }
 
 func New(config *app.Config) Repo {

@@ -37,7 +37,7 @@ func NewPostgresDB(cfg *string) *sql.DB {
 }
 
 func CreateTable(db *sql.DB) {
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar UNIQUE, user_id varchar, correlation_id varchar)")
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS data (id serial primary key, short_url varchar, original_url varchar UNIQUE, user_id varchar, correlation_id varchar, active bool  DEFAULT true)")
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +60,7 @@ func (d *DataBase) GetLongURLByID(id int) string {
 	row := d.dB.QueryRow("SELECT original_url FROM data WHERE id = $1", id)
 	alb := models.DBUrl{}
 	if err := row.Scan(&alb.Originalurl); err != nil {
-		fmt.Print("Error.")
+		fmt.Print("Error GetLongURLByID.")
 	}
 	return alb.Originalurl
 }
@@ -68,7 +68,7 @@ func (d *DataBase) ReturnShortURL(LongURL string) string {
 	row := d.dB.QueryRow("SELECT short_url FROM data WHERE original_url = $1", LongURL)
 	alb := models.DBUrls{}
 	if err := row.Scan(&alb.Shorturl); err != nil {
-		fmt.Print("Error.")
+		fmt.Print("Error ReturnShortURL.")
 	}
 	return alb.Shorturl
 }
@@ -91,4 +91,26 @@ func (d *DataBase) MakeShortURL(url string) string {
 	}
 	nextid := alb.Maxid + 1
 	return d.config.BaseURL + "/" + strconv.Itoa(nextid)
+}
+
+func (d *DataBase) CheckDeletion(id int) bool {
+	row := d.dB.QueryRow("SELECT active FROM data WHERE id = $1", id)
+	alb := models.DBUrl{}
+	if err := row.Scan(&alb.Active); err != nil {
+		fmt.Print("Error CheckStatus.")
+	}
+	return alb.Active
+}
+
+// func (d *DataBase) Delete(id int, err error) {
+// 	d.dB.QueryRow("UPDATE data SET active=false WHERE id = $1", id)
+// }
+func (d *DataBase) DeleteMultiple(id []int) error {
+
+	for _, i := range id {
+		d.dB.QueryRow("UPDATE data SET active=false WHERE id = $1", i)
+
+	}
+
+	return nil
 }

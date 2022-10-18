@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/AltynayK/firstpraktikum/internal/app"
 	"github.com/AltynayK/firstpraktikum/internal/models"
@@ -18,18 +21,29 @@ import (
 )
 
 type Handler struct {
-	config *app.Config
-	repo   repository.Repo
+	config           *app.Config
+	repo             repository.Repo
+	queueForDeletion chan []int
+	db               *sql.DB
 }
+
+const (
+	chanVal         = 5
+	shutdownTimeout = 5 * time.Second
+)
 
 func NewHandler(config *app.Config) *Handler {
 
 	return &Handler{
-		config: config,
-		repo:   repository.New(config),
+		config:           config,
+		repo:             repository.New(config),
+		queueForDeletion: make(chan []int, chanVal),
+		db:               repository.NewPostgresDB(&config.DatabaseDNS),
 	}
 }
-func (s *Handler) Run(config *app.Config) {
+
+func (s *Handler) Run(ctx context.Context, config *app.Config) error {
+
 	mux := s.InitHandlers()
 
 	srv := http.Server{
@@ -37,9 +51,26 @@ func (s *Handler) Run(config *app.Config) {
 		Handler: mux,
 	}
 
-	if err := srv.ListenAndServe(); err != nil {
-		fmt.Print(err)
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Print("listen and serve:")
+		}
+	}()
+	fmt.Printf("listening on %s", config.ServerAddress)
+	<-ctx.Done()
+
+	fmt.Println("shutting down server gracefully")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer cancel()
+	close(s.queueForDeletion)
+	s.db.Close()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		return err
 	}
+
+	return nil
 
 }
 
@@ -57,6 +88,9 @@ func (s *Handler) InitHandlers() *mux.Router {
 	router.HandleFunc("/api/user/urls", s.GetAllUrls).Methods("GET")
 	router.HandleFunc("/ping", s.CheckConnection).Methods("GET")
 	router.HandleFunc("/api/shorten/batch", s.PostMultipleUrls).Methods("POST")
+	router.HandleFunc("/api/user/urls", s.DeleteUrls).Methods("DELETE")
+	go s.urlsForDelete()
+
 	return router
 }
 
@@ -117,6 +151,7 @@ func (s *Handler) PostText(w http.ResponseWriter, r *http.Request) {
 func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	var longURL string
+	status := true
 	id, ok := vars["id"]
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
@@ -129,6 +164,15 @@ func (s *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	//repo := repository.New()
 	longURL = s.repo.GetLongURLByID(b)
+	status = s.repo.CheckDeletion(b)
+	if !status {
+
+		w.Header().Set("Location", longURL)
+		w.WriteHeader(http.StatusGone)
+		fmt.Fprint(w)
+		return
+	}
+
 	w.Header().Set("Location", longURL)
 	w.WriteHeader(http.StatusTemporaryRedirect)
 	fmt.Fprint(w)
@@ -186,7 +230,6 @@ func (s *Handler) PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	var okRes models.MultURL
 	var jsonRes []byte
 	var JSONArray []models.MultURL
-	//repo := repository.New()
 	for _, value := range url {
 		a := r.Context().Value(userCtxKey).(string)
 		shortURL := s.repo.MakeShortURL(value.LongURL)
@@ -211,4 +254,42 @@ func (s *Handler) PostMultipleUrls(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprint(w, string(jsonRes))
+}
+
+func (s *Handler) DeleteUrls(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("content-type", "application/json")
+	var processingUrls []string
+	content, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(content, &processingUrls)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	s.WriteDataToChan(processingUrls)
+
+	w.WriteHeader(http.StatusAccepted)
+
+}
+func (s *Handler) WriteDataToChan(processingUrls []string) {
+	var slice []int
+	for _, value := range processingUrls {
+		a, err := strconv.Atoi(value)
+		if err != nil {
+			fmt.Print("error")
+		}
+		slice = append(slice, a)
+	}
+	s.queueForDeletion <- slice
+}
+
+func (s *Handler) urlsForDelete() {
+
+	var data []int
+	for i := range s.queueForDeletion {
+		data = i
+		s.repo.DeleteMultiple(data)
+	}
+
 }

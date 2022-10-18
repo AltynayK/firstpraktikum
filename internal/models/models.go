@@ -19,6 +19,7 @@ type DBUrl struct {
 	shorturl    string
 	Originalurl string
 	userid      string
+	Active      bool
 }
 type Abs struct {
 	ShortURL      string `json:"short_url"`

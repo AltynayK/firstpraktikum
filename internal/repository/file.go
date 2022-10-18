@@ -2,6 +2,7 @@ package repository
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -76,4 +77,10 @@ func (f *File) MakeShortURL(url string) string {
 }
 func (f *File) ReturnShortURL(url string) string {
 	return url
+}
+func (f *File) CheckDeletion(id int) bool {
+	return true
+}
+func (f *File) DeleteMultiple([]int) error {
+	return errors.New("not implemented")
 }
